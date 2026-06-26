@@ -6496,16 +6496,10 @@ ${curriculumCtx
         });
         messages.push({ role: 'user', content: text });
 
-       const SUPABASE_URL = 'https://qokkdckumwyykjeysyiq.supabase.co'
-
-const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${SUPABASE_KEY}`,
-  },
-  body: JSON.stringify({...})
-})
+        const response = await fetch(`${window.SUPABASE_URL}/functions/v1/ai-proxy`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${window.SUPABASE_KEY}` },
+          body: JSON.stringify({
             model: 'claude-sonnet-4-6',
             max_tokens: 1000,
             system: systemPrompt,
