@@ -121,6 +121,431 @@
       color: var(--text);
     }
 
+    /* ═══════════════════════════════════════════════════════════════
+       🤖 SPACE BOT — DRAGGABLE AI ASSISTANT
+    ═══════════════════════════════════════════════════════════════ */
+
+    /* ── DRAGGABLE BOT ICON ── */
+    #space-bot-icon {
+      position: fixed;
+      bottom: 90px;
+      left: 24px;
+      width: 62px;
+      height: 62px;
+      z-index: 9999;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      filter: drop-shadow(0 0 18px rgba(56,189,248,0.55));
+      transition: filter 0.3s, transform 0.2s;
+    }
+    #space-bot-icon:hover {
+      filter: drop-shadow(0 0 28px rgba(56,189,248,0.9)) drop-shadow(0 0 50px rgba(45,212,191,0.4));
+      transform: scale(1.08);
+    }
+    #space-bot-icon:active { cursor: grabbing; transform: scale(1.05); }
+    #space-bot-icon.bot-pulse svg {
+      animation: botPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes botPulse {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      25%      { transform: translateY(-6px) rotate(-4deg); }
+      75%      { transform: translateY(-3px) rotate(3deg); }
+    }
+    @keyframes botOrbit {
+      to { transform: rotate(360deg); }
+    }
+    @keyframes antennaBlink {
+      0%,90%,100% { opacity:1; }
+      95%         { opacity:0.2; }
+    }
+    .bot-antenna-light { animation: antennaBlink 2s ease-in-out infinite; }
+
+    /* ── NOTIFICATION BADGE ── */
+    #bot-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 18px;
+      height: 18px;
+      background: var(--teal);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 900;
+      color: #020208;
+      animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes badgePop {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+
+    /* ── SIDEBAR CHAT ── */
+    #bot-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 380px;
+      height: 100vh;
+      z-index: 9998;
+      display: flex;
+      flex-direction: column;
+      background: rgba(4,4,16,0.97);
+      border-right: 1px solid rgba(56,189,248,0.15);
+      box-shadow: 4px 0 40px rgba(0,0,0,0.8), 0 0 80px rgba(56,189,248,0.06);
+      transform: translateX(-100%);
+      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+      backdrop-filter: blur(40px) saturate(180%);
+      -webkit-backdrop-filter: blur(40px) saturate(180%);
+    }
+    [data-theme="light"] #bot-sidebar {
+      background: rgba(248,251,255,0.97);
+      border-right-color: rgba(3,105,161,0.15);
+      box-shadow: 4px 0 40px rgba(0,20,80,0.12), 0 0 40px rgba(3,105,161,0.05);
+    }
+    #bot-sidebar.open { transform: translateX(0); }
+
+    /* Top glow line */
+    #bot-sidebar::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,0.6), rgba(45,212,191,0.5), transparent);
+      pointer-events: none;
+    }
+
+    /* ── SIDEBAR HEADER ── */
+    #bot-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(56,189,248,0.08);
+      background: rgba(6,6,20,0.85);
+      flex-shrink: 0;
+    }
+    [data-theme="light"] #bot-header {
+      background: rgba(240,248,255,0.9);
+      border-bottom-color: rgba(3,105,161,0.1);
+    }
+    #bot-header-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(45,212,191,0.2));
+      border: 1px solid rgba(56,189,248,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    #bot-header-info { flex: 1; }
+    #bot-header-info h4 {
+      font-size: 0.92rem;
+      font-weight: 900;
+      margin: 0 0 2px;
+      color: var(--accent);
+    }
+    #bot-header-info p {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin: 0;
+    }
+    #bot-status-dot {
+      width: 7px; height: 7px;
+      background: var(--teal);
+      border-radius: 50%;
+      display: inline-block;
+      margin-left: 5px;
+      box-shadow: 0 0 8px rgba(45,212,191,0.8);
+      animation: statusBlink 2s ease-in-out infinite;
+    }
+    @keyframes statusBlink {
+      0%,100% { opacity:1; box-shadow: 0 0 8px rgba(45,212,191,0.8); }
+      50%      { opacity:0.5; box-shadow: 0 0 3px rgba(45,212,191,0.3); }
+    }
+    #bot-close-btn {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      border: 1px solid rgba(56,189,248,0.15);
+      background: rgba(56,189,248,0.05);
+      color: var(--text-dim);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.25s;
+      flex-shrink: 0;
+    }
+    #bot-close-btn:hover { background: rgba(248,113,113,0.12); color: var(--red); border-color: rgba(248,113,113,0.3); }
+
+    /* ── CONTEXT SELECTOR ── */
+    #bot-context-bar {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(56,189,248,0.06);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      background: rgba(4,4,14,0.6);
+    }
+    [data-theme="light"] #bot-context-bar { background: rgba(235,245,255,0.7); }
+    .bot-ctx-chip {
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(56,189,248,0.15);
+      background: rgba(56,189,248,0.05);
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s;
+      font-family: 'Cairo', sans-serif;
+    }
+    .bot-ctx-chip:hover, .bot-ctx-chip.active {
+      background: rgba(56,189,248,0.12);
+      border-color: rgba(56,189,248,0.4);
+      color: var(--accent);
+    }
+    .bot-ctx-chip.active {
+      box-shadow: 0 0 12px rgba(56,189,248,0.15);
+    }
+
+    /* ── MESSAGES AREA ── */
+    #bot-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+    #bot-messages::-webkit-scrollbar { width: 3px; }
+    #bot-messages::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 4px; }
+
+    .bot-msg {
+      display: flex;
+      gap: 8px;
+      animation: msgFadeIn 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes msgFadeIn {
+      from { opacity:0; transform: translateY(10px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .bot-msg.user { flex-direction: row-reverse; }
+
+    .bot-msg-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .bot-msg.bot .bot-msg-avatar {
+      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(45,212,191,0.15));
+      border: 1px solid rgba(56,189,248,0.25);
+      color: var(--accent);
+    }
+    .bot-msg.user .bot-msg-avatar {
+      background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(56,189,248,0.1));
+      border: 1px solid rgba(167,139,250,0.25);
+      color: var(--violet);
+    }
+
+    .bot-msg-bubble {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.87rem;
+      line-height: 1.7;
+      font-weight: 500;
+    }
+    .bot-msg.bot .bot-msg-bubble {
+      background: rgba(56,189,248,0.07);
+      border: 1px solid rgba(56,189,248,0.12);
+      color: var(--text);
+      border-radius: 4px 14px 14px 14px;
+    }
+    [data-theme="light"] .bot-msg.bot .bot-msg-bubble {
+      background: rgba(3,105,161,0.06);
+      border-color: rgba(3,105,161,0.12);
+    }
+    .bot-msg.user .bot-msg-bubble {
+      background: rgba(45,212,191,0.1);
+      border: 1px solid rgba(45,212,191,0.2);
+      color: var(--text);
+      border-radius: 14px 4px 14px 14px;
+    }
+
+    /* ── TYPING INDICATOR ── */
+    #bot-typing {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 0 4px;
+    }
+    #bot-typing.show { display: flex; }
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      background: rgba(56,189,248,0.07);
+      border: 1px solid rgba(56,189,248,0.12);
+      padding: 10px 14px;
+      border-radius: 4px 14px 14px 14px;
+    }
+    .typing-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: typingBounce 1.2s ease-in-out infinite;
+    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce {
+      0%,60%,100% { transform: translateY(0); opacity:0.4; }
+      30%          { transform: translateY(-6px); opacity:1; }
+    }
+
+    /* ── SUGGESTED QUESTIONS ── */
+    #bot-suggestions {
+      padding: 0 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .bot-suggestion {
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(56,189,248,0.12);
+      background: rgba(56,189,248,0.04);
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: right;
+      transition: all 0.22s;
+      font-family: 'Cairo', sans-serif;
+    }
+    .bot-suggestion:hover {
+      background: rgba(56,189,248,0.1);
+      border-color: rgba(56,189,248,0.3);
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    /* ── INPUT AREA ── */
+    #bot-input-area {
+      padding: 12px 14px;
+      border-top: 1px solid rgba(56,189,248,0.08);
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+      background: rgba(4,4,14,0.7);
+    }
+    [data-theme="light"] #bot-input-area {
+      background: rgba(240,248,255,0.9);
+      border-top-color: rgba(3,105,161,0.1);
+    }
+    #bot-input {
+      flex: 1;
+      background: rgba(10,10,28,0.8);
+      border: 1px solid rgba(56,189,248,0.12);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.87rem;
+      resize: none;
+      outline: none;
+      max-height: 100px;
+      min-height: 42px;
+      transition: border-color 0.25s, box-shadow 0.25s;
+      line-height: 1.5;
+    }
+    [data-theme="light"] #bot-input {
+      background: rgba(238,247,255,0.9);
+      border-color: rgba(3,105,161,0.15);
+      color: #0a1628;
+    }
+    #bot-input:focus {
+      border-color: rgba(56,189,248,0.4);
+      box-shadow: 0 0 20px rgba(56,189,248,0.08);
+    }
+    #bot-input::placeholder { color: var(--text-muted); }
+    #bot-send-btn {
+      width: 40px; height: 40px;
+      border-radius: 11px;
+      border: none;
+      background: linear-gradient(135deg, var(--teal), var(--accent-dim));
+      color: #fff;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      transition: all 0.25s;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(45,212,191,0.25);
+    }
+    #bot-send-btn:hover { transform: scale(1.08); box-shadow: 0 6px 22px rgba(45,212,191,0.4); }
+    #bot-send-btn:active { transform: scale(0.96); }
+    #bot-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── CLEAR BTN ── */
+    #bot-clear-btn {
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(248,113,113,0.2);
+      background: rgba(248,113,113,0.05);
+      color: var(--red);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s;
+      font-family: 'Cairo', sans-serif;
+    }
+    #bot-clear-btn:hover { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); }
+
+    /* ── LOADING STATE IN MESSAGES ── */
+    .bot-loading-bar {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--teal), var(--accent), transparent);
+      background-size: 200% 100%;
+      animation: loadingFlow 1.4s linear infinite;
+      border-radius: 2px;
+      margin-top: 6px;
+    }
+    @keyframes loadingFlow {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── OVERLAY ── */
+    #bot-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      background: rgba(0,0,0,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    #bot-overlay.show { opacity: 1; pointer-events: all; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 480px) {
+      #bot-sidebar { width: 100vw; }
+    }
+
     /* ─── STAR CANVAS ─── */
     #space-canvas {
       position: fixed;
@@ -2750,6 +3175,183 @@ ESSAY
     <div style="font-size:0.8rem;margin-top:6px">الفرقة الثالثة — قسم نظم ومعلومات — منصة الكلية</div>
   </footer>
 
+  <!-- ═══════════ SPACE BOT ═══════════ -->
+
+  <!-- Overlay -->
+  <div id="bot-overlay" onclick="closeBotSidebar()"></div>
+
+  <!-- Draggable Bot Icon -->
+  <div id="space-bot-icon" class="bot-pulse" title="روبوت المناهج 🤖">
+    <div id="bot-badge" title="اسألني!">AI</div>
+    <svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="botBodyGrad" cx="50%" cy="40%" r="55%">
+          <stop offset="0%"   stop-color="#1e3a5f"/>
+          <stop offset="100%" stop-color="#0a0a1e"/>
+        </radialGradient>
+        <radialGradient id="botFaceGrad" cx="50%" cy="35%" r="55%">
+          <stop offset="0%"   stop-color="#0d2040"/>
+          <stop offset="100%" stop-color="#060610"/>
+        </radialGradient>
+        <filter id="botGlow">
+          <feGaussianBlur stdDeviation="1.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%"   stop-color="#2dd4bf"/>
+          <stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Orbit ring -->
+      <ellipse cx="31" cy="31" rx="29" ry="8" stroke="rgba(56,189,248,0.18)" stroke-width="1" fill="none"
+        style="animation: botOrbit 8s linear infinite; transform-origin:31px 31px"/>
+
+      <!-- Body -->
+      <rect x="10" y="26" width="42" height="28" rx="9" fill="url(#botBodyGrad)"
+        stroke="rgba(56,189,248,0.4)" stroke-width="1.2"/>
+
+      <!-- Glow border -->
+      <rect x="10" y="26" width="42" height="28" rx="9" fill="none"
+        stroke="url(#accentGrad)" stroke-width="0.6" opacity="0.5"/>
+
+      <!-- Face plate -->
+      <rect x="16" y="31" width="30" height="17" rx="5" fill="url(#botFaceGrad)"
+        stroke="rgba(56,189,248,0.25)" stroke-width="0.8"/>
+
+      <!-- Eyes (LED style) -->
+      <rect x="20" y="35" width="8" height="5" rx="2.5" fill="#38bdf8"
+        filter="url(#botGlow)" opacity="0.95"/>
+      <rect x="34" y="35" width="8" height="5" rx="2.5" fill="#2dd4bf"
+        filter="url(#botGlow)" opacity="0.95"/>
+
+      <!-- Eye glow -->
+      <rect x="20" y="35" width="8" height="5" rx="2.5" fill="rgba(56,189,248,0.5)"/>
+      <rect x="34" y="35" width="8" height="5" rx="2.5" fill="rgba(45,212,191,0.5)"/>
+
+      <!-- Mouth (smile scan line) -->
+      <rect x="21" y="43" width="20" height="2" rx="1" fill="rgba(56,189,248,0.4)"/>
+      <rect x="24" y="43" width="14" height="2" rx="1" fill="rgba(56,189,248,0.7)"/>
+
+      <!-- Side ears -->
+      <rect x="5"  y="31" width="6" height="10" rx="3" fill="rgba(45,212,191,0.2)"
+        stroke="rgba(45,212,191,0.4)" stroke-width="0.8"/>
+      <rect x="51" y="31" width="6" height="10" rx="3" fill="rgba(45,212,191,0.2)"
+        stroke="rgba(45,212,191,0.4)" stroke-width="0.8"/>
+
+      <!-- Ear dots -->
+      <circle cx="8"  cy="36" r="1.5" fill="#2dd4bf" opacity="0.8"/>
+      <circle cx="54" cy="36" r="1.5" fill="#2dd4bf" opacity="0.8"/>
+
+      <!-- Neck -->
+      <rect x="26" y="22" width="10" height="5" rx="2" fill="rgba(56,189,248,0.2)"
+        stroke="rgba(56,189,248,0.3)" stroke-width="0.8"/>
+
+      <!-- Head -->
+      <rect x="14" y="9" width="34" height="15" rx="7" fill="url(#botBodyGrad)"
+        stroke="rgba(56,189,248,0.4)" stroke-width="1.2"/>
+
+      <!-- Head details — visor -->
+      <rect x="18" y="12" width="26" height="8" rx="3.5" fill="rgba(56,189,248,0.08)"
+        stroke="rgba(56,189,248,0.2)" stroke-width="0.7"/>
+
+      <!-- Visor scan line -->
+      <rect x="20" y="15" width="22" height="1.5" rx="0.75" fill="rgba(56,189,248,0.5)"/>
+
+      <!-- Antenna -->
+      <line x1="31" y1="9" x2="31" y2="3" stroke="rgba(45,212,191,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="31" cy="2.5" r="2" fill="#2dd4bf" class="bot-antenna-light"
+        filter="url(#botGlow)"/>
+
+      <!-- Bottom thrusters -->
+      <rect x="15" y="52" width="10" height="5" rx="2.5" fill="rgba(56,189,248,0.15)"
+        stroke="rgba(56,189,248,0.3)" stroke-width="0.7"/>
+      <rect x="37" y="52" width="10" height="5" rx="2.5" fill="rgba(56,189,248,0.15)"
+        stroke="rgba(56,189,248,0.3)" stroke-width="0.7"/>
+
+      <!-- Thruster glow -->
+      <rect x="17" y="54" width="6" height="2" rx="1" fill="rgba(56,189,248,0.5)"/>
+      <rect x="39" y="54" width="6" height="2" rx="1" fill="rgba(45,212,191,0.5)"/>
+
+      <!-- Chest panel — LED strip -->
+      <rect x="22" y="44" width="18" height="3" rx="1.5" fill="rgba(56,189,248,0.05)"
+        stroke="rgba(56,189,248,0.2)" stroke-width="0.6"/>
+      <circle cx="26" cy="45.5" r="1"  fill="#38bdf8" opacity="0.7"/>
+      <circle cx="31" cy="45.5" r="1"  fill="#2dd4bf" opacity="0.5"/>
+      <circle cx="36" cy="45.5" r="1"  fill="#a78bfa" opacity="0.7"/>
+    </svg>
+  </div>
+
+  <!-- Bot Sidebar -->
+  <div id="bot-sidebar" dir="rtl">
+
+    <!-- Header -->
+    <div id="bot-header">
+      <div id="bot-header-avatar">
+        <i class="fas fa-robot" style="color:var(--accent);font-size:1rem"></i>
+      </div>
+      <div id="bot-header-info">
+        <h4>🤖 مساعد المناهج <span id="bot-status-dot"></span></h4>
+        <p id="bot-status-text">جاهز للمساعدة — أسألني عن أي مادة</p>
+      </div>
+      <button id="bot-close-btn" onclick="closeBotSidebar()" title="إغلاق">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Context chips -->
+    <div id="bot-context-bar">
+      <span style="font-size:0.72rem;color:var(--text-muted);align-self:center;font-weight:700;margin-left:4px">المصادر:</span>
+      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'lectures')">📹 محاضرات</button>
+      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'summaries')">📄 ملخصات</button>
+      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'quizzes')">❓ كويزات</button>
+      <button id="bot-clear-btn" onclick="clearBotChat()"><i class="fas fa-trash" style="margin-left:4px"></i>مسح</button>
+    </div>
+
+    <!-- Messages -->
+    <div id="bot-messages">
+      <!-- Welcome message -->
+      <div class="bot-msg bot">
+        <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
+        <div class="bot-msg-bubble">
+          👋 أهلاً! أنا مساعد المناهج الذكي.<br><br>
+          بسألك عن أي حاجة في <strong>المحاضرات</strong> أو <strong>الملخصات</strong> أو <strong>الكويزات</strong> الموجودة في المنصة — وهجاوبك من المحتوى المتاح عندك في قاعدة البيانات. 🚀
+        </div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="bot-msg bot" id="bot-typing">
+        <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
+        <div class="typing-dots">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions -->
+    <div id="bot-suggestions">
+      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">📚 إيه المواد المتاحة دلوقتي؟</button>
+      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">❓ كم عدد الكويزات الموجودة؟</button>
+      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">📄 لخصلي المحتوى المتاح</button>
+    </div>
+
+    <!-- Input -->
+    <div id="bot-input-area">
+      <textarea
+        id="bot-input"
+        placeholder="اسألني عن أي محاضرة أو مادة..."
+        rows="1"
+        onkeydown="botInputKeydown(event)"
+        oninput="autoResizeBotInput(this)"
+      ></textarea>
+      <button id="bot-send-btn" onclick="sendBotMessage()" title="إرسال">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
   <script>
     // ====================== SUPABASE ======================
     const SUPABASE_URL = 'https://qokkdckumwyykjeysyiq.supabase.co';
@@ -5280,37 +5882,27 @@ ESSAY
       if (!canvas) return;
 
       const ctx = canvas.getContext('2d');
-      let W, H;
+      let W, H, stars = [], shootingStars = [], nebulaClouds = [];
       let animFrame, lastShoot = 0;
       const isDark = () => document.body.getAttribute('data-theme') !== 'light';
-
-      // ── SHARED DATA ──
-      let stars = [], shootingStars = [], nebulaClouds = [];
-      // ── DARK MODE: galaxies & planets ──
-      let galaxies = [], planets = [];
-      // ── LIGHT MODE: solar system ──
-      let solarPlanets = [];
 
       function resize() {
         W = canvas.width  = window.innerWidth;
         H = canvas.height = window.innerHeight;
         buildStars();
         buildNebula();
-        buildGalaxies();
-        buildPlanets();
-        buildSolarSystem();
       }
 
-      /* ════════════════════════════════════
-         DARK MODE BUILDERS
-      ════════════════════════════════════ */
+      // Star types: tiny, medium, large, colored
       function buildStars() {
         stars = [];
-        const count = Math.floor((W * H) / 3200);
+        const count = Math.floor((W * H) / 3800);
         for (let i = 0; i < count; i++) {
           const r = Math.random();
           stars.push({
-            x: Math.random() * W, y: Math.random() * H,
+            x: Math.random() * W,
+            y: Math.random() * H,
+            // size distribution: 70% tiny, 20% small, 8% medium, 2% large
             size: r < 0.70 ? Math.random() * 0.8 + 0.2
                 : r < 0.90 ? Math.random() * 0.8 + 0.8
                 : r < 0.98 ? Math.random() * 0.8 + 1.6
@@ -5319,7 +5911,10 @@ ESSAY
             alpha: 0,
             twinkleSpeed: Math.random() * 0.015 + 0.003,
             twinklePhase: Math.random() * Math.PI * 2,
-            hue: Math.random() < 0.15 ? (Math.random() < 0.5 ? 195 : 270) : 0,
+            // subtle color tint
+            hue: Math.random() < 0.15
+              ? (Math.random() < 0.5 ? 195 : 270)  // cyan or violet
+              : 0,  // white
             saturation: Math.random() < 0.15 ? 60 : 0,
           });
         }
@@ -5327,430 +5922,142 @@ ESSAY
 
       function buildNebula() {
         nebulaClouds = [];
-        const colors = [[56,189,248],[45,212,191],[167,139,250],[99,102,241],[34,211,238]];
-        for (let i = 0; i < 5; i++) {
-          const c = colors[i];
+        const patches = 5;
+        const colors = [
+          [56,189,248],   // sky blue
+          [45,212,191],   // teal
+          [167,139,250],  // violet
+          [99,102,241],   // indigo
+          [34,211,238],   // cyan
+        ];
+        for (let i = 0; i < patches; i++) {
+          const c = colors[i % colors.length];
           nebulaClouds.push({
-            x: Math.random() * W, y: Math.random() * H,
-            rx: 200 + Math.random() * 350, ry: 120 + Math.random() * 220,
-            color: c, alpha: 0.018 + Math.random() * 0.025,
-            driftX: (Math.random() - 0.5) * 0.1, driftY: (Math.random() - 0.5) * 0.05,
-            phase: Math.random() * Math.PI * 2, pulseSpeed: 0.003 + Math.random() * 0.004,
-          });
-        }
-      }
-
-      function buildGalaxies() {
-        galaxies = [];
-        const count = 3 + Math.floor(Math.random() * 2); // 3-4 galaxies
-        for (let i = 0; i < count; i++) {
-          galaxies.push({
             x: Math.random() * W,
             y: Math.random() * H,
-            angle: Math.random() * Math.PI,
-            arms: 2 + Math.floor(Math.random() * 3),        // 2-4 spiral arms
-            radius: 80 + Math.random() * 140,
-            tilt: 0.2 + Math.random() * 0.6,                // ellipse squish
-            rotSpeed: (Math.random() - 0.5) * 0.0003,
-            hue: [195, 220, 270, 180][Math.floor(Math.random() * 4)],
-            alpha: 0.12 + Math.random() * 0.12,
+            rx: 200 + Math.random() * 350,
+            ry: 120 + Math.random() * 220,
+            color: c,
+            alpha: 0.018 + Math.random() * 0.025,
+            driftX: (Math.random() - 0.5) * 0.12,
+            driftY: (Math.random() - 0.5) * 0.06,
             phase: Math.random() * Math.PI * 2,
-            pulseSpeed: 0.002 + Math.random() * 0.002,
+            pulseSpeed: 0.003 + Math.random() * 0.004,
           });
         }
       }
 
-      function buildPlanets() {
-        planets = [];
-        const defs = [
-          // { color stops, ring?, radius, pos }
-          { r: 22, colors: ['#e8b86d','#c97a30','#8b4513'], ring: false, rx: 0.12, ry: 0.18 },
-          { r: 18, colors: ['#6ab0e8','#3a7abf','#1a4a80'], ring: false, rx: 0.75, ry: 0.12 },
-          { r: 30, colors: ['#e8c97a','#d4a547','#8b6914'], ring: true,  rx: 0.25, ry: 0.72 },
-          { r: 14, colors: ['#88c0d8','#5fa8c0','#2d7090'], ring: false, rx: 0.82, ry: 0.55 },
-          { r: 20, colors: ['#c87a6a','#a04535','#602010'], ring: false, rx: 0.55, ry: 0.88 },
-        ];
-        defs.forEach(d => {
-          planets.push({
-            x: d.rx * W, y: d.ry * H,
-            r: d.r,
-            colors: d.colors,
-            ring: d.ring,
-            floatPhase: Math.random() * Math.PI * 2,
-            floatSpeed: 0.003 + Math.random() * 0.003,
-            floatAmp: 6 + Math.random() * 8,
-          });
-        });
-      }
-
+      /* Shooting star */
       function spawnShootingStar() {
-        const angle = (Math.random() * 30 + 150) * Math.PI / 180;
+        const angle = (Math.random() * 30 + 150) * Math.PI / 180; // mostly left-down
         shootingStars.push({
-          x: Math.random() * W * 0.8 + W * 0.1, y: Math.random() * H * 0.3,
-          len: 80 + Math.random() * 180, speed: 8 + Math.random() * 14,
-          angle, alpha: 1, life: 1,
+          x: Math.random() * W * 0.8 + W * 0.1,
+          y: Math.random() * H * 0.3,
+          len: 80 + Math.random() * 180,
+          speed: 8 + Math.random() * 14,
+          angle,
+          alpha: 1,
+          life: 1,
         });
-      }
-
-      /* ════════════════════════════════════
-         LIGHT MODE: SOLAR SYSTEM
-      ════════════════════════════════════ */
-      function buildSolarSystem() {
-        // Sun is at center-left area, planets orbit around it
-        const sunX = W * 0.42, sunY = H * 0.5;
-        solarPlanets = [
-          // name, orbitRx, orbitRy, size, color, speed, startAngle, hasMoon
-          { name:'Mercury', orbitRx: W*0.07, orbitRy: H*0.06, r:4,  color:'#b0a090', speed:0.018, angle: Math.random()*Math.PI*2, moon:false },
-          { name:'Venus',   orbitRx: W*0.12, orbitRy: H*0.09, r:7,  color:'#e8c87a', speed:0.013, angle: Math.random()*Math.PI*2, moon:false },
-          { name:'Earth',   orbitRx: W*0.18, orbitRy: H*0.13, r:8,  color:'#3a8abf', speed:0.010, angle: Math.random()*Math.PI*2, moon:true,  moonDist:14, moonR:2.5, moonAngle:Math.random()*Math.PI*2, moonSpeed:0.06 },
-          { name:'Mars',    orbitRx: W*0.25, orbitRy: H*0.18, r:6,  color:'#c0522a', speed:0.008, angle: Math.random()*Math.PI*2, moon:false },
-          { name:'Jupiter', orbitRx: W*0.35, orbitRy: H*0.26, r:18, color:'#c8a060', speed:0.005, angle: Math.random()*Math.PI*2, moon:false,
-            bands:[{y:-0.3,h:0.12,c:'rgba(180,130,80,0.35)'},{y:0.1,h:0.15,c:'rgba(160,110,60,0.3)'},{y:-0.05,h:0.08,c:'rgba(200,160,100,0.2)'}] },
-          { name:'Saturn',  orbitRx: W*0.46, orbitRy: H*0.34, r:15, color:'#d4b870', speed:0.003, angle: Math.random()*Math.PI*2, moon:false, ring:true },
-          { name:'Uranus',  orbitRx: W*0.56, orbitRy: H*0.42, r:11, color:'#7ac8d8', speed:0.002, angle: Math.random()*Math.PI*2, moon:false },
-          { name:'Neptune', orbitRx: W*0.65, orbitRy: H*0.50, r:10, color:'#4060c8', speed:0.0015,angle: Math.random()*Math.PI*2, moon:false },
-        ];
-        // store sun position
-        solarPlanets._sunX = sunX;
-        solarPlanets._sunY = sunY;
-      }
-
-      /* ════════════════════════════════════
-         DRAW HELPERS
-      ════════════════════════════════════ */
-      function drawGalaxy(g) {
-        ctx.save();
-        ctx.translate(g.x, g.y);
-        ctx.rotate(g.angle);
-        ctx.scale(1, g.tilt);
-
-        const pulse = Math.sin(t * g.pulseSpeed + g.phase) * 0.15 + 0.85;
-
-        // Core glow
-        const core = ctx.createRadialGradient(0, 0, 0, 0, 0, g.radius * 0.18);
-        core.addColorStop(0, `hsla(${g.hue},70%,92%,${g.alpha * pulse * 3})`);
-        core.addColorStop(0.4, `hsla(${g.hue},60%,75%,${g.alpha * pulse * 1.5})`);
-        core.addColorStop(1, `hsla(${g.hue},50%,60%,0)`);
-        ctx.fillStyle = core;
-        ctx.beginPath();
-        ctx.arc(0, 0, g.radius * 0.18, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Spiral arms
-        for (let arm = 0; arm < g.arms; arm++) {
-          const armOffset = (arm / g.arms) * Math.PI * 2;
-          for (let p = 0; p < 120; p++) {
-            const frac = p / 120;
-            const spiralAngle = armOffset + frac * Math.PI * 3;
-            const dist = frac * g.radius;
-            const px = Math.cos(spiralAngle) * dist;
-            const py = Math.sin(spiralAngle) * dist * 0.4;
-            const starA = (1 - frac) * g.alpha * pulse * (0.5 + Math.random() * 0.5);
-            const sz = (1 - frac) * 1.8 + 0.2;
-            ctx.fillStyle = `hsla(${g.hue},60%,88%,${starA})`;
-            ctx.beginPath();
-            ctx.arc(px, py, sz, 0, Math.PI * 2);
-            ctx.fill();
-          }
-        }
-
-        // Outer haze
-        const haze = ctx.createRadialGradient(0, 0, g.radius * 0.2, 0, 0, g.radius);
-        haze.addColorStop(0, `hsla(${g.hue},50%,70%,${g.alpha * pulse * 0.4})`);
-        haze.addColorStop(1, `hsla(${g.hue},40%,60%,0)`);
-        ctx.fillStyle = haze;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, g.radius, g.radius * 0.4, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-        g.angle += g.rotSpeed;
-      }
-
-      function drawPlanet(p) {
-        const fy = Math.sin(t * p.floatSpeed + p.floatPhase) * p.floatAmp;
-        const px = p.x, py = p.y + fy;
-
-        // Ring behind planet (Saturn)
-        if (p.ring) {
-          ctx.save();
-          ctx.translate(px, py);
-          ctx.scale(1, 0.28);
-          const ringGrad = ctx.createRadialGradient(0, 0, p.r * 1.2, 0, 0, p.r * 2.4);
-          ringGrad.addColorStop(0, 'rgba(220,190,110,0.0)');
-          ringGrad.addColorStop(0.2, 'rgba(220,190,110,0.25)');
-          ringGrad.addColorStop(0.6, 'rgba(200,170,90,0.18)');
-          ringGrad.addColorStop(1, 'rgba(180,150,70,0.0)');
-          ctx.fillStyle = ringGrad;
-          ctx.beginPath();
-          ctx.arc(0, 0, p.r * 2.4, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        }
-
-        // Planet body
-        const grad = ctx.createRadialGradient(px - p.r*0.3, py - p.r*0.3, p.r*0.1, px, py, p.r);
-        grad.addColorStop(0, p.colors[0]);
-        grad.addColorStop(0.5, p.colors[1] || p.colors[0]);
-        grad.addColorStop(1, p.colors[2] || p.colors[1] || p.colors[0]);
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.arc(px, py, p.r, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Jupiter bands
-        if (p.bands) {
-          ctx.save();
-          ctx.beginPath();
-          ctx.arc(px, py, p.r, 0, Math.PI * 2);
-          ctx.clip();
-          p.bands.forEach(b => {
-            ctx.fillStyle = b.c;
-            ctx.fillRect(px - p.r, py + b.y * p.r, p.r * 2, b.h * p.r * 2);
-          });
-          ctx.restore();
-        }
-
-        // Atmosphere glow
-        const atmo = ctx.createRadialGradient(px, py, p.r * 0.85, px, py, p.r * 1.35);
-        atmo.addColorStop(0, 'rgba(255,255,255,0)');
-        atmo.addColorStop(0.5, `${p.colors[0]}22`);
-        atmo.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = atmo;
-        ctx.beginPath();
-        ctx.arc(px, py, p.r * 1.35, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      function drawSolarSystem() {
-        const sunX = solarPlanets._sunX, sunY = solarPlanets._sunY;
-
-        // White background with subtle warm center (sun glow on white)
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, W, H);
-
-        // Sun glow layers
-        const sunGlow3 = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, W*0.55);
-        sunGlow3.addColorStop(0, 'rgba(255,240,180,0.22)');
-        sunGlow3.addColorStop(0.3, 'rgba(255,220,120,0.10)');
-        sunGlow3.addColorStop(0.7, 'rgba(255,200,80,0.04)');
-        sunGlow3.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.fillStyle = sunGlow3;
-        ctx.fillRect(0, 0, W, H);
-
-        // Orbit rings (thin dashed-like faded circles)
-        ctx.save();
-        ctx.translate(sunX, sunY);
-        solarPlanets.forEach(p => {
-          ctx.strokeStyle = 'rgba(160,180,220,0.18)';
-          ctx.lineWidth = 0.8;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, p.orbitRx, p.orbitRy, 0, 0, Math.PI * 2);
-          ctx.stroke();
-        });
-        ctx.restore();
-
-        // Advance planet angles
-        solarPlanets.forEach(p => { p.angle += p.speed; });
-
-        // Draw planets (back to front by orbit size — outermost first)
-        [...solarPlanets].reverse().forEach(p => {
-          const px = sunX + Math.cos(p.angle) * p.orbitRx;
-          const py = sunY + Math.sin(p.angle) * p.orbitRy;
-
-          // Saturn ring behind
-          if (p.ring) {
-            ctx.save();
-            ctx.translate(px, py);
-            ctx.scale(1, 0.3);
-            const rg = ctx.createRadialGradient(0,0,p.r*1.3,0,0,p.r*2.5);
-            rg.addColorStop(0,   'rgba(210,180,90,0)');
-            rg.addColorStop(0.15,'rgba(210,180,90,0.35)');
-            rg.addColorStop(0.6, 'rgba(190,155,70,0.25)');
-            rg.addColorStop(1,   'rgba(190,155,70,0)');
-            ctx.fillStyle = rg;
-            ctx.beginPath();
-            ctx.arc(0, 0, p.r*2.5, 0, Math.PI*2);
-            ctx.fill();
-            ctx.restore();
-          }
-
-          // Planet body gradient (light from top-left = sun direction approximated)
-          const grad = ctx.createRadialGradient(px - p.r*0.35, py - p.r*0.35, p.r*0.05, px, py, p.r);
-          grad.addColorStop(0, lightenColor(p.color, 60));
-          grad.addColorStop(0.5, p.color);
-          grad.addColorStop(1, darkenColor(p.color, 50));
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(px, py, p.r, 0, Math.PI * 2);
-          ctx.fill();
-
-          // Earth: blue + green landmasses (clipped blobs)
-          if (p.name === 'Earth') {
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(px, py, p.r, 0, Math.PI*2);
-            ctx.clip();
-            ctx.fillStyle = 'rgba(60,160,80,0.55)';
-            ctx.beginPath(); ctx.ellipse(px-2, py-2, p.r*0.45, p.r*0.55, 0.4, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.ellipse(px+2, py+1, p.r*0.35, p.r*0.4, -0.6, 0, Math.PI*2); ctx.fill();
-            // Cloud wisps
-            ctx.fillStyle = 'rgba(255,255,255,0.35)';
-            ctx.beginPath(); ctx.ellipse(px-1, py-3, p.r*0.5, p.r*0.15, 0.3, 0, Math.PI*2); ctx.fill();
-            ctx.restore();
-          }
-
-          // Jupiter bands
-          if (p.name === 'Jupiter' && p.bands) {
-            ctx.save();
-            ctx.beginPath(); ctx.arc(px, py, p.r, 0, Math.PI*2); ctx.clip();
-            p.bands.forEach(b => {
-              ctx.fillStyle = b.c;
-              ctx.fillRect(px - p.r, py + b.y * p.r, p.r*2, b.h * p.r * 2);
-            });
-            ctx.restore();
-          }
-
-          // Moon
-          if (p.moon) {
-            p.moonAngle += p.moonSpeed;
-            const mx = px + Math.cos(p.moonAngle) * p.moonDist;
-            const my = py + Math.sin(p.moonAngle) * p.moonDist * 0.5;
-            const mg = ctx.createRadialGradient(mx-p.moonR*0.3, my-p.moonR*0.3, 0, mx, my, p.moonR);
-            mg.addColorStop(0,'#f0eeea'); mg.addColorStop(1,'#9a9890');
-            ctx.fillStyle = mg;
-            ctx.beginPath(); ctx.arc(mx, my, p.moonR, 0, Math.PI*2); ctx.fill();
-          }
-
-          // Atmosphere rim
-          const atmo = ctx.createRadialGradient(px, py, p.r*0.88, px, py, p.r*1.28);
-          atmo.addColorStop(0, 'rgba(255,255,255,0)');
-          atmo.addColorStop(0.5, hexToRgba(p.color, 0.12));
-          atmo.addColorStop(1, 'rgba(255,255,255,0)');
-          ctx.fillStyle = atmo;
-          ctx.beginPath(); ctx.arc(px, py, p.r*1.28, 0, Math.PI*2); ctx.fill();
-        });
-
-        // Sun itself (on top, center)
-        const sunR = Math.min(W, H) * 0.055;
-        // Outer corona
-        const corona = ctx.createRadialGradient(sunX, sunY, sunR*0.6, sunX, sunY, sunR*3.5);
-        corona.addColorStop(0,   'rgba(255,230,100,0.30)');
-        corona.addColorStop(0.3, 'rgba(255,200,60,0.15)');
-        corona.addColorStop(0.7, 'rgba(255,180,30,0.05)');
-        corona.addColorStop(1,   'rgba(255,255,255,0)');
-        ctx.fillStyle = corona;
-        ctx.beginPath(); ctx.arc(sunX, sunY, sunR*3.5, 0, Math.PI*2); ctx.fill();
-
-        // Inner glow
-        const sunGlow = ctx.createRadialGradient(sunX-sunR*0.2, sunY-sunR*0.2, 0, sunX, sunY, sunR);
-        sunGlow.addColorStop(0,   '#fffde0');
-        sunGlow.addColorStop(0.3, '#ffe566');
-        sunGlow.addColorStop(0.7, '#ffb700');
-        sunGlow.addColorStop(1,   '#ff8c00');
-        ctx.fillStyle = sunGlow;
-        ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI*2); ctx.fill();
-
-        // Sun surface shimmer
-        const shimmer = ctx.createRadialGradient(sunX-sunR*0.25, sunY-sunR*0.25, 0, sunX, sunY, sunR);
-        shimmer.addColorStop(0, 'rgba(255,255,220,0.55)');
-        shimmer.addColorStop(0.5, 'rgba(255,255,200,0.15)');
-        shimmer.addColorStop(1, 'rgba(255,200,0,0)');
-        ctx.fillStyle = shimmer;
-        ctx.beginPath(); ctx.arc(sunX, sunY, sunR, 0, Math.PI*2); ctx.fill();
-      }
-
-      // Color helpers
-      function lightenColor(hex, amt) {
-        const r = Math.min(255, parseInt(hex.slice(1,3),16)+amt);
-        const g = Math.min(255, parseInt(hex.slice(3,5),16)+amt);
-        const b = Math.min(255, parseInt(hex.slice(5,7),16)+amt);
-        return `rgb(${r},${g},${b})`;
-      }
-      function darkenColor(hex, amt) {
-        const r = Math.max(0, parseInt(hex.slice(1,3),16)-amt);
-        const g = Math.max(0, parseInt(hex.slice(3,5),16)-amt);
-        const b = Math.max(0, parseInt(hex.slice(5,7),16)-amt);
-        return `rgb(${r},${g},${b})`;
-      }
-      function hexToRgba(hex, a) {
-        const r = parseInt(hex.slice(1,3),16);
-        const g = parseInt(hex.slice(3,5),16);
-        const b = parseInt(hex.slice(5,7),16);
-        return `rgba(${r},${g},${b},${a})`;
       }
 
       let t = 0;
 
-      /* ════════════════════════════════════
-         MAIN DRAW LOOP
-      ════════════════════════════════════ */
       function draw() {
         animFrame = requestAnimationFrame(draw);
         t += 1;
+
         const lightMode = !isDark();
 
         if (lightMode) {
-          // ── LIGHT MODE: Solar System ──
-          drawSolarSystem();
-          return;
+          // Light mode: white space background
+          const bg = ctx.createRadialGradient(W*0.5, H*0.3, 0, W*0.5, H*0.5, Math.max(W,H)*0.85);
+          bg.addColorStop(0, 'rgba(255,255,255,1)');
+          bg.addColorStop(0.5, 'rgba(245,250,255,1)');
+          bg.addColorStop(1, 'rgba(235,244,255,1)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, W, H);
+        } else {
+          // Dark mode: deep space background
+          const bg = ctx.createRadialGradient(W*0.5, H*0.3, 0, W*0.5, H*0.5, Math.max(W,H)*0.85);
+          bg.addColorStop(0, 'rgba(4,4,18,1)');
+          bg.addColorStop(0.5, 'rgba(2,2,12,1)');
+          bg.addColorStop(1, 'rgba(0,0,6,1)');
+          ctx.fillStyle = bg;
+          ctx.fillRect(0, 0, W, H);
         }
-
-        // ── DARK MODE: Deep Space ──
-        const bg = ctx.createRadialGradient(W*0.5, H*0.3, 0, W*0.5, H*0.5, Math.max(W,H)*0.85);
-        bg.addColorStop(0, 'rgba(4,4,18,1)');
-        bg.addColorStop(0.5, 'rgba(2,2,12,1)');
-        bg.addColorStop(1, 'rgba(0,0,6,1)');
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, W, H);
 
         // Nebula clouds
         nebulaClouds.forEach(n => {
-          n.x += n.driftX; n.y += n.driftY;
-          if (n.x > W + n.rx) n.x = -n.rx; if (n.x < -n.rx) n.x = W + n.rx;
-          if (n.y > H + n.ry) n.y = -n.ry; if (n.y < -n.ry) n.y = H + n.ry;
+          n.x += n.driftX;
+          n.y += n.driftY;
+          if (n.x > W + n.rx) n.x = -n.rx;
+          if (n.x < -n.rx)   n.x = W + n.rx;
+          if (n.y > H + n.ry) n.y = -n.ry;
+          if (n.y < -n.ry)   n.y = H + n.ry;
+
           const pulse = Math.sin(t * n.pulseSpeed + n.phase) * 0.3 + 0.7;
-          const g2 = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
-          g2.addColorStop(0,   `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${n.alpha * pulse})`);
-          g2.addColorStop(0.4, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${n.alpha * pulse * 0.5})`);
-          g2.addColorStop(1,   `rgba(${n.color[0]},${n.color[1]},${n.color[2]},0)`);
+          // In light mode, use darker/muted nebula tones
+          const nebulaAlpha = lightMode ? n.alpha * 0.4 : n.alpha;
+          const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.rx);
+          grad.addColorStop(0, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${nebulaAlpha * pulse})`);
+          grad.addColorStop(0.4, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},${nebulaAlpha * pulse * 0.5})`);
+          grad.addColorStop(1, `rgba(${n.color[0]},${n.color[1]},${n.color[2]},0)`);
           ctx.save();
           ctx.scale(1, n.ry / n.rx);
-          ctx.fillStyle = g2;
+          ctx.fillStyle = grad;
           ctx.beginPath();
           ctx.arc(n.x, n.y * (n.rx / n.ry), n.rx, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
         });
 
-        // Galaxies
-        galaxies.forEach(g => drawGalaxy(g));
-
-        // Background planets
-        planets.forEach(p => drawPlanet(p));
-
         // Stars
         stars.forEach(s => {
           s.twinklePhase += s.twinkleSpeed;
           const twinkle = Math.sin(s.twinklePhase) * 0.35 + 0.65;
           s.alpha = s.baseAlpha * twinkle;
-          let color = `rgba(220,235,255,${s.alpha})`;
-          if (s.hue === 195) color = `hsla(195,${s.saturation}%,90%,${s.alpha})`;
-          if (s.hue === 270) color = `hsla(270,${s.saturation}%,90%,${s.alpha})`;
-          if (s.size > 1.8) {
-            const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size*4);
-            glow.addColorStop(0, color); glow.addColorStop(1, 'transparent');
-            ctx.fillStyle = glow;
-            ctx.beginPath(); ctx.arc(s.x, s.y, s.size*4, 0, Math.PI*2); ctx.fill();
+
+          // In light mode: dark stars on white background
+          let color;
+          if (lightMode) {
+            if (s.hue === 195) color = `hsla(195,${s.saturation}%,20%,${s.alpha})`;
+            else if (s.hue === 270) color = `hsla(270,${s.saturation}%,20%,${s.alpha})`;
+           else color = `rgba(37,99,235,${s.alpha})`;
+          } else {
+            if (s.hue === 195) color = `hsla(195,${s.saturation}%,90%,${s.alpha})`;
+            else if (s.hue === 270) color = `hsla(270,${s.saturation}%,90%,${s.alpha})`;
+            else color = `rgba(220,235,255,${s.alpha})`;
           }
+
+          // Glow for larger stars
+          if (s.size > 1.8) {
+            const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.size * 4);
+            glow.addColorStop(0, color);
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.size * 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
           ctx.fillStyle = color;
-          ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Cross sparkle for very large stars
           if (s.size > 2.5) {
-            ctx.strokeStyle = `rgba(200,230,255,${s.alpha * 0.4})`;
+            const sparkleColor = lightMode
+              ? `rgba(10,30,60,${s.alpha * 0.4})`
+              : `rgba(200,230,255,${s.alpha * 0.4})`;
+            ctx.strokeStyle = sparkleColor;
             ctx.lineWidth = 0.5;
             ctx.beginPath();
-            ctx.moveTo(s.x - s.size*3, s.y); ctx.lineTo(s.x + s.size*3, s.y);
-            ctx.moveTo(s.x, s.y - s.size*3); ctx.lineTo(s.x, s.y + s.size*3);
+            ctx.moveTo(s.x - s.size * 3, s.y);
+            ctx.lineTo(s.x + s.size * 3, s.y);
+            ctx.moveTo(s.x, s.y - s.size * 3);
+            ctx.lineTo(s.x, s.y + s.size * 3);
             ctx.stroke();
           }
         });
@@ -5758,21 +6065,38 @@ ESSAY
         // Shooting stars
         const now = Date.now();
         if (now - lastShoot > 3500 + Math.random() * 5000) {
-          spawnShootingStar(); lastShoot = now;
+          spawnShootingStar();
+          lastShoot = now;
         }
+
         shootingStars = shootingStars.filter(ss => ss.alpha > 0.02);
         shootingStars.forEach(ss => {
           ss.x += Math.cos(ss.angle) * ss.speed;
           ss.y += Math.sin(ss.angle) * ss.speed;
-          ss.alpha -= 0.022; ss.life -= 0.022;
+          ss.alpha -= 0.022;
+          ss.life -= 0.022;
+
           const tailX = ss.x - Math.cos(ss.angle) * ss.len;
           const tailY = ss.y - Math.sin(ss.angle) * ss.len;
-          const g = ctx.createLinearGradient(tailX, tailY, ss.x, ss.y);
-          g.addColorStop(0, 'transparent');
-          g.addColorStop(0.6, `rgba(200,240,255,${ss.alpha * 0.4})`);
-          g.addColorStop(1, `rgba(255,255,255,${ss.alpha})`);
-          ctx.strokeStyle = g; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
-          ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(ss.x, ss.y); ctx.stroke();
+          const grad = ctx.createLinearGradient(tailX, tailY, ss.x, ss.y);
+          if (lightMode) {
+            // Dark shooting star trail in light mode
+            grad.addColorStop(0, 'transparent');
+            grad.addColorStop(0.6, `rgba(10,30,80,${ss.alpha * 0.4})`);
+            grad.addColorStop(1, `rgba(0,0,0,${ss.alpha})`);
+          } else {
+            grad.addColorStop(0, 'transparent');
+            grad.addColorStop(0.6, `rgba(200,240,255,${ss.alpha * 0.4})`);
+            grad.addColorStop(1, `rgba(255,255,255,${ss.alpha})`);
+          }
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.5;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(tailX, tailY);
+          ctx.lineTo(ss.x, ss.y);
+          ctx.stroke();
         });
       }
 
@@ -5787,6 +6111,441 @@ ESSAY
       observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
     })();
 
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════════
+       🤖 SPACE BOT SCRIPT — AI CURRICULUM ASSISTANT
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+  (function() {
+
+    /* ── STATE ── */
+    let botOpen      = false;
+    let botLoading   = false;
+    let botCtxFlags  = { lectures: true, summaries: true, quizzes: true };
+    let botHistory   = []; // { role:'user'|'assistant', content }
+    let botDragging  = false;
+    let botDragOffX  = 0, botDragOffY  = 0;
+
+    const icon     = document.getElementById('space-bot-icon');
+    const sidebar  = document.getElementById('bot-sidebar');
+    const overlay  = document.getElementById('bot-overlay');
+    const messagesEl = document.getElementById('bot-messages');
+    const typingEl   = document.getElementById('bot-typing');
+    const inputEl    = document.getElementById('bot-input');
+    const sendBtn    = document.getElementById('bot-send-btn');
+
+    /* ── DRAGGABLE ICON ── */
+    function onPointerDown(e) {
+      if (e.target.closest('#space-bot-icon') && !botOpen) {
+        botDragging = true;
+        const rect = icon.getBoundingClientRect();
+        botDragOffX = (e.clientX || e.touches[0].clientX) - rect.left;
+        botDragOffY = (e.clientY || e.touches[0].clientY) - rect.top;
+        icon.style.transition = 'none';
+        icon.style.cursor = 'grabbing';
+        e.preventDefault();
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!botDragging) return;
+      const cx = e.clientX || (e.touches && e.touches[0].clientX);
+      const cy = e.clientY || (e.touches && e.touches[0].clientY);
+      let nx = cx - botDragOffX;
+      let ny = cy - botDragOffY;
+      // Clamp to viewport
+      nx = Math.max(0, Math.min(window.innerWidth  - icon.offsetWidth,  nx));
+      ny = Math.max(0, Math.min(window.innerHeight - icon.offsetHeight, ny));
+      icon.style.left   = nx + 'px';
+      icon.style.top    = ny + 'px';
+      icon.style.bottom = 'auto';
+      icon.style.right  = 'auto';
+      e.preventDefault();
+    }
+
+    function onPointerUp(e) {
+      if (botDragging) {
+        botDragging = false;
+        icon.style.transition = '';
+        icon.style.cursor = 'grab';
+      }
+    }
+
+    let dragMoved = false;
+    let touchStartX = 0, touchStartY = 0;
+
+    icon.addEventListener('mousedown', (e) => {
+      dragMoved = false;
+      touchStartX = e.clientX;
+      touchStartY = e.clientY;
+      onPointerDown(e);
+    });
+    icon.addEventListener('touchstart', (e) => {
+      dragMoved = false;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+      onPointerDown(e);
+    }, { passive: false });
+
+    document.addEventListener('mousemove', (e) => {
+      if (botDragging) {
+        dragMoved = true;
+        onPointerMove(e);
+      }
+    });
+    document.addEventListener('touchmove', (e) => {
+      if (botDragging) {
+        dragMoved = true;
+        onPointerMove(e);
+      }
+    }, { passive: false });
+
+    document.addEventListener('mouseup', (e) => {
+      const wasDragging = botDragging;
+      onPointerUp(e);
+      if (!dragMoved && !wasDragging) return;
+      if (!dragMoved) openBotSidebar();
+    });
+    document.addEventListener('touchend', (e) => {
+      const wasDragging = botDragging;
+      onPointerUp(e);
+      if (!dragMoved) openBotSidebar();
+    });
+
+    icon.addEventListener('click', (e) => {
+      if (!dragMoved) openBotSidebar();
+    });
+
+    /* ── OPEN / CLOSE ── */
+    window.openBotSidebar = function() {
+      botOpen = true;
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      icon.style.display = 'none';
+      // Load context on first open
+      if (botHistory.length === 0) {
+        setTimeout(() => showBotSuggestions(), 300);
+      }
+      setTimeout(() => inputEl.focus(), 500);
+    };
+
+    window.closeBotSidebar = function() {
+      botOpen = false;
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      icon.style.display = '';
+    };
+
+    /* ── CONTEXT TOGGLE ── */
+    window.toggleBotCtx = function(chip, key) {
+      botCtxFlags[key] = !botCtxFlags[key];
+      chip.classList.toggle('active', botCtxFlags[key]);
+    };
+
+    /* ── CLEAR ── */
+    window.clearBotChat = function() {
+      botHistory = [];
+      // Reset messages to welcome only
+      messagesEl.innerHTML = `
+        <div class="bot-msg bot">
+          <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
+          <div class="bot-msg-bubble">
+            👋 تم مسح المحادثة! أسألني عن أي حاجة في المناهج. 🚀
+          </div>
+        </div>
+        <div class="bot-msg bot" id="bot-typing">
+          <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
+        </div>`;
+      showBotSuggestions();
+    };
+
+    /* ── SUGGESTIONS ── */
+    window.sendBotSuggestion = function(btn) {
+      inputEl.value = btn.textContent.trim();
+      sendBotMessage();
+    };
+
+    function showBotSuggestions() {
+      const sugEl = document.getElementById('bot-suggestions');
+      sugEl.style.display = '';
+    }
+
+    /* ── AUTO RESIZE INPUT ── */
+    window.autoResizeBotInput = function(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+    };
+
+    /* ── KEYDOWN ── */
+    window.botInputKeydown = function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendBotMessage();
+      }
+    };
+
+    /* ── FETCH CURRICULUM CONTEXT FROM SUPABASE ── */
+    async function fetchCurriculumContext() {
+      const ctx = [];
+      const grade = window.currentGrade;
+      const term  = window.currentTerm;
+
+      // Build filter string
+      const gradeTermFilter = (grade && term)
+        ? `&grade=eq.${grade}&term=eq.${term}`
+        : '';
+
+      const headers = {
+        'apikey': window.SUPABASE_KEY || '',
+        'Authorization': `Bearer ${window.SUPABASE_KEY || ''}`,
+        'Content-Type': 'application/json'
+      };
+
+      const SB_URL = window.SUPABASE_URL || '';
+
+      try {
+        // ── 1. Lectures ──
+        if (botCtxFlags.lectures) {
+          const res = await fetch(
+            `${SB_URL}/rest/v1/resources?select=title,subject,url,file_type,description&type=eq.lectures${gradeTermFilter}&limit=60`,
+            { headers }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length) {
+              ctx.push(`\n## المحاضرات المتاحة (${data.length} محاضرة):`);
+              const grouped = {};
+              data.forEach(r => {
+                const sub = r.subject || 'عام';
+                if (!grouped[sub]) grouped[sub] = [];
+                grouped[sub].push(`  - ${r.title || 'بدون عنوان'} [${r.file_type || 'رابط'}]`);
+              });
+              Object.entries(grouped).forEach(([sub, items]) => {
+                ctx.push(`### مادة: ${sub}`);
+                ctx.push(items.join('\n'));
+              });
+            }
+          }
+        }
+
+        // ── 2. Summaries ──
+        if (botCtxFlags.summaries) {
+          const res = await fetch(
+            `${SB_URL}/rest/v1/resources?select=title,subject,author_name,file_type&type=eq.summaries${gradeTermFilter}&limit=60`,
+            { headers }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length) {
+              ctx.push(`\n## الملخصات المتاحة (${data.length} ملخص):`);
+              const grouped = {};
+              data.forEach(r => {
+                const sub = r.subject || 'عام';
+                if (!grouped[sub]) grouped[sub] = [];
+                grouped[sub].push(`  - ${r.title || 'ملخص'} ${r.author_name ? '(بقلم: ' + r.author_name + ')' : ''}`);
+              });
+              Object.entries(grouped).forEach(([sub, items]) => {
+                ctx.push(`### مادة: ${sub}`);
+                ctx.push(items.join('\n'));
+              });
+            }
+          }
+        }
+
+        // ── 3. Quizzes ──
+        if (botCtxFlags.quizzes) {
+          const res = await fetch(
+            `${SB_URL}/rest/v1/quizzes?select=title,section,lq_folder,questions${gradeTermFilter}&published=eq.true&limit=60`,
+            { headers }
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.length) {
+              const exams   = data.filter(q => !q.section || q.section === 'exams');
+              const lqQuizzes = data.filter(q => q.section === 'lecture-quizzes');
+              if (exams.length) {
+                ctx.push(`\n## الامتحانات المتاحة (${exams.length} امتحان):`);
+                exams.forEach(q => {
+                  const count = Array.isArray(q.questions) ? q.questions.length : 0;
+                  ctx.push(`  - ${q.title} (${count} سؤال)`);
+                  // Include question texts for better AI answers
+                  if (Array.isArray(q.questions) && q.questions.length) {
+                    q.questions.slice(0, 10).forEach((qs, i) => {
+                      ctx.push(`    س${i+1}: ${qs.question}`);
+                      if (qs.type === 'mcq' && qs.options) {
+                        const correct = qs.options[qs.correct];
+                        ctx.push(`    الإجابة الصحيحة: ${correct}`);
+                        if (qs.explanation) ctx.push(`    الشرح: ${qs.explanation}`);
+                      } else if (qs.type === 'tf') {
+                        ctx.push(`    الإجابة الصحيحة: ${qs.correct === 0 ? 'صح' : 'خطأ'}`);
+                      }
+                    });
+                  }
+                });
+              }
+              if (lqQuizzes.length) {
+                ctx.push(`\n## كويزات المحاضرات (${lqQuizzes.length} كويز):`);
+                lqQuizzes.forEach(q => {
+                  const count = Array.isArray(q.questions) ? q.questions.length : 0;
+                  ctx.push(`  - [${q.lq_folder || 'عام'}] ${q.title} (${count} سؤال)`);
+                  if (Array.isArray(q.questions) && q.questions.length) {
+                    q.questions.slice(0, 8).forEach((qs, i) => {
+                      ctx.push(`    س${i+1}: ${qs.question}`);
+                      if (qs.type === 'mcq' && qs.options) {
+                        const correct = qs.options[qs.correct];
+                        ctx.push(`    الإجابة: ${correct}`);
+                      } else if (qs.type === 'tf') {
+                        ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح' : 'خطأ'}`);
+                      }
+                    });
+                  }
+                });
+              }
+            }
+          }
+        }
+
+      } catch(err) {
+        console.warn('Bot context fetch error:', err);
+      }
+
+      return ctx.join('\n');
+    }
+
+    /* ── APPEND MESSAGE ── */
+    function appendMsg(role, content) {
+      const typing = document.getElementById('bot-typing');
+      const div = document.createElement('div');
+      div.className = `bot-msg ${role}`;
+      div.innerHTML = `
+        <div class="bot-msg-avatar">
+          <i class="fas fa-${role === 'bot' ? 'robot' : 'user'}"></i>
+        </div>
+        <div class="bot-msg-bubble">${content}</div>
+      `;
+      messagesEl.insertBefore(div, typing);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return div;
+    }
+
+    /* ── SEND MESSAGE ── */
+    window.sendBotMessage = async function() {
+      const text = inputEl.value.trim();
+      if (!text || botLoading) return;
+
+      // Hide suggestions after first message
+      document.getElementById('bot-suggestions').style.display = 'none';
+
+      // Append user message
+      appendMsg('user', text);
+      botHistory.push({ role: 'user', content: text });
+      inputEl.value = '';
+      inputEl.style.height = 'auto';
+
+      // Show typing
+      botLoading = true;
+      sendBtn.disabled = true;
+      const typing = document.getElementById('bot-typing');
+      typing.classList.add('show');
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+
+      // Update status
+      document.getElementById('bot-status-text').textContent = 'جاري جلب المناهج...';
+
+      try {
+        // Fetch curriculum context
+        const curriculumCtx = await fetchCurriculumContext();
+        document.getElementById('bot-status-text').textContent = 'جاري التفكير...';
+
+        const grade     = window.currentGrade;
+        const term      = window.currentTerm;
+        const gradeName = (window.GRADE_NAMES && grade) ? (window.GRADE_NAMES[grade] || grade) : 'غير محدد';
+        const termName  = (window.TERM_NAMES && term)   ? (window.TERM_NAMES[term]   || term)  : 'غير محدد';
+
+        const systemPrompt = `أنت مساعد ذكي متخصص في مناهج كلية نظم ومعلومات.
+مهمتك الإجابة على أسئلة الطلاب بخصوص المحتوى التعليمي الموجود في المنصة فقط.
+
+القسم الحالي: ${gradeName}
+الترم الحالي: ${termName}
+
+${curriculumCtx
+  ? `محتوى المنصة المتاح:\n${curriculumCtx}`
+  : 'لا يوجد محتوى محدد في المنصة بعد أو القسم/الترم غير محددين.'
+}
+
+تعليمات مهمة:
+- أجب بالعربية دائماً
+- استند فقط على المحتوى الموجود في المنصة
+- لو السؤال مش متعلق بالمناهج، قل للطالب إنك متخصص في مناهج المنصة بس
+- كن ودوداً ومفيداً وموجزاً
+- لو الطالب بيسأل عن سؤال محدد في الكويز، أدي الإجابة الصحيحة مع الشرح لو متاح
+- استخدم إيموجي بشكل معتدل لتحسين القراءة`;
+
+        // Build messages for API
+        const messages = [];
+        // Add recent history (last 6 turns max)
+        const recentHistory = botHistory.slice(-7, -1); // exclude last user msg
+        recentHistory.forEach(h => {
+          messages.push({ role: h.role === 'bot' ? 'assistant' : 'user', content: h.content });
+        });
+        messages.push({ role: 'user', content: text });
+
+       const SUPABASE_URL = 'https://qokkdckumwyykjeysyiq.supabase.co'
+
+const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-proxy`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+  },
+  body: JSON.stringify({...})
+})
+            model: 'claude-sonnet-4-6',
+            max_tokens: 1000,
+            system: systemPrompt,
+            messages: messages
+          })
+        });
+
+        if (!response.ok) throw new Error('API error: ' + response.status);
+
+        const data = await response.json();
+        const reply = data.content && data.content[0] && data.content[0].text
+          ? data.content[0].text
+          : '⚠️ حصل خطأ في الرد.';
+
+        // Format: convert newlines to <br> and **bold**
+        const formatted = reply
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\n/g, '<br>');
+
+        typing.classList.remove('show');
+        appendMsg('bot', formatted);
+        botHistory.push({ role: 'bot', content: reply });
+        document.getElementById('bot-status-text').textContent = 'جاهز للمساعدة — أسألني عن أي مادة';
+
+      } catch(err) {
+        typing.classList.remove('show');
+        appendMsg('bot', `⚠️ حصل خطأ: ${err.message || 'تعذر الاتصال'}. جرب تاني.`);
+        document.getElementById('bot-status-text').textContent = 'جاهز للمساعدة';
+        console.error('Bot error:', err);
+      } finally {
+        botLoading = false;
+        sendBtn.disabled = false;
+        setTimeout(() => inputEl.focus(), 100);
+      }
+    };
+
+    /* ── EXPOSE GRADE/TERM NAMES globally for bot context ── */
+    // (already defined in main script, just ensure bot can read them)
+
+  })();
   </script>
 </body>
 </html>
