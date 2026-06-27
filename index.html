@@ -188,10 +188,9 @@
     #bot-sidebar {
       position: fixed;
       bottom: 90px;
-      left: 100px;
-      width: 340px;
-      height: 480px;
-      max-height: 75vh;
+      left: 16px;
+      width: 320px;
+      height: 460px;
       z-index: 9998;
       display: flex;
       flex-direction: column;
@@ -201,7 +200,7 @@
       box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 60px rgba(56,189,248,0.08);
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.85) translateY(20px);
+      transform: scale(0.85) translateY(10px);
       transform-origin: bottom left;
       transition: opacity 0.3s cubic-bezier(0.22,1,0.36,1), transform 0.3s cubic-bezier(0.22,1,0.36,1);
       backdrop-filter: blur(40px) saturate(180%);
@@ -218,13 +217,60 @@
       pointer-events: all;
       transform: scale(1) translateY(0);
     }
+    /* Desktop resize — flip direction so user drags top-right corner */
+    @media (min-width: 481px) {
+      #bot-sidebar {
+        resize: both;
+        overflow: auto;
+        min-width: 240px;
+        max-width: 520px;
+        min-height: 280px;
+        max-height: calc(100vh - 100px);
+        /* override overflow:hidden so resize handle shows */
+        overflow: hidden;
+      }
+      #bot-sidebar.open {
+        overflow: auto;
+      }
+      /* Custom resize corner hint */
+      #bot-sidebar::after {
+        content: '';
+        position: absolute;
+        bottom: 4px;
+        left: 4px;
+        width: 12px;
+        height: 12px;
+        border-bottom: 2px solid rgba(56,189,248,0.4);
+        border-left: 2px solid rgba(56,189,248,0.4);
+        border-radius: 0 0 0 4px;
+        pointer-events: none;
+      }
+    }
+    /* Resize handle bar */
+    #bot-resize-handle {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 6px;
+      cursor: ns-resize;
+      z-index: 10;
+      background: transparent;
+      border-radius: 18px 18px 0 0;
+    }
+    #bot-resize-handle:hover {
+      background: rgba(56,189,248,0.12);
+    }
+
+    /* Mobile: full-width floating but not full screen */
     @media (max-width: 480px) {
       #bot-sidebar {
-        left: 8px;
-        right: 8px;
-        width: auto;
-        bottom: 80px;
-        height: 70vh;
+        left: 8px !important;
+        right: 8px !important;
+        width: calc(100vw - 16px) !important;
+        bottom: 80px !important;
+        top: auto !important;
+        height: 65vh !important;
+        max-height: 65vh !important;
+        transform-origin: bottom center;
       }
     }
 
@@ -3188,8 +3234,8 @@ ESSAY
 
   <!-- ═══════════ SPACE BOT ═══════════ -->
 
-  <!-- Overlay -->
-  <div id="bot-overlay" onclick="closeBotSidebar()"></div>
+  <!-- Overlay removed — floating window doesn't need it -->
+  <div id="bot-overlay" style="display:none"></div>
 
   <!-- Draggable Bot Icon -->
   <div id="space-bot-icon" class="bot-pulse" title="روبوت المناهج 🤖">
@@ -3295,6 +3341,7 @@ ESSAY
 
   <!-- Bot Sidebar -->
   <div id="bot-sidebar" dir="rtl">
+    <div id="bot-resize-handle" id="bot-rh"></div>
 
     <!-- Header -->
     <div id="bot-header">
@@ -6187,12 +6234,17 @@ ESSAY
     }
 
     function positionSidebar() {
+      // On mobile — CSS handles position, don't override
+      if (window.innerWidth <= 480) {
+        sidebar.style.left = '';
+        sidebar.style.top  = '';
+        return;
+      }
       const rect = icon.getBoundingClientRect();
-      const sw   = 340;
-      const sh   = 480;
+      const sw   = sidebar.offsetWidth  || 320;
+      const sh   = sidebar.offsetHeight || 460;
       let left   = rect.left;
       let top    = rect.top - sh - 10;
-      // Keep inside viewport
       if (left + sw > window.innerWidth  - 8) left = window.innerWidth  - sw - 8;
       if (top < 8) top = rect.bottom + 10;
       if (left < 8) left = 8;
@@ -6201,14 +6253,48 @@ ESSAY
       sidebar.style.bottom = 'auto';
     }
 
-    icon.addEventListener('mousedown',  (e) => { onPointerDown(e); });
-    icon.addEventListener('touchstart', (e) => { onPointerDown(e); }, { passive: false });
-    document.addEventListener('mousemove',  (e) => { if (botDragging) onPointerMove(e); });
-    document.addEventListener('touchmove',  (e) => { if (botDragging) onPointerMove(e); }, { passive: false });
-    document.addEventListener('mouseup',  onPointerUp);
-    document.addEventListener('touchend', onPointerUp);
+    // ── Icon drag (mouse) ──
+    icon.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      dragMoved = false;
+      onPointerDown(e);
+    });
+    document.addEventListener('mousemove', (e) => { if (botDragging) onPointerMove(e); });
+    document.addEventListener('mouseup', (e) => {
+      if (botDragging) { onPointerUp(); }
+    });
 
-    icon.addEventListener('click', () => { if (!dragMoved) toggleBot(); });
+    // ── Icon tap/drag (touch) ──
+    let touchTimer = null;
+    icon.addEventListener('touchstart', (e) => {
+      dragMoved = false;
+      const t = e.touches[0];
+      // Short tap = toggle, long press+move = drag
+      touchTimer = setTimeout(() => {
+        onPointerDown(e);
+      }, 120);
+    }, { passive: true });
+
+    icon.addEventListener('touchend', (e) => {
+      clearTimeout(touchTimer);
+      if (!botDragging && !dragMoved) {
+        toggleBot();
+      }
+      if (botDragging) onPointerUp();
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (botDragging) { onPointerMove(e); }
+    }, { passive: false });
+    document.addEventListener('touchend', () => { if (botDragging) onPointerUp(); });
+
+    // ── Click fallback for desktop ──
+    icon.addEventListener('click', (e) => {
+      if (!dragMoved) toggleBot();
+      dragMoved = false;
+    });
+
+
 
     /* ── TOGGLE / OPEN / CLOSE ── */
     function toggleBot() {
@@ -6228,6 +6314,8 @@ ESSAY
     function closeBot() {
       botOpen = false;
       sidebar.classList.remove('open');
+      // Remove any stray overlay
+      if (overlay) { overlay.classList.remove('show'); }
     }
 
     /* ── DEPT PICKER ── */
