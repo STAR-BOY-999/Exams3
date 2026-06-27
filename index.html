@@ -6253,46 +6253,46 @@ ESSAY
       sidebar.style.bottom = 'auto';
     }
 
-    // ── Icon drag (mouse) ──
+    // ── Mouse drag (desktop) ──
     icon.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
       dragMoved = false;
       onPointerDown(e);
     });
     document.addEventListener('mousemove', (e) => { if (botDragging) onPointerMove(e); });
-    document.addEventListener('mouseup', (e) => {
-      if (botDragging) { onPointerUp(); }
-    });
+    document.addEventListener('mouseup', () => { if (botDragging) onPointerUp(); });
+    icon.addEventListener('click', () => { if (!dragMoved) toggleBot(); dragMoved = false; });
 
-    // ── Icon tap/drag (touch) ──
-    let touchTimer = null;
+    // ── Touch (mobile) — simple tap to toggle, drag to move ──
+    let touchStartX = 0, touchStartY = 0;
     icon.addEventListener('touchstart', (e) => {
       dragMoved = false;
-      const t = e.touches[0];
-      // Short tap = toggle, long press+move = drag
-      touchTimer = setTimeout(() => {
-        onPointerDown(e);
-      }, 120);
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
     }, { passive: true });
+
+    icon.addEventListener('touchmove', (e) => {
+      const dx = Math.abs(e.touches[0].clientX - touchStartX);
+      const dy = Math.abs(e.touches[0].clientY - touchStartY);
+      if (dx > 8 || dy > 8) {
+        dragMoved = true;
+        if (!botDragging) onPointerDown(e);
+        onPointerMove(e);
+      }
+    }, { passive: false });
 
     icon.addEventListener('touchend', (e) => {
-      clearTimeout(touchTimer);
-      if (!botDragging && !dragMoved) {
+      if (botDragging) {
+        onPointerUp();
+      } else if (!dragMoved) {
+        // Pure tap — toggle bot
+        e.preventDefault();
         toggleBot();
       }
-      if (botDragging) onPointerUp();
-    }, { passive: true });
-
-    document.addEventListener('touchmove', (e) => {
-      if (botDragging) { onPointerMove(e); }
-    }, { passive: false });
-    document.addEventListener('touchend', () => { if (botDragging) onPointerUp(); });
-
-    // ── Click fallback for desktop ──
-    icon.addEventListener('click', (e) => {
-      if (!dragMoved) toggleBot();
       dragMoved = false;
-    });
+    }, { passive: false });
+
+    document.addEventListener('touchend', () => { if (botDragging) onPointerUp(); });
 
 
 
