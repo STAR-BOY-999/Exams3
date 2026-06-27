@@ -6305,9 +6305,11 @@ ESSAY
       positionSidebar();
       botOpen = true;
       sidebar.classList.add('open');
-      // Show dept picker if not chosen yet
       if (!botDept) showDeptPicker();
-      setTimeout(() => inputEl && inputEl.focus(), 400);
+      // Don't auto-focus on mobile — causes keyboard to open instead of bot
+      if (window.innerWidth > 480) {
+        setTimeout(() => inputEl && inputEl.focus(), 400);
+      }
     }
 
     window.closeBotSidebar = function() { closeBot(); };
