@@ -187,37 +187,48 @@
     /* ── SIDEBAR CHAT ── */
     #bot-sidebar {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 380px;
-      height: 100vh;
+      bottom: 90px;
+      left: 100px;
+      width: 340px;
+      height: 480px;
+      max-height: 75vh;
       z-index: 9998;
       display: flex;
       flex-direction: column;
       background: rgba(4,4,16,0.97);
-      border-right: 1px solid rgba(56,189,248,0.15);
-      box-shadow: 4px 0 40px rgba(0,0,0,0.8), 0 0 80px rgba(56,189,248,0.06);
-      transform: translateX(-100%);
-      transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+      border: 1px solid rgba(56,189,248,0.2);
+      border-radius: 18px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 60px rgba(56,189,248,0.08);
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85) translateY(20px);
+      transform-origin: bottom left;
+      transition: opacity 0.3s cubic-bezier(0.22,1,0.36,1), transform 0.3s cubic-bezier(0.22,1,0.36,1);
       backdrop-filter: blur(40px) saturate(180%);
       -webkit-backdrop-filter: blur(40px) saturate(180%);
+      overflow: hidden;
     }
     [data-theme="light"] #bot-sidebar {
       background: rgba(248,251,255,0.97);
-      border-right-color: rgba(3,105,161,0.15);
-      box-shadow: 4px 0 40px rgba(0,20,80,0.12), 0 0 40px rgba(3,105,161,0.05);
+      border-color: rgba(3,105,161,0.2);
+      box-shadow: 0 8px 40px rgba(0,20,80,0.15), 0 0 40px rgba(3,105,161,0.06);
     }
-    #bot-sidebar.open { transform: translateX(0); }
+    #bot-sidebar.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: scale(1) translateY(0);
+    }
+    @media (max-width: 480px) {
+      #bot-sidebar {
+        left: 8px;
+        right: 8px;
+        width: auto;
+        bottom: 80px;
+        height: 70vh;
+      }
+    }
 
-    /* Top glow line */
-    #bot-sidebar::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(56,189,248,0.6), rgba(45,212,191,0.5), transparent);
-      pointer-events: none;
-    }
+
 
     /* ── SIDEBAR HEADER ── */
     #bot-header {
@@ -543,7 +554,7 @@
 
     /* ── MOBILE ── */
     @media (max-width: 480px) {
-      #bot-sidebar { width: 100vw; }
+      /* mobile handled in main rule */
     }
 
     /* ─── STAR CANVAS ─── */
@@ -6114,7 +6125,7 @@ ESSAY
   </script>
 
   <!-- ═══════════════════════════════════════════════════════
-       🤖 SPACE BOT SCRIPT — AI CURRICULUM ASSISTANT
+       🤖 SPACE BOT SCRIPT — AI CURRICULUM ASSISTANT v2
   ═══════════════════════════════════════════════════════ -->
   <script>
   (function() {
@@ -6123,48 +6134,51 @@ ESSAY
     let botOpen      = false;
     let botLoading   = false;
     let botCtxFlags  = { lectures: true, summaries: true, quizzes: true };
-    let botHistory   = []; // { role:'user'|'assistant', content }
+    let botHistory   = [];
     let botDragging  = false;
-    let botDragOffX  = 0, botDragOffY  = 0;
+    let botDragOffX  = 0, botDragOffY = 0;
+    let botDept      = null; // 'general' | 'systems' | null
 
-    const icon     = document.getElementById('space-bot-icon');
-    const sidebar  = document.getElementById('bot-sidebar');
-    const overlay  = document.getElementById('bot-overlay');
+    const icon       = document.getElementById('space-bot-icon');
+    const sidebar    = document.getElementById('bot-sidebar');
+    const overlay    = document.getElementById('bot-overlay');
     const messagesEl = document.getElementById('bot-messages');
-    const typingEl   = document.getElementById('bot-typing');
     const inputEl    = document.getElementById('bot-input');
     const sendBtn    = document.getElementById('bot-send-btn');
 
     /* ── DRAGGABLE ICON ── */
+    let dragMoved = false;
+
     function onPointerDown(e) {
-      if (e.target.closest('#space-bot-icon') && !botOpen) {
-        botDragging = true;
-        const rect = icon.getBoundingClientRect();
-        botDragOffX = (e.clientX || e.touches[0].clientX) - rect.left;
-        botDragOffY = (e.clientY || e.touches[0].clientY) - rect.top;
-        icon.style.transition = 'none';
-        icon.style.cursor = 'grabbing';
-        e.preventDefault();
-      }
+      botDragging = true;
+      dragMoved   = false;
+      const rect  = icon.getBoundingClientRect();
+      const cx    = e.clientX ?? e.touches[0].clientX;
+      const cy    = e.clientY ?? e.touches[0].clientY;
+      botDragOffX = cx - rect.left;
+      botDragOffY = cy - rect.top;
+      icon.style.transition = 'none';
+      icon.style.cursor = 'grabbing';
+      e.preventDefault();
     }
 
     function onPointerMove(e) {
       if (!botDragging) return;
-      const cx = e.clientX || (e.touches && e.touches[0].clientX);
-      const cy = e.clientY || (e.touches && e.touches[0].clientY);
-      let nx = cx - botDragOffX;
-      let ny = cy - botDragOffY;
-      // Clamp to viewport
-      nx = Math.max(0, Math.min(window.innerWidth  - icon.offsetWidth,  nx));
-      ny = Math.max(0, Math.min(window.innerHeight - icon.offsetHeight, ny));
+      dragMoved = true;
+      const cx = e.clientX ?? e.touches[0].clientX;
+      const cy = e.clientY ?? e.touches[0].clientY;
+      let nx = Math.max(0, Math.min(window.innerWidth  - icon.offsetWidth,  cx - botDragOffX));
+      let ny = Math.max(0, Math.min(window.innerHeight - icon.offsetHeight, cy - botDragOffY));
       icon.style.left   = nx + 'px';
       icon.style.top    = ny + 'px';
       icon.style.bottom = 'auto';
       icon.style.right  = 'auto';
+      // Move sidebar to follow icon
+      if (botOpen) positionSidebar();
       e.preventDefault();
     }
 
-    function onPointerUp(e) {
+    function onPointerUp() {
       if (botDragging) {
         botDragging = false;
         icon.style.transition = '';
@@ -6172,69 +6186,99 @@ ESSAY
       }
     }
 
-    let dragMoved = false;
-    let touchStartX = 0, touchStartY = 0;
+    function positionSidebar() {
+      const rect = icon.getBoundingClientRect();
+      const sw   = 340;
+      const sh   = 480;
+      let left   = rect.left;
+      let top    = rect.top - sh - 10;
+      // Keep inside viewport
+      if (left + sw > window.innerWidth  - 8) left = window.innerWidth  - sw - 8;
+      if (top < 8) top = rect.bottom + 10;
+      if (left < 8) left = 8;
+      sidebar.style.left   = left + 'px';
+      sidebar.style.top    = top  + 'px';
+      sidebar.style.bottom = 'auto';
+    }
 
-    icon.addEventListener('mousedown', (e) => {
-      dragMoved = false;
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
-      onPointerDown(e);
-    });
-    icon.addEventListener('touchstart', (e) => {
-      dragMoved = false;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      onPointerDown(e);
-    }, { passive: false });
+    icon.addEventListener('mousedown',  (e) => { onPointerDown(e); });
+    icon.addEventListener('touchstart', (e) => { onPointerDown(e); }, { passive: false });
+    document.addEventListener('mousemove',  (e) => { if (botDragging) onPointerMove(e); });
+    document.addEventListener('touchmove',  (e) => { if (botDragging) onPointerMove(e); }, { passive: false });
+    document.addEventListener('mouseup',  onPointerUp);
+    document.addEventListener('touchend', onPointerUp);
 
-    document.addEventListener('mousemove', (e) => {
-      if (botDragging) {
-        dragMoved = true;
-        onPointerMove(e);
-      }
-    });
-    document.addEventListener('touchmove', (e) => {
-      if (botDragging) {
-        dragMoved = true;
-        onPointerMove(e);
-      }
-    }, { passive: false });
+    icon.addEventListener('click', () => { if (!dragMoved) toggleBot(); });
 
-    document.addEventListener('mouseup', (e) => {
-      const wasDragging = botDragging;
-      onPointerUp(e);
-      if (!dragMoved && !wasDragging) return;
-      if (!dragMoved) openBotSidebar();
-    });
-    document.addEventListener('touchend', (e) => {
-      const wasDragging = botDragging;
-      onPointerUp(e);
-      if (!dragMoved) openBotSidebar();
-    });
+    /* ── TOGGLE / OPEN / CLOSE ── */
+    function toggleBot() {
+      botOpen ? closeBot() : openBot();
+    }
 
-    icon.addEventListener('click', (e) => {
-      if (!dragMoved) openBotSidebar();
-    });
-
-    /* ── OPEN / CLOSE ── */
-    window.openBotSidebar = function() {
+    function openBot() {
+      positionSidebar();
       botOpen = true;
       sidebar.classList.add('open');
-      overlay.classList.add('show');
-      icon.style.display = 'none';
-      // Load context on first open
-      if (botHistory.length === 0) {
-        setTimeout(() => showBotSuggestions(), 300);
-      }
-      setTimeout(() => inputEl.focus(), 500);
-    };
+      // Show dept picker if not chosen yet
+      if (!botDept) showDeptPicker();
+      setTimeout(() => inputEl && inputEl.focus(), 400);
+    }
 
-    window.closeBotSidebar = function() {
+    window.closeBotSidebar = function() { closeBot(); };
+    function closeBot() {
       botOpen = false;
       sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-      icon.style.display = '';
+    }
+
+    /* ── DEPT PICKER ── */
+    function showDeptPicker() {
+      const msgArea = messagesEl;
+      // Remove old picker if exists
+      const old = document.getElementById('bot-dept-picker');
+      if (old) old.remove();
+
+      const picker = document.createElement('div');
+      picker.id = 'bot-dept-picker';
+      picker.style.cssText = `
+        background: rgba(56,189,248,0.06);
+        border: 1px solid rgba(56,189,248,0.2);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 4px 0;
+        animation: msgFadeIn 0.35s cubic-bezier(0.22,1,0.36,1);
+      `;
+      picker.innerHTML = `
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:10px;text-align:center">
+          🎓 اختار القسم اللي تبعه
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button onclick="window.setBotDept('general')" style="
+            flex:1;padding:10px 8px;border-radius:11px;border:1px solid rgba(45,212,191,0.3);
+            background:rgba(45,212,191,0.08);color:var(--teal);font-family:'Cairo',sans-serif;
+            font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;
+          ">🏫 إدارة أعمال عامة</button>
+          <button onclick="window.setBotDept('systems')" style="
+            flex:1;padding:10px 8px;border-radius:11px;border:1px solid rgba(167,139,250,0.3);
+            background:rgba(167,139,250,0.08);color:var(--violet);font-family:'Cairo',sans-serif;
+            font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;
+          ">💻 نظم ومعلومات</button>
+        </div>
+      `;
+      const typing = document.getElementById('bot-typing');
+      messagesEl.insertBefore(picker, typing);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    window.setBotDept = function(dept) {
+      botDept = dept;
+      const picker = document.getElementById('bot-dept-picker');
+      if (picker) picker.remove();
+      const deptName = dept === 'general' ? '🏫 إدارة أعمال عامة' : '💻 نظم ومعلومات';
+      appendMsg('bot', `تمام! هجيبلك المحتوى الخاص بـ <strong>${deptName}</strong> بس. اسألني عن أي حاجة 🚀`);
+      document.getElementById('bot-suggestions').style.display = '';
+      // Update dept indicator in header
+      const statusEl = document.getElementById('bot-status-text');
+      if (statusEl) statusEl.textContent = `قسم: ${deptName}`;
     };
 
     /* ── CONTEXT TOGGLE ── */
@@ -6246,37 +6290,29 @@ ESSAY
     /* ── CLEAR ── */
     window.clearBotChat = function() {
       botHistory = [];
-      // Reset messages to welcome only
+      botDept    = null;
       messagesEl.innerHTML = `
         <div class="bot-msg bot">
           <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
-          <div class="bot-msg-bubble">
-            👋 تم مسح المحادثة! أسألني عن أي حاجة في المناهج. 🚀
-          </div>
+          <div class="bot-msg-bubble">👋 تم مسح المحادثة! اختار قسمك الأول. 🚀</div>
         </div>
         <div class="bot-msg bot" id="bot-typing">
           <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
           <div class="typing-dots">
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
+            <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
           </div>
         </div>`;
-      showBotSuggestions();
+      showDeptPicker();
     };
 
     /* ── SUGGESTIONS ── */
     window.sendBotSuggestion = function(btn) {
+      if (!botDept) { showDeptPicker(); return; }
       inputEl.value = btn.textContent.trim();
       sendBotMessage();
     };
 
-    function showBotSuggestions() {
-      const sugEl = document.getElementById('bot-suggestions');
-      sugEl.style.display = '';
-    }
-
-    /* ── AUTO RESIZE INPUT ── */
+    /* ── AUTO RESIZE ── */
     window.autoResizeBotInput = function(el) {
       el.style.height = 'auto';
       el.style.height = Math.min(el.scrollHeight, 100) + 'px';
@@ -6284,127 +6320,130 @@ ESSAY
 
     /* ── KEYDOWN ── */
     window.botInputKeydown = function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendBotMessage();
-      }
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBotMessage(); }
     };
 
-    /* ── FETCH CURRICULUM CONTEXT FROM SUPABASE ── */
+    /* ── FETCH CURRICULUM CONTEXT ── */
     async function fetchCurriculumContext() {
       const ctx = [];
       const grade = window.currentGrade;
       const term  = window.currentTerm;
 
-      // Build filter string
+      // Build dept filter
+      let deptFilter = '';
+      if (botDept === 'general')  deptFilter = '&department=eq.general';
+      if (botDept === 'systems')  deptFilter = '&department=eq.systems';
+
       const gradeTermFilter = (grade && term)
         ? `&grade=eq.${grade}&term=eq.${term}`
         : '';
+
+      const filter = gradeTermFilter + deptFilter;
 
       const headers = {
         'apikey': window.SUPABASE_KEY || '',
         'Authorization': `Bearer ${window.SUPABASE_KEY || ''}`,
         'Content-Type': 'application/json'
       };
-
       const SB_URL = window.SUPABASE_URL || '';
 
       try {
-        // ── 1. Lectures ──
+        // ── Lectures ──
         if (botCtxFlags.lectures) {
           const res = await fetch(
-            `${SB_URL}/rest/v1/resources?select=title,subject,url,file_type,description&type=eq.lectures${gradeTermFilter}&limit=60`,
+            `${SB_URL}/rest/v1/resources?select=title,subject,url,file_type&type=eq.lectures${filter}&limit=80`,
             { headers }
           );
           if (res.ok) {
             const data = await res.json();
             if (data && data.length) {
-              ctx.push(`\n## المحاضرات المتاحة (${data.length} محاضرة):`);
+              ctx.push(`\n## المحاضرات (${data.length}):`);
               const grouped = {};
               data.forEach(r => {
                 const sub = r.subject || 'عام';
                 if (!grouped[sub]) grouped[sub] = [];
-                grouped[sub].push(`  - ${r.title || 'بدون عنوان'} [${r.file_type || 'رابط'}]`);
+                grouped[sub].push(`  - "${r.title}" [${r.file_type || 'رابط'}]`);
               });
               Object.entries(grouped).forEach(([sub, items]) => {
-                ctx.push(`### مادة: ${sub}`);
+                ctx.push(`### ${sub}:`);
                 ctx.push(items.join('\n'));
               });
             }
           }
         }
 
-        // ── 2. Summaries ──
+        // ── Summaries ──
         if (botCtxFlags.summaries) {
           const res = await fetch(
-            `${SB_URL}/rest/v1/resources?select=title,subject,author_name,file_type&type=eq.summaries${gradeTermFilter}&limit=60`,
+            `${SB_URL}/rest/v1/resources?select=title,subject,author_name&type=eq.summaries${filter}&limit=80`,
             { headers }
           );
           if (res.ok) {
             const data = await res.json();
             if (data && data.length) {
-              ctx.push(`\n## الملخصات المتاحة (${data.length} ملخص):`);
+              ctx.push(`\n## الملخصات (${data.length}):`);
               const grouped = {};
               data.forEach(r => {
                 const sub = r.subject || 'عام';
                 if (!grouped[sub]) grouped[sub] = [];
-                grouped[sub].push(`  - ${r.title || 'ملخص'} ${r.author_name ? '(بقلم: ' + r.author_name + ')' : ''}`);
+                grouped[sub].push(`  - "${r.title}" ${r.author_name ? '(' + r.author_name + ')' : ''}`);
               });
               Object.entries(grouped).forEach(([sub, items]) => {
-                ctx.push(`### مادة: ${sub}`);
+                ctx.push(`### ${sub}:`);
                 ctx.push(items.join('\n'));
               });
             }
           }
         }
 
-        // ── 3. Quizzes ──
+        // ── Quizzes ──
         if (botCtxFlags.quizzes) {
           const res = await fetch(
-            `${SB_URL}/rest/v1/quizzes?select=title,section,lq_folder,questions${gradeTermFilter}&published=eq.true&limit=60`,
+            `${SB_URL}/rest/v1/quizzes?select=title,section,lq_folder,questions${filter}&published=eq.true&limit=80`,
             { headers }
           );
           if (res.ok) {
             const data = await res.json();
             if (data && data.length) {
-              const exams   = data.filter(q => !q.section || q.section === 'exams');
+              const exams     = data.filter(q => !q.section || q.section === 'exams');
               const lqQuizzes = data.filter(q => q.section === 'lecture-quizzes');
+
               if (exams.length) {
-                ctx.push(`\n## الامتحانات المتاحة (${exams.length} امتحان):`);
+                ctx.push(`\n## الامتحانات (${exams.length}):`);
                 exams.forEach(q => {
-                  const count = Array.isArray(q.questions) ? q.questions.length : 0;
-                  ctx.push(`  - ${q.title} (${count} سؤال)`);
-                  // Include question texts for better AI answers
-                  if (Array.isArray(q.questions) && q.questions.length) {
-                    q.questions.slice(0, 10).forEach((qs, i) => {
-                      ctx.push(`    س${i+1}: ${qs.question}`);
-                      if (qs.type === 'mcq' && qs.options) {
-                        const correct = qs.options[qs.correct];
-                        ctx.push(`    الإجابة الصحيحة: ${correct}`);
-                        if (qs.explanation) ctx.push(`    الشرح: ${qs.explanation}`);
-                      } else if (qs.type === 'tf') {
-                        ctx.push(`    الإجابة الصحيحة: ${qs.correct === 0 ? 'صح' : 'خطأ'}`);
-                      }
-                    });
-                  }
+                  if (!Array.isArray(q.questions)) return;
+                  ctx.push(`### ${q.title} (${q.questions.length} سؤال):`);
+                  q.questions.forEach((qs, i) => {
+                    ctx.push(`  س${i+1}: ${qs.question}`);
+                    if (qs.type === 'mcq' && Array.isArray(qs.options)) {
+                      qs.options.forEach((opt, idx) => {
+                        const mark = idx === qs.correct ? '✓' : ' ';
+                        ctx.push(`    ${mark} ${idx+1}) ${opt}`);
+                      });
+                      if (qs.explanation) ctx.push(`    💡 ${qs.explanation}`);
+                    } else if (qs.type === 'tf') {
+                      ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح ✓' : 'خطأ ✓'}`);
+                    }
+                  });
                 });
               }
+
               if (lqQuizzes.length) {
-                ctx.push(`\n## كويزات المحاضرات (${lqQuizzes.length} كويز):`);
+                ctx.push(`\n## كويزات المحاضرات (${lqQuizzes.length}):`);
                 lqQuizzes.forEach(q => {
-                  const count = Array.isArray(q.questions) ? q.questions.length : 0;
-                  ctx.push(`  - [${q.lq_folder || 'عام'}] ${q.title} (${count} سؤال)`);
-                  if (Array.isArray(q.questions) && q.questions.length) {
-                    q.questions.slice(0, 8).forEach((qs, i) => {
-                      ctx.push(`    س${i+1}: ${qs.question}`);
-                      if (qs.type === 'mcq' && qs.options) {
-                        const correct = qs.options[qs.correct];
-                        ctx.push(`    الإجابة: ${correct}`);
-                      } else if (qs.type === 'tf') {
-                        ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح' : 'خطأ'}`);
-                      }
-                    });
-                  }
+                  if (!Array.isArray(q.questions)) return;
+                  ctx.push(`### [${q.lq_folder || 'عام'}] ${q.title}:`);
+                  q.questions.forEach((qs, i) => {
+                    ctx.push(`  س${i+1}: ${qs.question}`);
+                    if (qs.type === 'mcq' && Array.isArray(qs.options)) {
+                      qs.options.forEach((opt, idx) => {
+                        const mark = idx === qs.correct ? '✓' : ' ';
+                        ctx.push(`    ${mark} ${idx+1}) ${opt}`);
+                      });
+                    } else if (qs.type === 'tf') {
+                      ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح ✓' : 'خطأ ✓'}`);
+                    }
+                  });
                 });
               }
             }
@@ -6412,7 +6451,7 @@ ESSAY
         }
 
       } catch(err) {
-        console.warn('Bot context fetch error:', err);
+        console.warn('Bot context error:', err);
       }
 
       return ctx.join('\n');
@@ -6424,11 +6463,8 @@ ESSAY
       const div = document.createElement('div');
       div.className = `bot-msg ${role}`;
       div.innerHTML = `
-        <div class="bot-msg-avatar">
-          <i class="fas fa-${role === 'bot' ? 'robot' : 'user'}"></i>
-        </div>
-        <div class="bot-msg-bubble">${content}</div>
-      `;
+        <div class="bot-msg-avatar"><i class="fas fa-${role === 'bot' ? 'robot' : 'user'}"></i></div>
+        <div class="bot-msg-bubble">${content}</div>`;
       messagesEl.insertBefore(div, typing);
       messagesEl.scrollTop = messagesEl.scrollHeight;
       return div;
@@ -6438,69 +6474,61 @@ ESSAY
     window.sendBotMessage = async function() {
       const text = inputEl.value.trim();
       if (!text || botLoading) return;
+      if (!botDept) { showDeptPicker(); return; }
 
-      // Hide suggestions after first message
       document.getElementById('bot-suggestions').style.display = 'none';
-
-      // Append user message
       appendMsg('user', text);
       botHistory.push({ role: 'user', content: text });
       inputEl.value = '';
       inputEl.style.height = 'auto';
 
-      // Show typing
       botLoading = true;
       sendBtn.disabled = true;
       const typing = document.getElementById('bot-typing');
       typing.classList.add('show');
       messagesEl.scrollTop = messagesEl.scrollHeight;
 
-      // Update status
-      document.getElementById('bot-status-text').textContent = 'جاري جلب المناهج...';
+      const statusEl = document.getElementById('bot-status-text');
+      if (statusEl) statusEl.textContent = 'جاري جلب المحتوى...';
 
       try {
-        // Fetch curriculum context
         const curriculumCtx = await fetchCurriculumContext();
-        document.getElementById('bot-status-text').textContent = 'جاري التفكير...';
+        if (statusEl) statusEl.textContent = 'جاري التفكير...';
 
-        const grade     = window.currentGrade;
-        const term      = window.currentTerm;
-        const gradeName = (window.GRADE_NAMES && grade) ? (window.GRADE_NAMES[grade] || grade) : 'غير محدد';
-        const termName  = (window.TERM_NAMES && term)   ? (window.TERM_NAMES[term]   || term)  : 'غير محدد';
+        const deptName = botDept === 'general' ? 'إدارة أعمال عامة' : 'نظم ومعلومات';
+        const grade    = window.currentGrade;
+        const term     = window.currentTerm;
 
-        const systemPrompt = `أنت مساعد ذكي متخصص في مناهج كلية نظم ومعلومات.
-مهمتك الإجابة على أسئلة الطلاب بخصوص المحتوى التعليمي الموجود في المنصة فقط.
+        const systemPrompt = `أنت مساعد ذكي متخصص في مناهج كلية نظم ومعلومات، قسم ${deptName}.
 
-القسم الحالي: ${gradeName}
-الترم الحالي: ${termName}
+مهمتك الإجابة على أسئلة الطلاب بخصوص المحتوى التعليمي الخاص بقسم ${deptName} فقط.
 
 ${curriculumCtx
-  ? `محتوى المنصة المتاح:\n${curriculumCtx}`
-  : 'لا يوجد محتوى محدد في المنصة بعد أو القسم/الترم غير محددين.'
+  ? `محتوى المنصة المتاح لقسم ${deptName}:\n${curriculumCtx}`
+  : `لا يوجد محتوى محدد متاح لقسم ${deptName} بعد.`
 }
 
-تعليمات مهمة:
-- أجب بالعربية دائماً
-- استند فقط على المحتوى الموجود في المنصة
-- لو السؤال مش متعلق بالمناهج، قل للطالب إنك متخصص في مناهج المنصة بس
-- كن ودوداً ومفيداً وموجزاً
-- لو الطالب بيسأل عن سؤال محدد في الكويز، أدي الإجابة الصحيحة مع الشرح لو متاح
-- استخدم إيموجي بشكل معتدل لتحسين القراءة`;
+تعليمات مهمة جداً:
+1. أجب بالعربية دائماً
+2. للأسئلة في الامتحانات: اذكر الإجابة الصحيحة (المعلمة بـ ✓) بالضبط كما هي في المحتوى
+3. لا تخلط بين مناهج قسم ${deptName} وأي قسم آخر
+4. لو الطالب طلب الانتقال لمادة معينة، قوله يدور عليها في القائمة الجانبية للمنصة
+5. كن موجزاً ومفيداً وودوداً`;
 
-        // Build messages for API
         const messages = [];
-        // Add recent history (last 6 turns max)
-        const recentHistory = botHistory.slice(-7, -1); // exclude last user msg
-        recentHistory.forEach(h => {
+        botHistory.slice(-6, -1).forEach(h => {
           messages.push({ role: h.role === 'bot' ? 'assistant' : 'user', content: h.content });
         });
         messages.push({ role: 'user', content: text });
 
         const response = await fetch(`${window.SUPABASE_URL}/functions/v1/ai-proxy`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${window.SUPABASE_KEY}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+          },
           body: JSON.stringify({
-            model: 'claude-sonnet-4-6',
+            model: 'groq',
             max_tokens: 1000,
             system: systemPrompt,
             messages: messages
@@ -6508,13 +6536,8 @@ ${curriculumCtx
         });
 
         if (!response.ok) throw new Error('API error: ' + response.status);
-
         const data = await response.json();
-        const reply = data.content && data.content[0] && data.content[0].text
-          ? data.content[0].text
-          : '⚠️ حصل خطأ في الرد.';
-
-        // Format: convert newlines to <br> and **bold**
+        const reply = data.content?.[0]?.text || '⚠️ حصل خطأ في الرد.';
         const formatted = reply
           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
           .replace(/\n/g, '<br>');
@@ -6522,22 +6545,20 @@ ${curriculumCtx
         typing.classList.remove('show');
         appendMsg('bot', formatted);
         botHistory.push({ role: 'bot', content: reply });
-        document.getElementById('bot-status-text').textContent = 'جاهز للمساعدة — أسألني عن أي مادة';
+        const deptLabel = botDept === 'general' ? '🏫 إدارة أعمال' : '💻 نظم ومعلومات';
+        if (statusEl) statusEl.textContent = `قسم: ${deptLabel}`;
 
       } catch(err) {
         typing.classList.remove('show');
         appendMsg('bot', `⚠️ حصل خطأ: ${err.message || 'تعذر الاتصال'}. جرب تاني.`);
-        document.getElementById('bot-status-text').textContent = 'جاهز للمساعدة';
+        if (statusEl) statusEl.textContent = 'جاهز للمساعدة';
         console.error('Bot error:', err);
       } finally {
         botLoading = false;
         sendBtn.disabled = false;
-        setTimeout(() => inputEl.focus(), 100);
+        setTimeout(() => inputEl && inputEl.focus(), 100);
       }
     };
-
-    /* ── EXPOSE GRADE/TERM NAMES globally for bot context ── */
-    // (already defined in main script, just ensure bot can read them)
 
   })();
   </script>
