@@ -2534,12 +2534,43 @@ ESSAY
       </div>
       <div class="form-group">
         <label>نوع الملف</label>
-        <select id="lecture-file-type-input">
-          <option value="video">🎥 فيديو</option>
-          <option value="pdf">📄 PDF</option>
-          <option value="drive">📁 Google Drive</option>
-          <option value="link">🔗 رابط</option>
-        </select>
+        <div class="cft-select" id="lecture-file-type-select">
+          <button type="button" class="cft-trigger" id="lecture-file-type-trigger" onclick="toggleLectureFileTypeDropdown()">
+            <span class="cft-current">
+              <span class="cft-icon" id="lecture-file-type-current-icon">
+                <span class="cft-mini-badge" style="background:#ffab40"><i class="fas fa-video"></i></span>
+              </span>
+              <span id="lecture-file-type-current-label">فيديو</span>
+            </span>
+            <i class="fas fa-chevron-down cft-chevron"></i>
+          </button>
+          <div class="cft-options" id="lecture-file-type-options">
+            <div class="cft-option selected" data-value="video" onclick="selectLectureFileType('video')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#ffab40"><i class="fas fa-video"></i></span></span>
+              <span>فيديو</span>
+            </div>
+            <div class="cft-option" data-value="pdf" onclick="selectLectureFileType('pdf')">
+              <span class="cft-icon">
+                <svg viewBox="0 0 48 48" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+                  <rect width="48" height="48" rx="12" fill="#e02020"></rect>
+                  <path d="M9 3h19l11 11v21a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#ffffff" opacity="0.14"></path>
+                  <path d="M28 3v9a2 2 0 0 0 2 2h9" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"></path>
+                  <text x="24" y="31" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">PDF</text>
+                </svg>
+              </span>
+              <span>PDF</span>
+            </div>
+            <div class="cft-option" data-value="drive" onclick="selectLectureFileType('drive')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#00c853"><i class="fab fa-google-drive"></i></span></span>
+              <span>Google Drive</span>
+            </div>
+            <div class="cft-option" data-value="link" onclick="selectLectureFileType('link')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#6aa6ff"><i class="fas fa-link"></i></span></span>
+              <span>رابط</span>
+            </div>
+          </div>
+          <input type="hidden" id="lecture-file-type-input" value="video">
+        </div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeModal('lecture-modal')">إلغاء</button>
@@ -4607,7 +4638,7 @@ ESSAY
       if (!adminLecturesCurrentSubject) return toast('اختر مادة أولاً!', 'error');
       document.getElementById('lecture-title-input').value = '';
       document.getElementById('lecture-url-input').value = '';
-      document.getElementById('lecture-file-type-input').value = 'video';
+      setLectureFileTypeSelectValue('video');
       document.getElementById('lecture-modal-subject-label').textContent =
         `📁 ${adminLecturesCurrentSubject}`;
       document.getElementById('lecture-modal').classList.remove('hidden');
@@ -5903,10 +5934,54 @@ ESSAY
       }
     });
 
+    // ====================== CUSTOM FILE-TYPE DROPDOWN (مودال إضافة محاضرة) ======================
+    const LECTURE_FILE_TYPE_LABELS = { video: 'فيديو', pdf: 'PDF', drive: 'Google Drive', link: 'رابط' };
+
+    function toggleLectureFileTypeDropdown() {
+      const trigger = document.getElementById('lecture-file-type-trigger');
+      const options = document.getElementById('lecture-file-type-options');
+      const isOpen = options.classList.contains('open');
+      if (isOpen) {
+        options.classList.remove('open');
+        trigger.classList.remove('open');
+      } else {
+        options.classList.add('open');
+        trigger.classList.add('open');
+      }
+    }
+
+    function selectLectureFileType(value) {
+      document.getElementById('lecture-file-type-input').value = value;
+      document.getElementById('lecture-file-type-current-label').textContent = LECTURE_FILE_TYPE_LABELS[value] || value;
+      const chosenOption = document.querySelector(`#lecture-file-type-options .cft-option[data-value="${value}"]`);
+      const currentIconEl = document.getElementById('lecture-file-type-current-icon');
+      if (chosenOption && currentIconEl) {
+        currentIconEl.innerHTML = chosenOption.querySelector('.cft-icon').innerHTML;
+      }
+      document.querySelectorAll('#lecture-file-type-options .cft-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.value === value);
+      });
+      document.getElementById('lecture-file-type-options').classList.remove('open');
+      document.getElementById('lecture-file-type-trigger').classList.remove('open');
+    }
+
+    function setLectureFileTypeSelectValue(value) {
+      selectLectureFileType(value);
+    }
+
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('lecture-file-type-select');
+      if (!wrap) return;
+      if (!wrap.contains(e.target)) {
+        document.getElementById('lecture-file-type-options').classList.remove('open');
+        document.getElementById('lecture-file-type-trigger').classList.remove('open');
+      }
+    });
+
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', function(e) {
         if (e.target === this) {
-          const modals = ['pwd-modal', 'quiz-modal', 'question-modal', 'about-modal', 'review-modal', 'import-modal', 'resource-modal', 'owners-master-pwd-modal', 'owner-modal', 'owner-pwd-modal'];
+          const modals = ['pwd-modal', 'quiz-modal', 'question-modal', 'about-modal', 'review-modal', 'import-modal', 'resource-modal', 'owners-master-pwd-modal', 'owner-modal', 'owner-pwd-modal', 'lecture-modal'];
           modals.forEach(m => {
             if (this.id === m) closeModal(m);
           });
