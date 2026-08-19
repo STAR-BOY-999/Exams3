@@ -3601,14 +3601,18 @@ ESSAY
       const container = document.getElementById('summaries-list');
       let summariesList = _summariesCache;
       let owners = summaryOwnersPublicCache || [];
+      let matchedOwnerFiles = [];
 
       const q = summariesSearchQuery.trim();
       if (q) {
         summariesList = summariesList.filter(r => _matchesQuery(q, r.subject, r.title, r.author_name));
+        // الملخصات اللي جوا فولدرات أصحاب الملخصات واللي بتطابق كلمة البحث — هتتعرض كملفات مباشرة
+        matchedOwnerFiles = _summariesCache.filter(r => r.owner_id && _matchesQuery(q, r.subject, r.title));
+        // الفولدر نفسه يظهر بس لو اسم صاحبه هو اللي طابق البحث (مش لو ملخص جواه طابق)
         owners = owners.filter(o => _matchesQuery(q, o.name));
       }
 
-      if ((!summariesList || summariesList.length === 0) && owners.length === 0) {
+      if ((!summariesList || summariesList.length === 0) && owners.length === 0 && matchedOwnerFiles.length === 0) {
         const msg = q ? `لا توجد نتائج مطابقة لـ "${q}"` : 'لا توجد ملخصات متاحة حالياً';
         const icon = q ? 'fa-search' : 'fa-sticky-note';
         container.innerHTML = `<div class="empty"><i class="fas ${icon}"></i><p>${msg}</p></div>`;
@@ -3619,6 +3623,26 @@ ESSAY
       const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
 
       let html = '';
+
+      // ── ملخصات أصحاب الملخصات المطابقة للبحث — تظهر كملفات مباشرة، ضغطة واحدة تفتح الملف ──
+      if (matchedOwnerFiles.length > 0) {
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-search" style="margin-left:6px"></i>نتائج البحث</div>`;
+        html += `<div style="margin-bottom:1.4rem">`;
+        html += matchedOwnerFiles.map((r, i) => `
+          <a href="${r.url}" target="_blank" rel="noopener" class="resource-card"
+            style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;text-decoration:none;color:inherit">
+            <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
+              ${icons[r.file_type] || _pdfIconSvg()}
+            </div>
+            <div class="resource-info" style="flex:1">
+              <h4>${r.title || r.subject}</h4>
+              ${r.author_name ? `<p style="color:var(--amber)"><i class="fas fa-user" style="margin-left:3px;font-size:0.75rem"></i>${r.author_name}</p>` : '<p>ملخص</p>'}
+            </div>
+            <i class="fas fa-download" style="color:#00e676;font-size:1.1rem;flex-shrink:0"></i>
+          </a>
+        `).join('');
+        html += `</div>`;
+      }
 
       // ── فولدرات أصحاب الملخصات ──
       if (owners.length > 0) {
