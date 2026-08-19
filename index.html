@@ -121,482 +121,6 @@
       color: var(--text);
     }
 
-    /* ═══════════════════════════════════════════════════════════════
-       🤖 SPACE BOT — DRAGGABLE AI ASSISTANT
-    ═══════════════════════════════════════════════════════════════ */
-
-    /* ── DRAGGABLE BOT ICON ── */
-    #space-bot-icon {
-      position: fixed;
-      bottom: 90px;
-      left: 24px;
-      width: 62px;
-      height: 62px;
-      z-index: 9999;
-      cursor: grab;
-      user-select: none;
-      touch-action: none;
-      filter: drop-shadow(0 0 18px rgba(56,189,248,0.55));
-      transition: filter 0.3s, transform 0.2s;
-    }
-    #space-bot-icon:hover {
-      filter: drop-shadow(0 0 28px rgba(56,189,248,0.9)) drop-shadow(0 0 50px rgba(45,212,191,0.4));
-      transform: scale(1.08);
-    }
-    #space-bot-icon:active { cursor: grabbing; transform: scale(1.05); }
-    #space-bot-icon.bot-pulse svg {
-      animation: botPulse 2.2s ease-in-out infinite;
-    }
-    @keyframes botPulse {
-      0%,100% { transform: translateY(0) rotate(0deg); }
-      25%      { transform: translateY(-6px) rotate(-4deg); }
-      75%      { transform: translateY(-3px) rotate(3deg); }
-    }
-    @keyframes botOrbit {
-      to { transform: rotate(360deg); }
-    }
-    @keyframes antennaBlink {
-      0%,90%,100% { opacity:1; }
-      95%         { opacity:0.2; }
-    }
-    .bot-antenna-light { animation: antennaBlink 2s ease-in-out infinite; }
-
-    /* ── NOTIFICATION BADGE ── */
-    #bot-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 18px;
-      height: 18px;
-      background: var(--teal);
-      border-radius: 50%;
-      border: 2px solid var(--bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.6rem;
-      font-weight: 900;
-      color: #020208;
-      animation: badgePop 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    @keyframes badgePop {
-      from { transform: scale(0); }
-      to   { transform: scale(1); }
-    }
-
-    /* ── SIDEBAR CHAT ── */
-    #bot-sidebar {
-      position: fixed;
-      bottom: 90px;
-      left: 16px;
-      width: 320px;
-      height: 460px;
-      z-index: 9998;
-      display: flex;
-      flex-direction: column;
-      background: rgba(4,4,16,0.97);
-      border: 1px solid rgba(56,189,248,0.2);
-      border-radius: 18px;
-      box-shadow: 0 8px 40px rgba(0,0,0,0.8), 0 0 60px rgba(56,189,248,0.08);
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.85) translateY(10px);
-      transform-origin: bottom left;
-      transition: opacity 0.3s cubic-bezier(0.22,1,0.36,1), transform 0.3s cubic-bezier(0.22,1,0.36,1);
-      backdrop-filter: blur(40px) saturate(180%);
-      -webkit-backdrop-filter: blur(40px) saturate(180%);
-      overflow: hidden;
-    }
-    [data-theme="light"] #bot-sidebar {
-      background: rgba(248,251,255,0.97);
-      border-color: rgba(3,105,161,0.2);
-      box-shadow: 0 8px 40px rgba(0,20,80,0.15), 0 0 40px rgba(3,105,161,0.06);
-    }
-    #bot-sidebar.open {
-      opacity: 1;
-      pointer-events: all;
-      transform: scale(1) translateY(0);
-    }
-    /* Desktop resize — flip direction so user drags top-right corner */
-    @media (min-width: 481px) {
-      #bot-sidebar {
-        resize: both;
-        overflow: auto;
-        min-width: 240px;
-        max-width: 520px;
-        min-height: 280px;
-        max-height: calc(100vh - 100px);
-        /* override overflow:hidden so resize handle shows */
-        overflow: hidden;
-      }
-      #bot-sidebar.open {
-        overflow: auto;
-      }
-      /* Custom resize corner hint */
-      #bot-sidebar::after {
-        content: '';
-        position: absolute;
-        bottom: 4px;
-        left: 4px;
-        width: 12px;
-        height: 12px;
-        border-bottom: 2px solid rgba(56,189,248,0.4);
-        border-left: 2px solid rgba(56,189,248,0.4);
-        border-radius: 0 0 0 4px;
-        pointer-events: none;
-      }
-    }
-    /* Resize handle bar */
-    #bot-resize-handle {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 6px;
-      cursor: ns-resize;
-      z-index: 10;
-      background: transparent;
-      border-radius: 18px 18px 0 0;
-    }
-    #bot-resize-handle:hover {
-      background: rgba(56,189,248,0.12);
-    }
-
-    /* Mobile: full-width floating but not full screen */
-    @media (max-width: 480px) {
-      #bot-sidebar {
-        left: 8px !important;
-        right: 8px !important;
-        width: calc(100vw - 16px) !important;
-        bottom: 80px !important;
-        top: auto !important;
-        height: 65vh !important;
-        max-height: 65vh !important;
-        transform-origin: bottom center;
-      }
-    }
-
-
-
-    /* ── SIDEBAR HEADER ── */
-    #bot-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(56,189,248,0.08);
-      background: rgba(6,6,20,0.85);
-      flex-shrink: 0;
-    }
-    [data-theme="light"] #bot-header {
-      background: rgba(240,248,255,0.9);
-      border-bottom-color: rgba(3,105,161,0.1);
-    }
-    #bot-header-avatar {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(45,212,191,0.2));
-      border: 1px solid rgba(56,189,248,0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    #bot-header-info { flex: 1; }
-    #bot-header-info h4 {
-      font-size: 0.92rem;
-      font-weight: 900;
-      margin: 0 0 2px;
-      color: var(--accent);
-    }
-    #bot-header-info p {
-      font-size: 0.72rem;
-      color: var(--text-dim);
-      margin: 0;
-    }
-    #bot-status-dot {
-      width: 7px; height: 7px;
-      background: var(--teal);
-      border-radius: 50%;
-      display: inline-block;
-      margin-left: 5px;
-      box-shadow: 0 0 8px rgba(45,212,191,0.8);
-      animation: statusBlink 2s ease-in-out infinite;
-    }
-    @keyframes statusBlink {
-      0%,100% { opacity:1; box-shadow: 0 0 8px rgba(45,212,191,0.8); }
-      50%      { opacity:0.5; box-shadow: 0 0 3px rgba(45,212,191,0.3); }
-    }
-    #bot-close-btn {
-      width: 32px; height: 32px;
-      border-radius: 9px;
-      border: 1px solid rgba(56,189,248,0.15);
-      background: rgba(56,189,248,0.05);
-      color: var(--text-dim);
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.85rem;
-      transition: all 0.25s;
-      flex-shrink: 0;
-    }
-    #bot-close-btn:hover { background: rgba(248,113,113,0.12); color: var(--red); border-color: rgba(248,113,113,0.3); }
-
-    /* ── CONTEXT SELECTOR ── */
-    #bot-context-bar {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(56,189,248,0.06);
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-      background: rgba(4,4,14,0.6);
-    }
-    [data-theme="light"] #bot-context-bar { background: rgba(235,245,255,0.7); }
-    .bot-ctx-chip {
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1px solid rgba(56,189,248,0.15);
-      background: rgba(56,189,248,0.05);
-      color: var(--text-dim);
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.22s;
-      font-family: 'Cairo', sans-serif;
-    }
-    .bot-ctx-chip:hover, .bot-ctx-chip.active {
-      background: rgba(56,189,248,0.12);
-      border-color: rgba(56,189,248,0.4);
-      color: var(--accent);
-    }
-    .bot-ctx-chip.active {
-      box-shadow: 0 0 12px rgba(56,189,248,0.15);
-    }
-
-    /* ── MESSAGES AREA ── */
-    #bot-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      scroll-behavior: smooth;
-    }
-    #bot-messages::-webkit-scrollbar { width: 3px; }
-    #bot-messages::-webkit-scrollbar-thumb { background: rgba(56,189,248,0.2); border-radius: 4px; }
-
-    .bot-msg {
-      display: flex;
-      gap: 8px;
-      animation: msgFadeIn 0.35s cubic-bezier(0.22,1,0.36,1);
-    }
-    @keyframes msgFadeIn {
-      from { opacity:0; transform: translateY(10px); }
-      to   { opacity:1; transform: translateY(0); }
-    }
-    .bot-msg.user { flex-direction: row-reverse; }
-
-    .bot-msg-avatar {
-      width: 30px;
-      height: 30px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-    .bot-msg.bot .bot-msg-avatar {
-      background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(45,212,191,0.15));
-      border: 1px solid rgba(56,189,248,0.25);
-      color: var(--accent);
-    }
-    .bot-msg.user .bot-msg-avatar {
-      background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(56,189,248,0.1));
-      border: 1px solid rgba(167,139,250,0.25);
-      color: var(--violet);
-    }
-
-    .bot-msg-bubble {
-      max-width: 82%;
-      padding: 10px 14px;
-      border-radius: 14px;
-      font-size: 0.87rem;
-      line-height: 1.7;
-      font-weight: 500;
-    }
-    .bot-msg.bot .bot-msg-bubble {
-      background: rgba(56,189,248,0.07);
-      border: 1px solid rgba(56,189,248,0.12);
-      color: var(--text);
-      border-radius: 4px 14px 14px 14px;
-    }
-    [data-theme="light"] .bot-msg.bot .bot-msg-bubble {
-      background: rgba(3,105,161,0.06);
-      border-color: rgba(3,105,161,0.12);
-    }
-    .bot-msg.user .bot-msg-bubble {
-      background: rgba(45,212,191,0.1);
-      border: 1px solid rgba(45,212,191,0.2);
-      color: var(--text);
-      border-radius: 14px 4px 14px 14px;
-    }
-
-    /* ── TYPING INDICATOR ── */
-    #bot-typing {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      padding: 0 4px;
-    }
-    #bot-typing.show { display: flex; }
-    .typing-dots {
-      display: flex;
-      gap: 4px;
-      background: rgba(56,189,248,0.07);
-      border: 1px solid rgba(56,189,248,0.12);
-      padding: 10px 14px;
-      border-radius: 4px 14px 14px 14px;
-    }
-    .typing-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: typingBounce 1.2s ease-in-out infinite;
-    }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes typingBounce {
-      0%,60%,100% { transform: translateY(0); opacity:0.4; }
-      30%          { transform: translateY(-6px); opacity:1; }
-    }
-
-    /* ── SUGGESTED QUESTIONS ── */
-    #bot-suggestions {
-      padding: 0 14px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .bot-suggestion {
-      padding: 7px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(56,189,248,0.12);
-      background: rgba(56,189,248,0.04);
-      color: var(--text-dim);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: right;
-      transition: all 0.22s;
-      font-family: 'Cairo', sans-serif;
-    }
-    .bot-suggestion:hover {
-      background: rgba(56,189,248,0.1);
-      border-color: rgba(56,189,248,0.3);
-      color: var(--accent);
-      transform: translateX(4px);
-    }
-
-    /* ── INPUT AREA ── */
-    #bot-input-area {
-      padding: 12px 14px;
-      border-top: 1px solid rgba(56,189,248,0.08);
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      flex-shrink: 0;
-      background: rgba(4,4,14,0.7);
-    }
-    [data-theme="light"] #bot-input-area {
-      background: rgba(240,248,255,0.9);
-      border-top-color: rgba(3,105,161,0.1);
-    }
-    #bot-input {
-      flex: 1;
-      background: rgba(10,10,28,0.8);
-      border: 1px solid rgba(56,189,248,0.12);
-      border-radius: 12px;
-      padding: 10px 14px;
-      color: var(--text);
-      font-family: 'Cairo', sans-serif;
-      font-size: 0.87rem;
-      resize: none;
-      outline: none;
-      max-height: 100px;
-      min-height: 42px;
-      transition: border-color 0.25s, box-shadow 0.25s;
-      line-height: 1.5;
-    }
-    [data-theme="light"] #bot-input {
-      background: rgba(238,247,255,0.9);
-      border-color: rgba(3,105,161,0.15);
-      color: #0a1628;
-    }
-    #bot-input:focus {
-      border-color: rgba(56,189,248,0.4);
-      box-shadow: 0 0 20px rgba(56,189,248,0.08);
-    }
-    #bot-input::placeholder { color: var(--text-muted); }
-    #bot-send-btn {
-      width: 40px; height: 40px;
-      border-radius: 11px;
-      border: none;
-      background: linear-gradient(135deg, var(--teal), var(--accent-dim));
-      color: #fff;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.25s;
-      flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(45,212,191,0.25);
-    }
-    #bot-send-btn:hover { transform: scale(1.08); box-shadow: 0 6px 22px rgba(45,212,191,0.4); }
-    #bot-send-btn:active { transform: scale(0.96); }
-    #bot-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-    /* ── CLEAR BTN ── */
-    #bot-clear-btn {
-      padding: 4px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(248,113,113,0.2);
-      background: rgba(248,113,113,0.05);
-      color: var(--red);
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.22s;
-      font-family: 'Cairo', sans-serif;
-    }
-    #bot-clear-btn:hover { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); }
-
-    /* ── LOADING STATE IN MESSAGES ── */
-    .bot-loading-bar {
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--teal), var(--accent), transparent);
-      background-size: 200% 100%;
-      animation: loadingFlow 1.4s linear infinite;
-      border-radius: 2px;
-      margin-top: 6px;
-    }
-    @keyframes loadingFlow {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* ── OVERLAY ── */
-    #bot-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9997;
-      background: rgba(0,0,0,0.3);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
-    }
-    #bot-overlay.show { opacity: 1; pointer-events: all; }
 
     /* ── MOBILE ── */
     @media (max-width: 480px) {
@@ -949,6 +473,52 @@
       font-size: 0.93rem;
       animation: fadeUp 0.55s 0.1s ease both;
     }
+
+    /* ─── SEARCH BAR (inside each section) ─── */
+    .content-search-wrap {
+      position: relative;
+      max-width: 480px;
+      margin: 0 auto 1.8rem;
+      animation: fadeUp 0.5s 0.12s ease both;
+    }
+    .content-search-wrap i.fa-search {
+      position: absolute;
+      top: 50%; right: 18px;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      pointer-events: none;
+    }
+    .content-search-input {
+      width: 100%;
+      padding: 0.85rem 3rem 0.85rem 1.2rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .content-search-input::placeholder { color: var(--text-muted); }
+    .content-search-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .content-search-clear {
+      position: absolute;
+      top: 50%; left: 12px;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: none;
+      background: none; border: none;
+      padding: 4px;
+    }
+    .content-search-wrap.has-value .content-search-clear { display: block; }
 
     /* ─── GLASS CARD BASE ─── */
     .glass-card {
@@ -1487,6 +1057,36 @@
     .form-group select option { background: #080818; color: var(--text); }
     [data-theme="light"] .form-group select option { background: #f0f6ff; }
 
+    /* ─── CUSTOM FILE-TYPE SELECT (بديل الـ select الأصلي عشان نقدر نحط أيقونات SVG جوه) ─── */
+    .cft-select { position: relative; }
+    .cft-trigger {
+      width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--surface2); border: 1px solid rgba(120,160,255,0.1); border-radius: var(--radius-sm);
+      padding: 9px 14px; color: var(--text); font-family: 'Cairo', sans-serif; font-size: 0.93rem;
+      cursor: pointer; transition: border-color 0.28s, box-shadow 0.28s; backdrop-filter: blur(10px);
+    }
+    .cft-trigger:hover, .cft-trigger.open { border-color: rgba(45,212,191,0.4); box-shadow: 0 0 22px rgba(45,212,191,0.09); }
+    .cft-trigger .cft-current { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .cft-trigger .cft-current .cft-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cft-trigger .cft-chevron { transition: transform 0.25s; color: var(--text-muted); font-size: 0.85rem; }
+    .cft-trigger.open .cft-chevron { transform: rotate(180deg); }
+    .cft-options {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
+      background: #0b0b1c; border: 1px solid rgba(120,160,255,0.16); border-radius: var(--radius-sm);
+      overflow: hidden; box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+      opacity: 0; transform: translateY(-6px); pointer-events: none; transition: all 0.2s;
+    }
+    [data-theme="light"] .cft-options { background: #f0f6ff; }
+    .cft-options.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .cft-option {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer;
+      font-weight: 700; font-size: 0.92rem; color: var(--text); transition: background 0.18s;
+    }
+    .cft-option:hover { background: rgba(120,160,255,0.12); }
+    .cft-option.selected { background: var(--accent); color: #fff; }
+    .cft-option .cft-icon { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cft-mini-badge { width: 100%; height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.72rem; }
+
     .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; }
     .hidden { display: none !important; }
 
@@ -1802,21 +1402,14 @@
     /* تخطيط المربع للأقسام - الامتحانات في المنتصف */
     .sections-box-layout {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 1rem;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1.1rem;
       margin-top: 2rem;
-      max-width: 760px;
+      max-width: 620px;
       margin-left: auto;
       margin-right: auto;
     }
-
-    /* الأقسام الأربعة في زوايا المربع */
-    .sections-box-layout .sec-top-right    { grid-column: 1; grid-row: 1; }
-    .sections-box-layout .sec-top-left     { grid-column: 3; grid-row: 1; }
-    .sections-box-layout .sec-center       { grid-column: 2; grid-row: 1 / span 3; display:flex; align-items:center; justify-content:center; }
-    .sections-box-layout .sec-bottom-right { grid-column: 1; grid-row: 3; }
-    .sections-box-layout .sec-bottom-left  { grid-column: 3; grid-row: 3; }
 
     /* قسم الامتحانات المركزي */
     .sec-center-card {
@@ -1848,7 +1441,7 @@
       transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), box-shadow 0.4s, border-color 0.4s;
       position: relative; overflow: hidden; text-align: center;
       animation: fadeUp 0.55s ease both;
-      min-height: 195px; display: flex; flex-direction: column;
+      aspect-ratio: 1 / 1; width: 100%; display: flex; flex-direction: column;
       backdrop-filter: blur(16px);
     }
 
@@ -1857,27 +1450,27 @@
       transition: opacity 0.4s; border-radius: 22px; pointer-events: none;
     }
 
-    .section-card-top { height: 2px; width: 100%; border-radius: 22px 22px 0 0; background-size: 300% 100%; animation: gradientShift 5s ease infinite; }
+    .section-card-top { height: 3px; width: 100%; border-radius: 22px 22px 0 0; background-size: 300% 100%; animation: gradientShift 5s ease infinite; }
 
-    .section-card-body { flex: 1; padding: 1.6rem 1.2rem 1.4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 1; }
+    .section-card-body { flex: 1; padding: 1.5rem 1rem 1.2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 1; }
 
     .section-card:hover { transform: translateY(-10px) scale(1.02); }
     .section-card:hover::before { opacity: 1; }
 
     .section-icon-wrap {
-      width: 56px; height: 56px; border-radius: 16px;
+      width: 54px; height: 54px; border-radius: 15px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; margin-bottom: 0.9rem;
+      font-size: 1.4rem; margin-bottom: 0.8rem;
       transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
       position: relative; z-index: 1;
     }
     .section-card:hover .section-icon-wrap { transform: scale(1.2) rotate(-8deg); }
 
-    .section-label { font-size: 1.04rem; font-weight: 800; position: relative; z-index: 1; }
-    .section-sub   { font-size: 0.79rem; color: var(--text-dim); margin-top: 5px; line-height: 1.5; position: relative; z-index: 1; }
+    .section-label { font-size: 1.02rem; font-weight: 800; position: relative; z-index: 1; }
+    .section-sub   { font-size: 0.76rem; color: var(--text-dim); margin-top: 5px; line-height: 1.4; position: relative; z-index: 1; }
 
     .section-arrow {
-      margin-top: 0.9rem; font-size: 0.79rem; font-weight: 700;
+      margin-top: 0.8rem; font-size: 0.76rem; font-weight: 700;
       display: flex; align-items: center; gap: 5px;
       opacity: 0; transform: translateY(10px); transition: all 0.35s ease; position: relative; z-index: 1;
     }
@@ -2019,13 +1612,7 @@
       .question-card { padding: 1.5rem; }
       .grades-grid  { grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
       .sections-grid{ grid-template-columns: repeat(2,1fr); gap: 0.75rem; }
-      .sections-box-layout { grid-template-columns: 1fr 1fr; grid-template-rows: auto; gap: 0.75rem; }
-      .sections-box-layout .sec-top-right    { grid-column: 1; grid-row: 1; }
-      .sections-box-layout .sec-top-left     { grid-column: 2; grid-row: 1; }
-      .sections-box-layout .sec-center       { grid-column: 1 / span 2; grid-row: 2; }
-      .sections-box-layout .sec-bottom-right { grid-column: 1; grid-row: 3; }
-      .sections-box-layout .sec-bottom-left  { grid-column: 2; grid-row: 3; }
-      .sections-box-layout > div:not([class]) { display: none; }
+      .sections-box-layout { gap: 0.9rem; }
       .page-title { font-size: 1.75rem; }
       #main { padding: 1.2rem 0.7rem; }
 
@@ -2350,23 +1937,7 @@
     <div id="grade-selection-page">
       <h2 class="page-title" style="animation-delay:0s">🎓 كلية <span>نظم ومعلومات</span></h2>
       <p class="page-sub" style="animation-delay:0.1s">اختر القسم</p>
-      <div class="grades-grid" style="max-width:600px;grid-template-columns:1fr 1fr">
-
-        <div class="grade-card grade-card-1" onclick="selectGrade('general')" style="animation-delay:0.1s;min-height:240px">
-          <div class="grade-card-top"></div>
-          <div class="grade-card-body">
-            <div class="grade-icon-wrap">
-              <i class="fas fa-globe" style="color:#2dd4bf"></i>
-            </div>
-            <div class="grade-num" style="font-size:2rem;margin-bottom:0.5rem">🌐</div>
-            <div class="grade-label">عامة</div>
-            <div class="grade-sub">المواد العامة المشتركة</div>
-            <div class="grade-arrow">
-              <span>ادخل</span>
-              <i class="fas fa-arrow-left"></i>
-            </div>
-          </div>
-        </div>
+      <div class="grades-grid" style="max-width:340px;grid-template-columns:1fr">
 
         <div class="grade-card grade-card-2" onclick="selectGrade('bis')" style="animation-delay:0.17s;min-height:240px">
           <div class="grade-card-top"></div>
@@ -2394,6 +1965,9 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current" id="term-breadcrumb-grade"></span>
       </div>
+      <button class="btn btn-ghost" onclick="showGradeSelection()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem" id="term-page-title"></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:0">اختر الفصل الدراسي</p>
       <div class="grades-grid" style="max-width:600px;grid-template-columns:1fr 1fr;margin-top:1.5rem">
@@ -2436,91 +2010,60 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current" id="sections-breadcrumb-term"></span>
       </div>
+      <button class="btn btn-ghost" onclick="showTermSelection()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem" id="sections-title"></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:0">اختر القسم</p>
 
-      <!-- تخطيط المربع: 4 أقسام حول الامتحانات في المنتصف -->
+      <!-- تخطيط 2×2: الامتحانات، المحاضرات، الملخصات، أسئلة المحاضرات -->
       <div class="sections-box-layout">
 
-        <!-- أعلى يمين: الكتب -->
-        <div class="sec-top-right">
-          <div class="section-card sec-books" onclick="openSection('books')" style="animation-delay:0.08s">
-            <div class="section-card-top"></div>
-            <div class="section-card-body">
-              <div class="section-icon-wrap">
-                <i class="fas fa-book-open" style="color:#6aa6ff"></i>
-              </div>
-              <div class="section-label">الكتب</div>
-              <div class="section-sub">الكتب والمراجع</div>
-              <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
+        <div class="section-card sec-exams" onclick="openSection('exams')" style="animation-delay:0.05s">
+          <div class="section-card-top"></div>
+          <div class="section-card-body">
+            <div class="section-icon-wrap">
+              <i class="fas fa-file-alt" style="color:#00e676"></i>
             </div>
+            <div class="section-label">الامتحانات</div>
+            <div class="section-sub">أسئلة الامتحانات السابقة</div>
+            <div class="section-arrow"><span>ابدأ الاختبار</span><i class="fas fa-arrow-left"></i></div>
           </div>
         </div>
 
-        <!-- المنتصف: الامتحانات (يمتد 3 صفوف) -->
-        <div class="sec-center">
-          <div class="sec-center-card sec-exams" onclick="openSection('exams')" style="animation-delay:0.05s">
-            <div class="section-card-top" style="height:3px;background:linear-gradient(90deg,#2dd4bf,#22d3ee,#34d399,#2dd4bf)"></div>
-            <div class="section-card-body" style="padding:2rem 1.2rem">
-              <div class="section-icon-wrap" style="width:64px;height:64px;font-size:1.8rem;margin-bottom:1rem">
-                <i class="fas fa-file-alt" style="color:#00e676"></i>
-              </div>
-              <div class="section-label" style="font-size:1.2rem">الامتحانات</div>
-              <div class="section-sub">أسئلة الامتحانات السابقة</div>
-              <div class="section-arrow" style="opacity:1;transform:none;margin-top:1.2rem">
-                <span>ابدأ الاختبار</span>
-                <i class="fas fa-arrow-left"></i>
-              </div>
+        <div class="section-card sec-lectures" onclick="openSection('lectures')" style="animation-delay:0.1s">
+          <div class="section-card-top"></div>
+          <div class="section-card-body">
+            <div class="section-icon-wrap">
+              <i class="fas fa-video" style="color:#ffab40"></i>
             </div>
+            <div class="section-label">المحاضرات</div>
+            <div class="section-sub">محاضرات كل مادة</div>
+            <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
           </div>
         </div>
 
-        <!-- أعلى يسار: المحاضرات -->
-        <div class="sec-top-left">
-          <div class="section-card sec-lectures" onclick="openSection('lectures')" style="animation-delay:0.12s">
-            <div class="section-card-top"></div>
-            <div class="section-card-body">
-              <div class="section-icon-wrap">
-                <i class="fas fa-video" style="color:#ffab40"></i>
-              </div>
-              <div class="section-label">المحاضرات</div>
-              <div class="section-sub">محاضرات كل مادة</div>
-              <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
+        <div class="section-card sec-summaries" onclick="openSection('summaries')" style="animation-delay:0.15s">
+          <div class="section-card-top"></div>
+          <div class="section-card-body">
+            <div class="section-icon-wrap">
+              <i class="fas fa-sticky-note" style="color:#fbbf24"></i>
             </div>
+            <div class="section-label">الملخصات</div>
+            <div class="section-sub">ملخصات الطلاب</div>
+            <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
           </div>
         </div>
 
-        <!-- مسافة صف أوسط يمين / يسار (فارغ — الامتحانات تملأ العمود الأوسط) -->
-        <div style="min-height:20px"></div>
-        <div style="min-height:20px"></div>
-
-        <!-- أسفل يمين: الملخصات -->
-        <div class="sec-bottom-right">
-          <div class="section-card sec-summaries" onclick="openSection('summaries')" style="animation-delay:0.18s">
-            <div class="section-card-top"></div>
-            <div class="section-card-body">
-              <div class="section-icon-wrap">
-                <i class="fas fa-sticky-note" style="color:#fbbf24"></i>
-              </div>
-              <div class="section-label">الملخصات</div>
-              <div class="section-sub">ملخصات الطلاب</div>
-              <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
+        <div class="section-card sec-lquiz" onclick="openSection('lecture-quizzes')" style="animation-delay:0.2s">
+          <div class="section-card-top"></div>
+          <div class="section-card-body">
+            <div class="section-icon-wrap">
+              <i class="fas fa-question-circle" style="color:#ce93d8"></i>
             </div>
-          </div>
-        </div>
-
-        <!-- أسفل يسار: أسئلة المحاضرات -->
-        <div class="sec-bottom-left">
-          <div class="section-card sec-lquiz" onclick="openSection('lecture-quizzes')" style="animation-delay:0.22s">
-            <div class="section-card-top"></div>
-            <div class="section-card-body">
-              <div class="section-icon-wrap">
-                <i class="fas fa-question-circle" style="color:#ce93d8"></i>
-              </div>
-              <div class="section-label">أسئلة المحاضرات</div>
-              <div class="section-sub">أسئلة على كل محاضرة</div>
-              <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
-            </div>
+            <div class="section-label">أسئلة المحاضرات</div>
+            <div class="section-sub">أسئلة على كل محاضرة</div>
+            <div class="section-arrow"><span>افتح</span><i class="fas fa-arrow-left"></i></div>
           </div>
         </div>
 
@@ -2538,6 +2081,9 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current">الامتحانات</span>
       </div>
+      <button class="btn btn-ghost" onclick="showSectionsPage()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <div class="loading" id="home-loading">
         <div class="spinner"></div>
         <p>جاري تحميل الامتحانات...</p>
@@ -2545,6 +2091,11 @@
       <div id="home-content" class="hidden">
         <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">📝 <span>الامتحانات</span></h2>
         <p class="page-sub" style="text-align:right">اختر الامتحان</p>
+        <div class="content-search-wrap" id="exams-search-wrap">
+          <input type="text" class="content-search-input" id="exams-search" placeholder="ابحث باسم الامتحان..." oninput="filterExams(this.value)">
+          <i class="fas fa-search"></i>
+          <button class="content-search-clear" onclick="clearSearch('exams-search')"><i class="fas fa-times"></i></button>
+        </div>
         <div id="quizzes-list"></div>
       </div>
     </div>
@@ -2560,6 +2111,9 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current">الكتب</span>
       </div>
+      <button class="btn btn-ghost" onclick="showSectionsPage()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">📚 <span>الكتب</span></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">الكتب والمراجع الدراسية</p>
       <div id="books-loading" class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>
@@ -2577,8 +2131,16 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current">المحاضرات</span>
       </div>
+      <button class="btn btn-ghost" onclick="showSectionsPage()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">🎥 <span>المحاضرات</span></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:0">اختر المادة</p>
+      <div class="content-search-wrap" id="lectures-search-wrap" style="margin-top:1.2rem">
+        <input type="text" class="content-search-input" id="lectures-search" placeholder="ابحث باسم المادة أو المحاضرة..." oninput="filterLectures(this.value)">
+        <i class="fas fa-search"></i>
+        <button class="content-search-clear" onclick="clearSearch('lectures-search')"><i class="fas fa-times"></i></button>
+      </div>
       <div id="lectures-loading" class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>
       <div id="lectures-subjects-list" class="hidden subjects-grid"></div>
     </div>
@@ -2594,8 +2156,16 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current">أسئلة المحاضرات</span>
       </div>
+      <button class="btn btn-ghost" onclick="showSectionsPage()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">❓ <span>أسئلة المحاضرات</span></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:0">اختر المادة</p>
+      <div class="content-search-wrap" id="lq-search-wrap" style="margin-top:1.2rem">
+        <input type="text" class="content-search-input" id="lq-search" placeholder="ابحث باسم المادة أو الاختبار..." oninput="filterLq(this.value)">
+        <i class="fas fa-search"></i>
+        <button class="content-search-clear" onclick="clearSearch('lq-search')"><i class="fas fa-times"></i></button>
+      </div>
       <div id="lq-loading" class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>
       <div id="lq-subjects-list" class="hidden subjects-grid"></div>
     </div>
@@ -2611,8 +2181,16 @@
         <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
         <span class="current">الملخصات</span>
       </div>
+      <button class="btn btn-ghost" onclick="showSectionsPage()" style="margin-bottom:1rem">
+        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
+      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">📝 <span>الملخصات</span></h2>
-      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">ملخصات الطلاب لكل مادة</p>
+      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">أصحاب الملخصات وملخصات كل مادة</p>
+      <div class="content-search-wrap" id="summaries-search-wrap" style="margin-top:-0.8rem">
+        <input type="text" class="content-search-input" id="summaries-search" placeholder="ابحث باسم المادة، الملخص، أو صاحب الملخص..." oninput="filterSummaries(this.value)">
+        <i class="fas fa-search"></i>
+        <button class="content-search-clear" onclick="clearSearch('summaries-search')"><i class="fas fa-times"></i></button>
+      </div>
       <div id="summaries-loading" class="loading"><div class="spinner"></div><p>جاري التحميل...</p></div>
       <div id="summaries-list" class="hidden"></div>
     </div>
@@ -2714,7 +2292,6 @@
       <!-- Section tabs -->
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
         <button class="grade-tab active" id="admin-tab-exams" onclick="switchAdminSection('exams')"><i class="fas fa-file-alt"></i> الامتحانات</button>
-        <button class="grade-tab" id="admin-tab-books" onclick="switchAdminSection('books')"><i class="fas fa-book"></i> الكتب</button>
         <button class="grade-tab" id="admin-tab-lectures" onclick="switchAdminSection('lectures')"><i class="fas fa-video"></i> المحاضرات</button>
         <button class="grade-tab" id="admin-tab-lecture-quizzes" onclick="switchAdminSection('lecture-quizzes')"><i class="fas fa-question-circle"></i> أسئلة المحاضرات</button>
         <button class="grade-tab" id="admin-tab-summaries" onclick="switchAdminSection('summaries')"><i class="fas fa-sticky-note"></i> الملخصات</button>
@@ -2722,16 +2299,6 @@
       <!-- Exams section -->
       <div id="admin-section-exams">
         <div id="admin-quizzes-list"></div>
-      </div>
-      <!-- Books section -->
-      <div id="admin-section-books" class="hidden">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-          <p style="color:var(--text-dim);font-size:0.9rem">إضافة روابط الكتب والمراجع</p>
-          <button class="btn btn-primary" onclick="showAddResourceModal('books')">
-            <i class="fas fa-plus"></i> إضافة كتاب
-          </button>
-        </div>
-        <div id="admin-books-list"></div>
       </div>
       <!-- Lectures section -->
       <div id="admin-section-lectures" class="hidden">
@@ -2793,14 +2360,20 @@
       </div>
       <!-- Summaries section -->
       <div id="admin-section-summaries" class="hidden">
-        <!-- View 1: قائمة المواد (المجلدات) -->
+        <!-- View 1: قائمة المواد + أصحاب الملخصات (كل حاجة في نفس الواجهة) -->
         <div id="admin-summaries-subjects-view">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-            <p style="color:var(--text-dim);font-size:0.9rem">اختر مادة أو أضف مادة جديدة</p>
-            <button class="btn btn-primary" onclick="showAddSubjectModal('summaries')">
-              <i class="fas fa-folder-plus"></i> إضافة مادة
-            </button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+            <p style="color:var(--text-dim);font-size:0.9rem">المواد وأصحاب الملخصات — كل واحد فولدر بيدخله لوحده</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="showAddOwnerModal()">
+                <i class="fas fa-user-plus"></i> إضافة صاحب ملخص
+              </button>
+              <button class="btn btn-primary" onclick="showAddSubjectModal('summaries')">
+                <i class="fas fa-folder-plus"></i> إضافة مادة
+              </button>
+            </div>
           </div>
+          <div id="admin-owners-list"></div>
           <div id="admin-summaries-subjects-list"></div>
         </div>
         <!-- View 2: الملخصات داخل المادة -->
@@ -2818,6 +2391,22 @@
             <span id="admin-summaries-current-subject"></span>
           </div>
           <div id="admin-summaries-list"></div>
+        </div>
+        <!-- View 3: ملخصات صاحب معين (بعد إدخال باسورد قسمه) -->
+        <div id="admin-owner-inside-view" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <button class="btn btn-ghost" onclick="backToOwnersView()">
+              <i class="fas fa-arrow-right"></i> رجوع للمواد
+            </button>
+            <button class="btn btn-primary" onclick="showAddOwnerSummaryModal()">
+              <i class="fas fa-plus"></i> إضافة ملخص
+            </button>
+          </div>
+          <div id="admin-owner-inside-title" style="font-size:1.1rem;font-weight:900;color:var(--amber);margin-bottom:1rem;display:flex;align-items:center;gap:8px">
+            <i class="fas fa-user"></i>
+            <span id="admin-owner-current-name"></span>
+          </div>
+          <div id="admin-owner-summaries-list"></div>
         </div>
       </div>
     </div>
@@ -2965,12 +2554,12 @@ ESSAY
   <div id="resource-modal" class="modal-overlay hidden">
     <div class="modal">
       <h3 id="resource-modal-title"><i class="fas fa-plus" style="color:var(--green);margin-left:8px"></i> إضافة مورد</h3>
-      <div class="form-group">
+      <div class="form-group" id="resource-subject-wrap">
         <label>اسم المادة / العنوان</label>
         <input type="text" id="resource-subject" placeholder="مثال: رياضيات / محاضرة 1">
       </div>
       <div class="form-group">
-        <label>العنوان التفصيلي</label>
+        <label id="resource-title-label">العنوان التفصيلي</label>
         <input type="text" id="resource-title" placeholder="مثال: الفصل الأول - المتغيرات">
       </div>
       <div class="form-group">
@@ -2979,12 +2568,48 @@ ESSAY
       </div>
       <div class="form-group">
         <label>نوع الملف</label>
-        <select id="resource-file-type">
-          <option value="pdf">📄 PDF</option>
-          <option value="video">🎥 فيديو</option>
-          <option value="link">🔗 رابط</option>
-          <option value="drive">📁 Google Drive</option>
-        </select>
+        <div class="cft-select" id="resource-file-type-select">
+          <button type="button" class="cft-trigger" id="resource-file-type-trigger" onclick="toggleFileTypeDropdown()">
+            <span class="cft-current">
+              <span class="cft-icon" id="resource-file-type-current-icon">
+                <svg viewBox="0 0 48 48" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+                  <rect width="48" height="48" rx="12" fill="#e02020"></rect>
+                  <path d="M9 3h19l11 11v21a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#ffffff" opacity="0.14"></path>
+                  <path d="M28 3v9a2 2 0 0 0 2 2h9" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"></path>
+                  <text x="24" y="31" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">PDF</text>
+                </svg>
+              </span>
+              <span id="resource-file-type-current-label">PDF</span>
+            </span>
+            <i class="fas fa-chevron-down cft-chevron"></i>
+          </button>
+          <div class="cft-options" id="resource-file-type-options">
+            <div class="cft-option selected" data-value="pdf" onclick="selectFileType('pdf')">
+              <span class="cft-icon">
+                <svg viewBox="0 0 48 48" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+                  <rect width="48" height="48" rx="12" fill="#e02020"></rect>
+                  <path d="M9 3h19l11 11v21a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#ffffff" opacity="0.14"></path>
+                  <path d="M28 3v9a2 2 0 0 0 2 2h9" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"></path>
+                  <text x="24" y="31" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">PDF</text>
+                </svg>
+              </span>
+              <span>PDF</span>
+            </div>
+            <div class="cft-option" data-value="video" onclick="selectFileType('video')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#ffab40"><i class="fas fa-video"></i></span></span>
+              <span>فيديو</span>
+            </div>
+            <div class="cft-option" data-value="link" onclick="selectFileType('link')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#6aa6ff"><i class="fas fa-link"></i></span></span>
+              <span>رابط</span>
+            </div>
+            <div class="cft-option" data-value="drive" onclick="selectFileType('drive')">
+              <span class="cft-icon"><span class="cft-mini-badge" style="background:#00c853"><i class="fab fa-google-drive"></i></span></span>
+              <span>Google Drive</span>
+            </div>
+          </div>
+          <input type="hidden" id="resource-file-type" value="pdf">
+        </div>
       </div>
       <!-- حقل اسم صاحب الملخص — يظهر فقط عند إضافة ملخص -->
       <div class="form-group" id="resource-author-wrap" style="display:none">
@@ -2994,6 +2619,59 @@ ESSAY
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeModal('resource-modal')">إلغاء</button>
         <button class="btn btn-primary" onclick="saveResource()"><i class="fas fa-save"></i> حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: كلمة سر إدارة أصحاب الملخصات (باسورد رئيسي منفصل) -->
+  <div id="owners-master-pwd-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3><i class="fas fa-user-shield" style="color:var(--amber);margin-left:8px"></i> كلمة سر إدارة أصحاب الملخصات</h3>
+      <div class="form-group">
+        <label>كلمة السر</label>
+        <input type="password" id="owners-master-pwd-input" placeholder="ادخل كلمة السر" autocomplete="off"
+          onkeydown="if(event.key==='Enter') submitOwnersMasterPwd()">
+      </div>
+      <div class="pwd-error" id="owners-master-pwd-error"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('owners-master-pwd-modal')">إلغاء</button>
+        <button class="btn btn-primary" onclick="submitOwnersMasterPwd()"><i class="fas fa-unlock-alt"></i> دخول</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: إضافة صاحب ملخص جديد (اسم + باسورد قسمه) -->
+  <div id="owner-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3><i class="fas fa-user-plus" style="color:var(--green);margin-left:8px"></i> إضافة صاحب ملخص</h3>
+      <div class="form-group">
+        <label>اسم صاحب الملخص</label>
+        <input type="text" id="owner-name-input" placeholder="مثال: أحمد محمد">
+      </div>
+      <div class="form-group">
+        <label>كلمة سر خاصة بقسمه</label>
+        <input type="text" id="owner-password-input" placeholder="كلمة سر لإدارة ملخصاته فقط">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('owner-modal')">إلغاء</button>
+        <button class="btn btn-primary" onclick="saveOwner()"><i class="fas fa-save"></i> حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: باسورد قسم صاحب ملخص معين -->
+  <div id="owner-pwd-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3><i class="fas fa-lock" style="color:var(--amber);margin-left:8px"></i> <span id="owner-pwd-title">كلمة سر القسم</span></h3>
+      <div class="form-group">
+        <label>كلمة السر</label>
+        <input type="password" id="owner-pwd-input" placeholder="ادخل كلمة السر" autocomplete="off"
+          onkeydown="if(event.key==='Enter') submitOwnerPwd()">
+      </div>
+      <div class="pwd-error" id="owner-pwd-error"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('owner-pwd-modal')">إلغاء</button>
+        <button class="btn btn-primary" onclick="submitOwnerPwd()"><i class="fas fa-unlock-alt"></i> دخول</button>
       </div>
     </div>
   </div>
@@ -3228,187 +2906,9 @@ ESSAY
   </div>
 
   <footer>
-    <div style="font-size:0.9rem;font-weight:700">⭐ BY : STAR BOY</div>
-    <div style="font-size:0.8rem;margin-top:6px">الفرقة الثالثة — قسم نظم ومعلومات — منصة الكلية</div>
+    <div style="font-size:0.9rem;font-weight:700">BY : Ebrahim Basyoni</div>
+    <div style="font-size:0.8rem;margin-top:6px">الفرقة الثالثة — قسم نظم ومعلومات</div>
   </footer>
-
-  <!-- ═══════════ SPACE BOT ═══════════ -->
-
-  <!-- Overlay removed — floating window doesn't need it -->
-  <div id="bot-overlay" style="display:none"></div>
-
-  <!-- Draggable Bot Icon -->
-  <div id="space-bot-icon" class="bot-pulse" title="روبوت المناهج 🤖">
-    <div id="bot-badge" title="اسألني!">AI</div>
-    <svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="botBodyGrad" cx="50%" cy="40%" r="55%">
-          <stop offset="0%"   stop-color="#1e3a5f"/>
-          <stop offset="100%" stop-color="#0a0a1e"/>
-        </radialGradient>
-        <radialGradient id="botFaceGrad" cx="50%" cy="35%" r="55%">
-          <stop offset="0%"   stop-color="#0d2040"/>
-          <stop offset="100%" stop-color="#060610"/>
-        </radialGradient>
-        <filter id="botGlow">
-          <feGaussianBlur stdDeviation="1.5" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%"   stop-color="#2dd4bf"/>
-          <stop offset="100%" stop-color="#38bdf8"/>
-        </linearGradient>
-      </defs>
-
-      <!-- Orbit ring -->
-      <ellipse cx="31" cy="31" rx="29" ry="8" stroke="rgba(56,189,248,0.18)" stroke-width="1" fill="none"
-        style="animation: botOrbit 8s linear infinite; transform-origin:31px 31px"/>
-
-      <!-- Body -->
-      <rect x="10" y="26" width="42" height="28" rx="9" fill="url(#botBodyGrad)"
-        stroke="rgba(56,189,248,0.4)" stroke-width="1.2"/>
-
-      <!-- Glow border -->
-      <rect x="10" y="26" width="42" height="28" rx="9" fill="none"
-        stroke="url(#accentGrad)" stroke-width="0.6" opacity="0.5"/>
-
-      <!-- Face plate -->
-      <rect x="16" y="31" width="30" height="17" rx="5" fill="url(#botFaceGrad)"
-        stroke="rgba(56,189,248,0.25)" stroke-width="0.8"/>
-
-      <!-- Eyes (LED style) -->
-      <rect x="20" y="35" width="8" height="5" rx="2.5" fill="#38bdf8"
-        filter="url(#botGlow)" opacity="0.95"/>
-      <rect x="34" y="35" width="8" height="5" rx="2.5" fill="#2dd4bf"
-        filter="url(#botGlow)" opacity="0.95"/>
-
-      <!-- Eye glow -->
-      <rect x="20" y="35" width="8" height="5" rx="2.5" fill="rgba(56,189,248,0.5)"/>
-      <rect x="34" y="35" width="8" height="5" rx="2.5" fill="rgba(45,212,191,0.5)"/>
-
-      <!-- Mouth (smile scan line) -->
-      <rect x="21" y="43" width="20" height="2" rx="1" fill="rgba(56,189,248,0.4)"/>
-      <rect x="24" y="43" width="14" height="2" rx="1" fill="rgba(56,189,248,0.7)"/>
-
-      <!-- Side ears -->
-      <rect x="5"  y="31" width="6" height="10" rx="3" fill="rgba(45,212,191,0.2)"
-        stroke="rgba(45,212,191,0.4)" stroke-width="0.8"/>
-      <rect x="51" y="31" width="6" height="10" rx="3" fill="rgba(45,212,191,0.2)"
-        stroke="rgba(45,212,191,0.4)" stroke-width="0.8"/>
-
-      <!-- Ear dots -->
-      <circle cx="8"  cy="36" r="1.5" fill="#2dd4bf" opacity="0.8"/>
-      <circle cx="54" cy="36" r="1.5" fill="#2dd4bf" opacity="0.8"/>
-
-      <!-- Neck -->
-      <rect x="26" y="22" width="10" height="5" rx="2" fill="rgba(56,189,248,0.2)"
-        stroke="rgba(56,189,248,0.3)" stroke-width="0.8"/>
-
-      <!-- Head -->
-      <rect x="14" y="9" width="34" height="15" rx="7" fill="url(#botBodyGrad)"
-        stroke="rgba(56,189,248,0.4)" stroke-width="1.2"/>
-
-      <!-- Head details — visor -->
-      <rect x="18" y="12" width="26" height="8" rx="3.5" fill="rgba(56,189,248,0.08)"
-        stroke="rgba(56,189,248,0.2)" stroke-width="0.7"/>
-
-      <!-- Visor scan line -->
-      <rect x="20" y="15" width="22" height="1.5" rx="0.75" fill="rgba(56,189,248,0.5)"/>
-
-      <!-- Antenna -->
-      <line x1="31" y1="9" x2="31" y2="3" stroke="rgba(45,212,191,0.6)" stroke-width="1.5" stroke-linecap="round"/>
-      <circle cx="31" cy="2.5" r="2" fill="#2dd4bf" class="bot-antenna-light"
-        filter="url(#botGlow)"/>
-
-      <!-- Bottom thrusters -->
-      <rect x="15" y="52" width="10" height="5" rx="2.5" fill="rgba(56,189,248,0.15)"
-        stroke="rgba(56,189,248,0.3)" stroke-width="0.7"/>
-      <rect x="37" y="52" width="10" height="5" rx="2.5" fill="rgba(56,189,248,0.15)"
-        stroke="rgba(56,189,248,0.3)" stroke-width="0.7"/>
-
-      <!-- Thruster glow -->
-      <rect x="17" y="54" width="6" height="2" rx="1" fill="rgba(56,189,248,0.5)"/>
-      <rect x="39" y="54" width="6" height="2" rx="1" fill="rgba(45,212,191,0.5)"/>
-
-      <!-- Chest panel — LED strip -->
-      <rect x="22" y="44" width="18" height="3" rx="1.5" fill="rgba(56,189,248,0.05)"
-        stroke="rgba(56,189,248,0.2)" stroke-width="0.6"/>
-      <circle cx="26" cy="45.5" r="1"  fill="#38bdf8" opacity="0.7"/>
-      <circle cx="31" cy="45.5" r="1"  fill="#2dd4bf" opacity="0.5"/>
-      <circle cx="36" cy="45.5" r="1"  fill="#a78bfa" opacity="0.7"/>
-    </svg>
-  </div>
-
-  <!-- Bot Sidebar -->
-  <div id="bot-sidebar" dir="rtl">
-    <div id="bot-resize-handle" id="bot-rh"></div>
-
-    <!-- Header -->
-    <div id="bot-header">
-      <div id="bot-header-avatar">
-        <i class="fas fa-robot" style="color:var(--accent);font-size:1rem"></i>
-      </div>
-      <div id="bot-header-info">
-        <h4>🤖 مساعد المناهج <span id="bot-status-dot"></span></h4>
-        <p id="bot-status-text">جاهز للمساعدة — أسألني عن أي مادة</p>
-      </div>
-      <button id="bot-close-btn" onclick="closeBotSidebar()" title="إغلاق">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-
-    <!-- Context chips -->
-    <div id="bot-context-bar">
-      <span style="font-size:0.72rem;color:var(--text-muted);align-self:center;font-weight:700;margin-left:4px">المصادر:</span>
-      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'lectures')">📹 محاضرات</button>
-      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'summaries')">📄 ملخصات</button>
-      <button class="bot-ctx-chip active" onclick="toggleBotCtx(this,'quizzes')">❓ كويزات</button>
-      <button id="bot-clear-btn" onclick="clearBotChat()"><i class="fas fa-trash" style="margin-left:4px"></i>مسح</button>
-    </div>
-
-    <!-- Messages -->
-    <div id="bot-messages">
-      <!-- Welcome message -->
-      <div class="bot-msg bot">
-        <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
-        <div class="bot-msg-bubble">
-          👋 أهلاً! أنا مساعد المناهج الذكي.<br><br>
-          بسألك عن أي حاجة في <strong>المحاضرات</strong> أو <strong>الملخصات</strong> أو <strong>الكويزات</strong> الموجودة في المنصة — وهجاوبك من المحتوى المتاح عندك في قاعدة البيانات. 🚀
-        </div>
-      </div>
-
-      <!-- Typing indicator -->
-      <div class="bot-msg bot" id="bot-typing">
-        <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
-        <div class="typing-dots">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Suggestions -->
-    <div id="bot-suggestions">
-      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">📚 إيه المواد المتاحة دلوقتي؟</button>
-      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">❓ كم عدد الكويزات الموجودة؟</button>
-      <button class="bot-suggestion" onclick="sendBotSuggestion(this)">📄 لخصلي المحتوى المتاح</button>
-    </div>
-
-    <!-- Input -->
-    <div id="bot-input-area">
-      <textarea
-        id="bot-input"
-        placeholder="اسألني عن أي محاضرة أو مادة..."
-        rows="1"
-        onkeydown="botInputKeydown(event)"
-        oninput="autoResizeBotInput(this)"
-      ></textarea>
-      <button id="bot-send-btn" onclick="sendBotMessage()" title="إرسال">
-        <i class="fas fa-paper-plane"></i>
-      </button>
-    </div>
-  </div>
 
   <script>
     // ====================== SUPABASE ======================
@@ -3444,18 +2944,96 @@ ESSAY
     let currentTerm  = null;           // 1 | 2
     let currentSection = 'exams';      // exams | books | lectures | lecture-quizzes
 
+    // ====================== CONTENT SEARCH (per section) ======================
+    let examsSearchQuery     = '';
+    let lecturesSearchQuery  = '';
+    let lqSearchQuery        = '';
+    let summariesSearchQuery = '';
+
+    function _norm(str) {
+      return (str || '').toString().trim().toLowerCase();
+    }
+    function _matchesQuery(query, ...fields) {
+      const q = _norm(query);
+      if (!q) return true;
+      return fields.some(f => _norm(f).includes(q));
+    }
+
+    // شكل مربع الأيقونة جنب كل مورد — للـ PDF: خلفية حمراء صلبة + أيقونة بيضاء (زي شكل بادچ PDF المعروف)
+    // باقي الأنواع: خلفية شفافة بلون مميز + أيقونة بنفس اللون (زي ما كان)
+    // resolvedColor = colors[fileType] || fallbackColor (يتحسب في مكان الاستخدام)
+    function _iconBoxStyle(fileType, resolvedColor) {
+      if (fileType === 'pdf') {
+        return `background:transparent`;
+      }
+      return `background:${resolvedColor}22;color:${resolvedColor}`;
+    }
+
+    // بادچ PDF (مربع أحمر + كلمة PDF بارزة وواضحة حتى في أصغر حجم) — تصميم بسيط أصلي، مش نسخة من أي شعار تجاري
+    function _pdfIconSvg(size) {
+      const s = size || '100%';
+      return `<svg viewBox="0 0 48 48" width="${s}" height="${s}" xmlns="http://www.w3.org/2000/svg" style="display:block">
+        <rect width="48" height="48" rx="12" fill="#e02020"></rect>
+        <path d="M9 3h19l11 11v21a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#ffffff" opacity="0.14"></path>
+        <path d="M28 3v9a2 2 0 0 0 2 2h9" fill="none" stroke="#ffffff" stroke-opacity="0.14" stroke-width="2"></path>
+        <text x="24" y="31" font-family="Arial,Helvetica,sans-serif" font-weight="900" font-size="17" fill="#ffffff" text-anchor="middle" letter-spacing="0.3">PDF</text>
+      </svg>`;
+    }
+    function clearSearch(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      input.value = '';
+      input.dispatchEvent(new Event('input'));
+      input.focus();
+    }
+    function _toggleSearchWrapState(inputId) {
+      const input = document.getElementById(inputId);
+      const wrap  = document.getElementById(inputId + '-wrap');
+      if (!input || !wrap) return;
+      wrap.classList.toggle('has-value', input.value.trim().length > 0);
+    }
+    function filterExams(val) {
+      examsSearchQuery = val;
+      _toggleSearchWrapState('exams-search');
+      renderHome();
+    }
+    function filterLectures(val) {
+      lecturesSearchQuery = val;
+      _toggleSearchWrapState('lectures-search');
+      _renderLecturesUI();
+    }
+    function filterLq(val) {
+      lqSearchQuery = val;
+      _toggleSearchWrapState('lq-search');
+      _renderLqUI();
+    }
+    function filterSummaries(val) {
+      summariesSearchQuery = val;
+      _toggleSearchWrapState('summaries-search');
+      _renderSummariesUI();
+    }
+
     const TERM_NAMES = { 1: 'الترم الأول', 2: 'الترم الثاني' };
     let adminCurrentSection = 'exams'; // for admin panel
     let editingResourceId = null;
-    let addingResourceType = 'books';  // type when opening add resource modal
+    let addingResourceType = 'summaries';  // type when opening add resource modal
     let gradePasswords = {};           // {general: 'xxx', bis: 'xxx'}  loaded from DB
 
+    // ====================== أصحاب الملخصات (SUMMARY OWNERS) — STATE ======================
+    let summaryOwnersMasterPassword = null; // باسورد إضافة صاحب ملخص جديد — من جدول app_passwords
+    let summaryOwners = [];                 // أصحاب الملخصات في القسم/الترم الحالي (للأدمن)
+    let adminSummariesMode = 'subjects';    // 'subjects' | 'owners' — وضع تصفح الملخصات في الأدمن
+    let adminCurrentOwner  = null;          // الصاحب المفتوح حالياً بعد إدخال باسورده
+    let _pendingOwnerOpen  = null;
+    let _ownersMasterPwdCallback = null;
+    let summariesViewMode  = 'subjects';    // 'subjects' | 'owners' — وضع تصفح الطالب
+    let summaryOwnersPublicCache = [];
+    let currentPublicOwner = null;
+
     const GRADE_NAMES = {
-      'general': 'عامة',
       'bis': 'نظم ومعلومات أعمال (BIS)'
     };
     const GRADE_ICONS = {
-      'general': '🌐',
       'bis': 'BIS'
     };
 
@@ -3474,6 +3052,19 @@ ESSAY
       } catch {
         // مش هنحط fallback — لو DB فشلت، الإدارة مش هتشتغل
         gradePasswords = {};
+      }
+    }
+
+    // ====================== LOAD OWNERS MASTER PASSWORD FROM DB ======================
+    // باسورد منفصل تماماً عن باسورد القسم — بيتحكم بس في إضافة "صاحب ملخص" جديد
+    async function loadOwnersMasterPassword() {
+      try {
+        const res = await api('app_passwords?select=password&key=eq.summary_owners_admin');
+        if (!res.ok) throw new Error('DB error');
+        const rows = await res.json();
+        summaryOwnersMasterPassword = rows[0]?.password || null;
+      } catch {
+        summaryOwnersMasterPassword = null;
       }
     }
 
@@ -3655,12 +3246,20 @@ ESSAY
       showPage('sections-page');
     }
 
+    function _resetSearchInput(inputId) {
+      const input = document.getElementById(inputId);
+      const wrap  = document.getElementById(inputId + '-wrap');
+      if (input) input.value = '';
+      if (wrap) wrap.classList.remove('has-value');
+    }
+
     function openSection(section) {
       currentSection = section;
       const gradeName = GRADE_NAMES[currentGrade] || currentGrade;
       const termName  = TERM_NAMES[currentTerm] || '';
 
       if (section === 'exams') {
+        examsSearchQuery = ''; _resetSearchInput('exams-search');
         document.getElementById('home-breadcrumb-grade').textContent = gradeName;
         document.getElementById('home-breadcrumb-term').textContent  = termName;
         showPage('home-page');
@@ -3675,6 +3274,7 @@ ESSAY
         document.getElementById('books-list').classList.add('hidden');
         loadResources('books').then(renderBooks);
       } else if (section === 'lectures') {
+        lecturesSearchQuery = ''; _resetSearchInput('lectures-search');
         document.getElementById('lectures-breadcrumb-grade').textContent = gradeName;
         document.getElementById('lectures-breadcrumb-term').textContent  = termName;
         showPage('lectures-page');
@@ -3682,6 +3282,7 @@ ESSAY
         document.getElementById('lectures-subjects-list').classList.add('hidden');
         loadResources('lectures').then(renderLectureSubjects);
       } else if (section === 'lecture-quizzes') {
+        lqSearchQuery = ''; _resetSearchInput('lq-search');
         document.getElementById('lq-breadcrumb-grade').textContent = gradeName;
         document.getElementById('lq-breadcrumb-term').textContent  = termName;
         showPage('lecture-quizzes-page');
@@ -3689,13 +3290,38 @@ ESSAY
         document.getElementById('lq-subjects-list').classList.add('hidden');
         loadQuizzes().then(() => renderLectureQuizSubjects());
       } else if (section === 'summaries') {
+        summariesSearchQuery = ''; _resetSearchInput('summaries-search');
         document.getElementById('summaries-breadcrumb-grade').textContent = gradeName;
         document.getElementById('summaries-breadcrumb-term').textContent  = termName;
         showPage('summaries-page');
+        currentPublicOwner = null;
+        document.getElementById('summaries-search-wrap').style.display = '';
         document.getElementById('summaries-loading').classList.remove('hidden');
         document.getElementById('summaries-list').classList.add('hidden');
-        loadResources('summaries').then(renderSummaries);
+        loadSummariesPageData();
       }
+    }
+
+    // تحميل المواد + أصحاب الملخصات مع بعض وعرضهم في نفس الصفحة
+    async function loadSummariesPageData() {
+      const [list, owners] = await Promise.all([
+        loadResources('summaries'),
+        loadPublicSummaryOwnersData()
+      ]);
+      _summariesCache = list || [];
+      summaryOwnersPublicCache = owners || [];
+      selectedSummaryIds.clear();
+      summariesSelectMode = false;
+      document.getElementById('summaries-loading').classList.add('hidden');
+      document.getElementById('summaries-list').classList.remove('hidden');
+      _renderSummariesUI();
+    }
+
+    async function loadPublicSummaryOwnersData() {
+      try {
+        const res = await api(`summary_owners?select=*&order=name&grade=eq.${currentGrade}&term=eq.${currentTerm}`);
+        return res.ok ? await res.json() : [];
+      } catch { return []; }
     }
 
     // ====================== BOOKS RENDER ======================
@@ -3709,13 +3335,13 @@ ESSAY
         return;
       }
 
-      const icons = { pdf: '📄', video: '🎥', link: '🔗', drive: '📁' };
+      const icons = { pdf: _pdfIconSvg(), video: '🎥', link: '🔗', drive: '📁' };
       const colors = { pdf: '#ff5252', video: '#ffab40', link: '#6aa6ff', drive: '#00e676' };
 
       container.innerHTML = booksList.map((r, i) => `
         <div class="resource-card" style="animation-delay:${i*0.06}s;cursor:default">
-          <div class="resource-icon" style="background:${colors[r.file_type] || 'var(--green)'}22;color:${colors[r.file_type] || 'var(--green)'}">
-            ${icons[r.file_type] || '📄'}
+          <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type] || 'var(--green)')}">
+            ${icons[r.file_type] || _pdfIconSvg()}
           </div>
           <div class="resource-info" style="flex:1">
             <h4>${r.subject || ''}</h4>
@@ -3751,14 +3377,22 @@ ESSAY
 
     function _renderLecturesUI() {
       const container     = document.getElementById('lectures-subjects-list');
-      const lecturesList  = _lecturesCache;
+      let lecturesList  = _lecturesCache;
 
       if (!lecturesList || lecturesList.length === 0) {
         container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-video"></i><p>لا توجد محاضرات حالياً</p></div>`;
         return;
       }
 
-      const icons  = { pdf:'📄', video:'🎥', link:'🔗', drive:'📁' };
+      if (lecturesSearchQuery.trim()) {
+        lecturesList = lecturesList.filter(r => _matchesQuery(lecturesSearchQuery, r.subject, r.title));
+        if (lecturesList.length === 0) {
+          container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-search"></i><p>لا توجد نتائج مطابقة لـ "${lecturesSearchQuery}"</p></div>`;
+          return;
+        }
+      }
+
+      const icons  = { pdf: _pdfIconSvg(), video:'🎥', link:'🔗', drive:'📁' };
       const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
 
       const subjects = {};
@@ -3786,7 +3420,7 @@ ESSAY
             <div>
               ${items.map((r, i) => `
                 <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
-                  <div class="resource-icon" style="background:${colors[r.file_type]||'var(--amber)'}22;color:${colors[r.file_type]||'var(--amber)'}">
+                  <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
                     ${icons[r.file_type] || '🎥'}
                   </div>
                   <div class="resource-info" style="flex:1">
@@ -3867,11 +3501,19 @@ ESSAY
 
     function _renderLqUI() {
       const container = document.getElementById('lq-subjects-list');
-      const lqQuizzes = _lqCache;
+      let lqQuizzes = _lqCache;
 
       if (!lqQuizzes || lqQuizzes.length === 0) {
         container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-question-circle"></i><p>لا توجد أسئلة محاضرات حالياً</p></div>`;
         return;
+      }
+
+      if (lqSearchQuery.trim()) {
+        lqQuizzes = lqQuizzes.filter(q => _matchesQuery(lqSearchQuery, q.title, q.lq_folder));
+        if (lqQuizzes.length === 0) {
+          container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-search"></i><p>لا توجد نتائج مطابقة لـ "${lqSearchQuery}"</p></div>`;
+          return;
+        }
       }
 
       // Group by subject (extracted from title: "مادة - محاضرة 1" → group by first part, or all in one group)
@@ -3957,59 +3599,93 @@ ESSAY
 
     function _renderSummariesUI() {
       const container = document.getElementById('summaries-list');
-      const summariesList = _summariesCache;
+      let summariesList = _summariesCache;
+      let owners = summaryOwnersPublicCache || [];
 
-      if (!summariesList || summariesList.length === 0) {
-        container.innerHTML = `<div class="empty"><i class="fas fa-sticky-note"></i><p>لا توجد ملخصات متاحة حالياً</p></div>`;
+      const q = summariesSearchQuery.trim();
+      if (q) {
+        summariesList = summariesList.filter(r => _matchesQuery(q, r.subject, r.title, r.author_name));
+        owners = owners.filter(o => _matchesQuery(q, o.name));
+      }
+
+      if ((!summariesList || summariesList.length === 0) && owners.length === 0) {
+        const msg = q ? `لا توجد نتائج مطابقة لـ "${q}"` : 'لا توجد ملخصات متاحة حالياً';
+        const icon = q ? 'fa-search' : 'fa-sticky-note';
+        container.innerHTML = `<div class="empty"><i class="fas ${icon}"></i><p>${msg}</p></div>`;
         return;
       }
 
-      const icons  = { pdf:'📄', video:'🎥', link:'🔗', drive:'📁' };
+      const icons  = { pdf: _pdfIconSvg(), video:'🎥', link:'🔗', drive:'📁' };
       const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
 
-      const subjects = {};
-      summariesList.forEach(r => {
-        const sub = r.subject || 'عام';
-        if (!subjects[sub]) subjects[sub] = [];
-        subjects[sub].push(r);
-      });
+      let html = '';
 
-      let html = ``;
-
-      html += Object.entries(subjects).map(([sub, items]) => {
-        const isOpen = summariesOpenFolders[sub] !== false;
-        return `
-          <div style="margin-bottom:1.2rem">
-            <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);margin-bottom:6px;transition:all 0.25s"
-              onclick="_toggleSummaryFolder('${sub.replace(/'/g,"\\'")}')">
-              <i class="fas fa-${isOpen ? 'folder-open' : 'folder'}" style="color:var(--amber);font-size:1.1rem"></i>
-              <span style="font-weight:900;color:var(--amber);flex:1">${sub}</span>
-              <span style="font-size:0.8rem;color:var(--text-dim)">${items.length} ملخص</span>
-              <i class="fas fa-chevron-${isOpen ? 'up' : 'down'}" style="color:var(--text-muted);font-size:0.8rem;margin-right:4px"></i>
+      // ── فولدرات أصحاب الملخصات ──
+      if (owners.length > 0) {
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>أصحاب الملخصات</div>`;
+        html += `<div style="margin-bottom:1.4rem">`;
+        html += owners.map((o, i) => `
+          <div class="admin-subject-card" style="animation-delay:${i*0.06}s" onclick="openPublicOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
+            <div class="admin-subject-folder-icon"><i class="fas fa-user"></i></div>
+            <div class="admin-subject-info">
+              <h4>${o.name}</h4>
+              <p>اضغط لعرض ملخصاته وتحميلها</p>
             </div>
-            ${isOpen ? `
-            <div>
-              ${items.map((r, i) => `
-                <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
-                  <div class="resource-icon" style="background:${colors[r.file_type]||'var(--amber)'}22;color:${colors[r.file_type]||'var(--amber)'}">
-                    ${icons[r.file_type] || '📄'}
-                  </div>
-                  <div class="resource-info" style="flex:1">
-                    <h4>${r.title || r.subject}</h4>
-                    ${r.author_name ? `<p style="color:var(--amber)"><i class="fas fa-user" style="margin-left:3px;font-size:0.75rem"></i>${r.author_name}</p>` : '<p>ملخص</p>'}
-                  </div>
-                  <a href="${r.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-                    style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;
-                    background:#00e676;color:#050509;font-weight:800;font-size:0.82rem;text-decoration:none;
-                    flex-shrink:0;font-family:'Cairo',sans-serif;transition:all 0.22s"
-                    onmouseover="this.style.background='#00c860';this.style.transform='scale(1.05)'"
-                    onmouseout="this.style.background='#00e676';this.style.transform='scale(1)'">
-                    <i class="fas fa-download"></i> تحميل
-                  </a>
-                </div>`).join('')}
-            </div>` : ''}
-          </div>`;
-      }).join('');
+            <i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:0.85rem;margin-right:4px"></i>
+          </div>
+        `).join('');
+        html += `</div>`;
+      }
+
+      // ── فولدرات المواد ──
+      const subjectOnlyList = (summariesList || []).filter(r => !r.owner_id); // استبعاد ملخصات أصحاب الملخصات
+      if (subjectOnlyList.length > 0) {
+        const subjects = {};
+        subjectOnlyList.forEach(r => {
+          const sub = r.subject || 'عام';
+          if (!subjects[sub]) subjects[sub] = [];
+          subjects[sub].push(r);
+        });
+
+        if (owners.length > 0) {
+          html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-folder" style="margin-left:6px"></i>حسب المادة</div>`;
+        }
+
+        html += Object.entries(subjects).map(([sub, items]) => {
+          const isOpen = summariesOpenFolders[sub] !== false;
+          return `
+            <div style="margin-bottom:1.2rem">
+              <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 14px;border-radius:12px;background:var(--surface2);border:1px solid var(--border);margin-bottom:6px;transition:all 0.25s"
+                onclick="_toggleSummaryFolder('${sub.replace(/'/g,"\\'")}')">
+                <i class="fas fa-${isOpen ? 'folder-open' : 'folder'}" style="color:var(--amber);font-size:1.1rem"></i>
+                <span style="font-weight:900;color:var(--amber);flex:1">${sub}</span>
+                <span style="font-size:0.8rem;color:var(--text-dim)">${items.length} ملخص</span>
+                <i class="fas fa-chevron-${isOpen ? 'up' : 'down'}" style="color:var(--text-muted);font-size:0.8rem;margin-right:4px"></i>
+              </div>
+              ${isOpen ? `
+              <div>
+                ${items.map((r, i) => `
+                  <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
+                    <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
+                      ${icons[r.file_type] || _pdfIconSvg()}
+                    </div>
+                    <div class="resource-info" style="flex:1">
+                      <h4>${r.title || r.subject}</h4>
+                      ${r.author_name ? `<p style="color:var(--amber)"><i class="fas fa-user" style="margin-left:3px;font-size:0.75rem"></i>${r.author_name}</p>` : '<p>ملخص</p>'}
+                    </div>
+                    <a href="${r.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
+                      style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;
+                      background:#00e676;color:#050509;font-weight:800;font-size:0.82rem;text-decoration:none;
+                      flex-shrink:0;font-family:'Cairo',sans-serif;transition:all 0.22s"
+                      onmouseover="this.style.background='#00c860';this.style.transform='scale(1.05)'"
+                      onmouseout="this.style.background='#00e676';this.style.transform='scale(1)'">
+                      <i class="fas fa-download"></i> تحميل
+                    </a>
+                  </div>`).join('')}
+              </div>` : ''}
+            </div>`;
+        }).join('');
+      }
 
       container.innerHTML = html;
     }
@@ -4056,9 +3732,14 @@ ESSAY
       document.getElementById('home-content').classList.remove('hidden');
 
       const container = document.getElementById('quizzes-list');
-      const published = quizzes.filter(q => q.published && (q.section === 'exams' || !q.section));
+      let published = quizzes.filter(q => q.published && (q.section === 'exams' || !q.section));
+      if (examsSearchQuery.trim()) {
+        published = published.filter(q => _matchesQuery(examsSearchQuery, q.title));
+      }
       if (published.length === 0) {
-        container.innerHTML = `<div class="empty"><i class="fas fa-book-open"></i><p>لا توجد امتحانات متاحة حالياً</p></div>`;
+        container.innerHTML = examsSearchQuery.trim()
+          ? `<div class="empty"><i class="fas fa-search"></i><p>لا توجد نتائج مطابقة لـ "${examsSearchQuery}"</p></div>`
+          : `<div class="empty"><i class="fas fa-book-open"></i><p>لا توجد امتحانات متاحة حالياً</p></div>`;
         return;
       }
       container.innerHTML = published.map((q, idx) => `
@@ -4109,6 +3790,12 @@ ESSAY
     function startQuiz(id) {
       sessionStorage.removeItem('quizState');
       currentQuiz = quizzes.find(q => q.id === id);
+      // 🤖 Update bot session
+      if (window.botSession) {
+        window.botSession.quiz = currentQuiz;
+        window.botSession.quizResults = null;
+        window.botSession.page = 'quiz-page';
+      }
       if (!currentQuiz.questions || currentQuiz.questions.length === 0) {
         return toast('هذا الامتحان لا يحتوي على أسئلة بعد!', 'error');
       }
@@ -4229,6 +3916,47 @@ ESSAY
       // update live score after answer
       updateLiveScore();
 
+      // 🤖 Bot encouragement
+      setTimeout(() => {
+        const total = currentQuiz.questions.length;
+        const qIdx  = currentQuestionIndex;
+        const correctMsgs = [
+          'ممتاز! إجابة صح تماماً!',
+          'رائع! استمر على المستوى ده!',
+          'إجابة صحيحة! أنت في الطريق الصح!',
+          'عظيم! ذاكرت كويس!',
+          'صح! واضح إنك فاهم المادة!',
+          'برافو عليك! دي إجابة مثالية!',
+          'أحسنت! ده المستوى اللي محتاجه في الامتحان!',
+          'صح صح! أنت بتتحسن بسرعة!',
+          'ممتاز يا بطل! استمر كده!',
+          'إجابة نظيفة! أنت شاطر!',
+          'ده اللي بيفرق! واضح إنك بتذاكر!',
+          'إجابة في الصميم! أنت على مستوى عالي!',
+        ];
+        const wrongMsgs = [
+          'مش مشكلة! راجع الإجابة الصح وهتفهم أكتر.',
+          'لا تستسلم! كل غلطة بتعلمك حاجة جديدة.',
+          'ركز معايا! الإجابة الصح موجودة تحت — اقراها كويس.',
+          'هتتحسن! المهم تراجع وتفهم.',
+          'مش وحش! بس خليك فاكر الإجابة الصح.',
+          'مؤقتة! المرة الجاية هتعرف.',
+          'اقرا الإجابة الصح كويس وهتفضل في دماغك.',
+          'محدش بيعرف كل حاجة من أول وهلة — استمر!',
+          'ده جزء من التعلم! راجع وارجع.',
+          'مش آخر الدنيا! المادة محتاجة مراجعة تانية.',
+          'حاول تفهم ليه الإجابة دي صح وهيساعدك كتير.',
+          'كل سؤال بتغلط فيه ده فرصة تتعلم حاجة جديدة!',
+        ];
+        const msgs = isCorrect ? correctMsgs : wrongMsgs;
+        const msg  = msgs[Math.floor(Math.random() * msgs.length)];
+        const remaining = total - qIdx - 1;
+        const extra = (!isCorrect && remaining > 0) ? ` (باقي ${remaining} سؤال)` : '';
+        if (window.showBotBubble) window.showBotBubble(msg + extra, isCorrect ? 'correct' : 'wrong');
+        // Update session
+        if (window.botSession) window.botSession.quiz = currentQuiz;
+      }, 350);
+
       let html = `<div class="question-text">${q.question}</div>`;
 
       if (q.type === 'mcq') {
@@ -4343,6 +4071,20 @@ ESSAY
       document.getElementById('skipped-count').textContent = skipped;
       document.getElementById('accuracy').textContent = `${pct}%`;
       document.getElementById('score').textContent = `${correct} من ${total}`;
+
+      // 🤖 Bot result message + update session
+      if (window.botSession) {
+        window.botSession.quizResults = { correct, wrong, skipped, pct, total };
+        window.botSession.page = 'results-page';
+      }
+      setTimeout(() => {
+        let msg = '';
+        if (pct >= 90)      msg = `🏆 ممتاز جداً! ${correct} من ${total} — أداء استثنائي! أنت جاهز للامتحان 💯`;
+        else if (pct >= 70) msg = `✅ كويس! ${correct} من ${total} — راجع الأسئلة الغلط من "مراجعة الإجابات" 📖`;
+        else if (pct >= 50) msg = `📚 ${correct} من ${total} — محتاج مذاكرة أكتر. اضغط "مراجعة الإجابات" 💪`;
+        else                msg = `💡 ${correct} من ${total} — لا تحبط! راجع المادة من الأول وهترتاح 🚀`;
+        if (window.showBotBubble) window.showBotBubble(msg, 'result');
+      }, 800);
     }
 
     function backToHome() { showSectionsPage(); }
@@ -4552,7 +4294,7 @@ ESSAY
     // ====================== ADMIN SECTION SWITCHER ======================
     function switchAdminSection(section) {
       adminCurrentSection = section;
-      ['exams','books','lectures','lecture-quizzes','summaries'].forEach(s => {
+      ['exams','lectures','lecture-quizzes','summaries'].forEach(s => {
         const tab = document.getElementById(`admin-tab-${s}`);
         const panel = document.getElementById(`admin-section-${s}`);
         if (tab) tab.classList.toggle('active', s === section);
@@ -4573,7 +4315,7 @@ ESSAY
           <div class="empty" style="padding:3rem">
             <i class="fas fa-${!currentGrade ? 'layer-group' : 'calendar-alt'}" style="font-size:2.5rem;opacity:0.3;margin-bottom:1rem"></i>
             <p style="font-size:1rem;font-weight:700;color:var(--amber)">
-              ${!currentGrade ? '⬆️ اختار القسم أولاً (عامة أو BIS)' : '⬆️ اختار الترم أولاً (ترم 1 أو 2)'}
+              ${!currentGrade ? '⬆️ اختار القسم أولاً' : '⬆️ اختار الترم أولاً (ترم 1 أو 2)'}
             </p>
           </div>`;
         return;
@@ -4584,12 +4326,14 @@ ESSAY
       } else if (section === 'lecture-quizzes') {
         adminLqCurrentFolder = null; // reset to folder list view
         loadAllQuizzesForAdmin();
-      } else if (section === 'books') {
-        loadResources('books').then(renderAdminBooks);
       } else if (section === 'lectures') {
         loadResources('lectures').then(renderAdminLecturesGrouped);
       } else if (section === 'summaries') {
         adminSummariesCurrentSubject = null;
+        adminCurrentOwner = null;
+        document.getElementById('admin-summaries-subjects-view').style.display = '';
+        document.getElementById('admin-summaries-inside-view').style.display = 'none';
+        document.getElementById('admin-owner-inside-view').style.display = 'none';
         loadResources('summaries').then(renderAdminSummariesGrouped);
       }
     }
@@ -4675,7 +4419,7 @@ ESSAY
     function _renderAdminLecturesInsideUI() {
       const container = document.getElementById('admin-lectures-inside-list');
       const items = _adminLecturesInsideCache;
-      const icons = { pdf:'📄', video:'🎥', link:'🔗', drive:'📁' };
+      const icons = { pdf: _pdfIconSvg('22px'), video:'🎥', link:'🔗', drive:'📁' };
 
       if (!items || items.length === 0) {
         container.innerHTML = `
@@ -5098,6 +4842,10 @@ ESSAY
       adminSummariesCurrentSubject = null;
       document.getElementById('admin-summaries-subjects-view').style.display = '';
       document.getElementById('admin-summaries-inside-view').style.display = 'none';
+      document.getElementById('admin-owner-inside-view').style.display = 'none';
+
+      // حمّل أصحاب الملخصات جنب المواد في نفس الواجهة
+      loadSummaryOwners();
 
       const container = document.getElementById('admin-summaries-subjects-list');
 
@@ -5112,6 +4860,7 @@ ESSAY
 
       const subjects = {};
       summariesList.forEach(r => {
+        if (r.owner_id) return; // ملخصات أصحاب الملخصات ليها فولدراتها الخاصة، متتحطش تحت المواد
         const sub = r.subject || 'عام';
         if (!subjects[sub]) subjects[sub] = [];
         subjects[sub].push(r);
@@ -5155,10 +4904,14 @@ ESSAY
       addingResourceType = 'summaries';
       const titleEl = document.getElementById('resource-modal-title');
       if (titleEl) titleEl.innerHTML = `<i class="fas fa-plus" style="color:var(--green);margin-left:8px"></i> إضافة ملخص — ${adminSummariesCurrentSubject}`;
+      const subjectWrap = document.getElementById('resource-subject-wrap');
+      if (subjectWrap) subjectWrap.style.display = '';
       document.getElementById('resource-subject').value = adminSummariesCurrentSubject;
+      const titleLabel = document.getElementById('resource-title-label');
+      if (titleLabel) titleLabel.textContent = 'العنوان التفصيلي';
       document.getElementById('resource-title').value = '';
       document.getElementById('resource-url').value = '';
-      document.getElementById('resource-file-type').value = 'pdf';
+      setFileTypeSelectValue('pdf');
       // إظهار حقل اسم صاحب الملخص لو موجود
       const authorWrap = document.getElementById('resource-author-wrap');
       if (authorWrap) authorWrap.style.display = '';
@@ -5174,15 +4927,7 @@ ESSAY
         return;
       }
 
-      const icons = { pdf:'📄', video:'🎥', link:'🔗', drive:'📁' };
-      const subjects = {};
-      summariesList.forEach(r => {
-        const sub = r.subject || 'عام';
-        if (!subjects[sub]) subjects[sub] = [];
-        subjects[sub].push(r);
-      });
-
-      const allIds = summariesList.map(r => r.id);
+      const icons = { pdf: _pdfIconSvg('22px'), video:'🎥', link:'🔗', drive:'📁' };
       const allChecked = allIds.length > 0 && allIds.every(id => adminSelectedSummaryIds.has(id));
 
       let html = `
@@ -5236,7 +4981,7 @@ ESSAY
                     ${isChecked ? '<i class="fas fa-check" style="color:#fff;font-size:0.7rem"></i>' : ''}
                   </div>` : ''}
                   <div style="flex:1">
-                    <h4>${icons[r.file_type] || '📄'} ${r.title || ''}</h4>
+                    <h4>${icons[r.file_type] || _pdfIconSvg('22px')} ${r.title || ''}</h4>
                     ${r.author_name ? `<p style="margin-top:2px;color:var(--amber);font-size:0.82rem"><i class="fas fa-user" style="margin-left:4px"></i>${r.author_name}</p>` : ''}
                     <p style="margin-top:4px"><a href="${r.url}" target="_blank" style="color:var(--teal);font-size:0.82rem">${r.url.substring(0,60)}${r.url.length>60?'...':''}</a></p>
                   </div>
@@ -5296,25 +5041,252 @@ ESSAY
       } catch { toast('خطأ في الحذف!','error'); }
     }
 
-    // ====================== ADMIN BOOKS ======================
-    function renderAdminBooks(booksList) {
-      const container = document.getElementById('admin-books-list');
-      if (!booksList || booksList.length === 0) {
-        container.innerHTML = `<div class="empty"><i class="fas fa-book"></i><p>لا توجد كتب — اضغط "إضافة كتاب"</p></div>`;
+    // ====================== أصحاب الملخصات — ADMIN ======================
+    async function loadSummaryOwners() {
+      if (!currentGrade || !currentTerm) { summaryOwners = []; renderAdminOwners(); return; }
+      try {
+        const res = await api(`summary_owners?select=*&order=id&grade=eq.${currentGrade}&term=eq.${currentTerm}`);
+        summaryOwners = res.ok ? await res.json() : [];
+      } catch { summaryOwners = []; }
+      renderAdminOwners();
+    }
+
+    function renderAdminOwners() {
+      const container = document.getElementById('admin-owners-list');
+      if (!container) return;
+      if (!summaryOwners.length) {
+        container.innerHTML = `
+          <div class="empty">
+            <i class="fas fa-user-friends" style="font-size:2.5rem;opacity:0.3;margin-bottom:1rem"></i>
+            <p>لا يوجد أصحاب ملخصات بعد — اضغط "إضافة صاحب ملخص"</p>
+          </div>`;
         return;
       }
-      const icons = { pdf:'📄', video:'🎥', link:'🔗', drive:'📁' };
-      container.innerHTML = booksList.map((r, i) => `
+      container.innerHTML = summaryOwners.map((o, i) => `
+        <div class="admin-subject-card" style="animation-delay:${i*0.06}s" onclick="openAdminOwner(${o.id})">
+          <div class="admin-subject-folder-icon"><i class="fas fa-user"></i></div>
+          <div class="admin-subject-info">
+            <h4>${o.name}</h4>
+            <p>ادخل باسورد قسمه لإدارة ملخصاته</p>
+          </div>
+          <div class="admin-subject-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-danger" title="حذف صاحب الملخص بالكامل" onclick="deleteOwnerAdmin(${o.id})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:0.85rem;margin-right:4px"></i>
+        </div>
+      `).join('');
+    }
+
+    // فتح مودال إضافة صاحب ملخص — محمي بباسورد رئيسي منفصل
+    function showAddOwnerModal() {
+      if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
+      askOwnersMasterPassword(() => {
+        document.getElementById('owner-name-input').value = '';
+        document.getElementById('owner-password-input').value = '';
+        document.getElementById('owner-modal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('owner-name-input').focus(), 100);
+      });
+    }
+
+    function askOwnersMasterPassword(cb) {
+      if (!summaryOwnersMasterPassword) {
+        toast('⚠️ خطأ في الاتصال بقاعدة البيانات', 'error');
+        return;
+      }
+      _ownersMasterPwdCallback = cb;
+      document.getElementById('owners-master-pwd-input').value = '';
+      document.getElementById('owners-master-pwd-error').textContent = '';
+      document.getElementById('owners-master-pwd-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('owners-master-pwd-input').focus(), 150);
+    }
+
+    function submitOwnersMasterPwd() {
+      const val = document.getElementById('owners-master-pwd-input').value.trim();
+      if (!summaryOwnersMasterPassword || val !== summaryOwnersMasterPassword) {
+        document.getElementById('owners-master-pwd-error').textContent = '❌ كلمة السر غلط، حاول تاني';
+        return;
+      }
+      closeModal('owners-master-pwd-modal');
+      const cb = _ownersMasterPwdCallback;
+      _ownersMasterPwdCallback = null;
+      if (cb) cb();
+    }
+
+    async function saveOwner() {
+      const name = document.getElementById('owner-name-input').value.trim();
+      const password = document.getElementById('owner-password-input').value.trim();
+      if (!name || !password) return toast('اكتب الاسم وكلمة السر!', 'error');
+      if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
+      try {
+        const res = await api('summary_owners', {
+          method: 'POST',
+          body: JSON.stringify({ name, password, grade: currentGrade, term: currentTerm })
+        });
+        if (!res.ok) throw new Error();
+        closeModal('owner-modal');
+        toast('✅ تم إضافة صاحب الملخص');
+        loadSummaryOwners();
+      } catch { toast('خطأ في الحفظ!', 'error'); }
+    }
+
+    async function deleteOwnerAdmin(id) {
+      const ok = await showConfirm({ title:'حذف صاحب الملخص', msg:'هيتم حذف صاحب الملخص وكل ملخصاته نهائياً. متأكد؟', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
+      if (!ok) return;
+      try {
+        await api(`resources?owner_id=eq.${id}`, { method: 'DELETE' });
+        await api(`summary_owners?id=eq.${id}`, { method: 'DELETE' });
+        toast('تم الحذف ✅');
+        loadSummaryOwners();
+      } catch { toast('خطأ في الحذف!', 'error'); }
+    }
+
+    // فتح قسم صاحب ملخص معين — محمي بباسورد هذا الصاحب تحديداً
+    function openAdminOwner(id) {
+      const owner = summaryOwners.find(o => o.id === id);
+      if (!owner) return;
+      _pendingOwnerOpen = owner;
+      document.getElementById('owner-pwd-title').textContent = `كلمة سر قسم: ${owner.name}`;
+      document.getElementById('owner-pwd-input').value = '';
+      document.getElementById('owner-pwd-error').textContent = '';
+      document.getElementById('owner-pwd-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('owner-pwd-input').focus(), 150);
+    }
+
+    function submitOwnerPwd() {
+      const val = document.getElementById('owner-pwd-input').value.trim();
+      if (!_pendingOwnerOpen || val !== _pendingOwnerOpen.password) {
+        document.getElementById('owner-pwd-error').textContent = '❌ كلمة السر غلط، حاول تاني';
+        return;
+      }
+      closeModal('owner-pwd-modal');
+      adminCurrentOwner = _pendingOwnerOpen;
+      _pendingOwnerOpen = null;
+      document.getElementById('admin-summaries-subjects-view').style.display = 'none';
+      document.getElementById('admin-owner-inside-view').style.display = '';
+      document.getElementById('admin-owner-current-name').textContent = adminCurrentOwner.name;
+      loadOwnerSummaries();
+    }
+
+    function backToOwnersView() {
+      adminCurrentOwner = null;
+      document.getElementById('admin-owner-inside-view').style.display = 'none';
+      document.getElementById('admin-summaries-subjects-view').style.display = '';
+      loadSummaryOwners();
+    }
+
+    async function loadOwnerSummaries() {
+      if (!adminCurrentOwner) return;
+      try {
+        const res = await api(`resources?select=*&order=id&owner_id=eq.${adminCurrentOwner.id}`);
+        const items = res.ok ? await res.json() : [];
+        renderAdminOwnerSummaries(items);
+      } catch { renderAdminOwnerSummaries([]); }
+    }
+
+    function renderAdminOwnerSummaries(items) {
+      const container = document.getElementById('admin-owner-summaries-list');
+      if (!items || !items.length) {
+        container.innerHTML = `<div class="empty"><i class="fas fa-sticky-note"></i><p>لا توجد ملخصات — اضغط "إضافة ملخص"</p></div>`;
+        return;
+      }
+      const icons = { pdf: _pdfIconSvg('22px'), video:'🎥', link:'🔗', drive:'📁' };
+      container.innerHTML = items.map((r, i) => `
         <div class="admin-quiz-card" style="animation-delay:${i*0.05}s">
           <div style="flex:1">
-            <h4>${icons[r.file_type] || '📄'} ${r.subject || ''} — ${r.title || ''}</h4>
-            <p style="margin-top:4px"><a href="${r.url}" target="_blank" style="color:var(--green);font-size:0.82rem">${r.url.substring(0,60)}${r.url.length>60?'...':''}</a></p>
+            <h4>${icons[r.file_type] || _pdfIconSvg('22px')} ${r.title || r.subject}</h4>
+            <p style="margin-top:4px"><a href="${r.url}" target="_blank" style="color:var(--amber);font-size:0.82rem">${r.url.substring(0,55)}${r.url.length>55?'...':''}</a></p>
           </div>
           <div class="admin-actions">
-            <button class="btn btn-danger" onclick="deleteResourceAdmin(${r.id},'books')"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-danger" onclick="deleteOwnerSummary(${r.id})"><i class="fas fa-trash"></i></button>
           </div>
         </div>
       `).join('');
+    }
+
+    async function deleteOwnerSummary(id) {
+      const ok = await showConfirm({ title:'حذف الملخص', msg:'هيتحذف نهائياً', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
+      if (!ok) return;
+      try {
+        await deleteResource(id);
+        toast('تم الحذف ✅');
+        loadOwnerSummaries();
+      } catch { toast('خطأ في الحذف!', 'error'); }
+    }
+
+    function showAddOwnerSummaryModal() {
+      if (!adminCurrentOwner) return;
+      addingResourceType = 'owner-summary';
+      document.getElementById('resource-modal-title').innerHTML = `<i class="fas fa-plus" style="color:var(--green);margin-left:8px"></i> إضافة ملخص — ${adminCurrentOwner.name}`;
+      const subjectWrap = document.getElementById('resource-subject-wrap');
+      if (subjectWrap) subjectWrap.style.display = 'none'; // مش محتاجينها هنا — الاسم اتحدد من فولدر الصاحب
+      document.getElementById('resource-subject').value = adminCurrentOwner.name;
+      const titleLabel = document.getElementById('resource-title-label');
+      if (titleLabel) titleLabel.textContent = 'اسم الملخص/المادة';
+      document.getElementById('resource-title').value = '';
+      document.getElementById('resource-url').value = '';
+      setFileTypeSelectValue('pdf');
+      const authorWrap = document.getElementById('resource-author-wrap');
+      if (authorWrap) authorWrap.style.display = 'none'; // اسم الصاحب معروف بالفعل
+      document.getElementById('resource-modal').classList.remove('hidden');
+    }
+
+    // ====================== أصحاب الملخصات — الواجهة العامة للطالب ======================
+    async function openPublicOwner(id, name) {
+      currentPublicOwner = { id, name };
+      document.getElementById('summaries-loading').classList.remove('hidden');
+      document.getElementById('summaries-list').classList.add('hidden');
+      try {
+        const res = await api(`resources?select=*&order=id&owner_id=eq.${id}`);
+        const items = res.ok ? await res.json() : [];
+        renderPublicOwnerSummaries(items, name);
+      } catch { renderPublicOwnerSummaries([], name); }
+    }
+
+    function renderPublicOwnerSummaries(items, name) {
+      document.getElementById('summaries-loading').classList.add('hidden');
+      const container = document.getElementById('summaries-list');
+      container.classList.remove('hidden');
+      const icons  = { pdf: _pdfIconSvg(), video:'🎥', link:'🔗', drive:'📁' };
+      const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
+
+      let html = `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;cursor:pointer;color:var(--amber);font-weight:800" onclick="backToSummariesMain()">
+          <i class="fas fa-arrow-right"></i> رجوع للملخصات
+        </div>
+        <h3 style="margin-bottom:1rem;color:var(--amber);display:flex;align-items:center;gap:8px">
+          <i class="fas fa-user"></i>${name}
+        </h3>`;
+
+      if (!items.length) {
+        html += `<div class="empty"><i class="fas fa-sticky-note"></i><p>لا توجد ملخصات لهذا الشخص بعد</p></div>`;
+      } else {
+        html += items.map((r, i) => `
+          <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
+            <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
+              ${icons[r.file_type] || _pdfIconSvg()}
+            </div>
+            <div class="resource-info" style="flex:1">
+              <h4>${r.title || r.subject}</h4>
+            </div>
+            <a href="${r.url}" target="_blank" rel="noopener"
+              style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;
+              background:#00e676;color:#050509;font-weight:800;font-size:0.82rem;text-decoration:none;
+              flex-shrink:0;font-family:'Cairo',sans-serif;transition:all 0.22s"
+              onmouseover="this.style.background='#00c860';this.style.transform='scale(1.05)'"
+              onmouseout="this.style.background='#00e676';this.style.transform='scale(1)'">
+              <i class="fas fa-download"></i> تحميل
+            </a>
+          </div>`).join('');
+      }
+      container.innerHTML = html;
+    }
+
+    function backToSummariesMain() {
+      currentPublicOwner = null;
+      document.getElementById('summaries-list').classList.remove('hidden');
+      _renderSummariesUI();
     }
 
     async function deleteResourceAdmin(id, type) {
@@ -5323,8 +5295,7 @@ ESSAY
       try {
         await deleteResource(id);
         toast('تم الحذف ✅');
-        if (type === 'books') loadResources('books').then(renderAdminBooks);
-        else if (type === 'lectures') loadResources('lectures').then(renderAdminLecturesGrouped);
+        if (type === 'lectures') loadResources('lectures').then(renderAdminLecturesGrouped);
         else if (type === 'summaries') {
           if (adminSummariesCurrentSubject) {
             loadResources('summaries').then(all => {
@@ -5341,12 +5312,16 @@ ESSAY
     // ====================== ADD RESOURCE MODAL ======================
     function showAddResourceModal(type) {
       addingResourceType = type;
-      const titles = { books:'إضافة كتاب', lectures:'إضافة محاضرة', summaries:'إضافة ملخص' };
+      const titles = { lectures:'إضافة محاضرة', summaries:'إضافة ملخص' };
       document.getElementById('resource-modal-title').innerHTML = `<i class="fas fa-plus" style="color:var(--green);margin-left:8px"></i> ${titles[type] || 'إضافة مورد'}`;
+      const subjectWrap = document.getElementById('resource-subject-wrap');
+      if (subjectWrap) subjectWrap.style.display = '';
       document.getElementById('resource-subject').value = '';
+      const titleLabel = document.getElementById('resource-title-label');
+      if (titleLabel) titleLabel.textContent = 'العنوان التفصيلي';
       document.getElementById('resource-title').value = '';
       document.getElementById('resource-url').value = '';
-      document.getElementById('resource-file-type').value = type === 'books' ? 'pdf' : (type === 'summaries' ? 'pdf' : 'video');
+      setFileTypeSelectValue(type === 'summaries' ? 'pdf' : 'video');
       // إظهار/إخفاء حقل اسم صاحب الملخص
       const authorWrap = document.getElementById('resource-author-wrap');
       if (authorWrap) authorWrap.style.display = (type === 'summaries') ? '' : 'none';
@@ -5359,15 +5334,23 @@ ESSAY
       const title   = document.getElementById('resource-title').value.trim();
       const url     = document.getElementById('resource-url').value.trim();
       const file_type = document.getElementById('resource-file-type').value;
-      const author_name = (document.getElementById('resource-author-name') && addingResourceType === 'summaries')
+      const author_name = (document.getElementById('resource-author-name') && (addingResourceType === 'summaries' || addingResourceType === 'owner-summary'))
         ? document.getElementById('resource-author-name').value.trim() : '';
       if (!subject || !url) return toast('اكتب المادة والرابط على الأقل', 'error');
       try {
+        if (addingResourceType === 'owner-summary') {
+          // ملخص تابع لصاحب ملخص معين — يتحفظ بنفس نوع summaries مع ربطه بالـ owner
+          if (!adminCurrentOwner) throw new Error('no-owner');
+          await createResource({ subject, title, url, file_type, author_name: adminCurrentOwner.name, owner_id: adminCurrentOwner.id, type: 'summaries' });
+          closeModal('resource-modal');
+          toast('تم الحفظ ✅');
+          loadOwnerSummaries();
+          return;
+        }
         await createResource({ subject, title, url, file_type, author_name, type: addingResourceType });
         closeModal('resource-modal');
         toast('تم الحفظ ✅');
-        if (addingResourceType === 'books') loadResources('books').then(renderAdminBooks);
-        else if (addingResourceType === 'lectures') loadResources('lectures').then(renderAdminLecturesGrouped);
+        if (addingResourceType === 'lectures') loadResources('lectures').then(renderAdminLecturesGrouped);
         else if (addingResourceType === 'summaries') {
           // لو داخل مادة معينة، ارجع ليها — غير كده ارجع للقائمة
           if (adminSummariesCurrentSubject) {
@@ -5382,6 +5365,7 @@ ESSAY
       } catch(e) {
         if (e.message === 'no-grade') toast('اختار القسم أولاً!', 'error');
         else if (e.message === 'no-term') toast('اختار الترم أولاً!', 'error');
+        else if (e.message === 'no-owner') toast('خطأ: لا يوجد صاحب ملخص محدد!', 'error');
         else if (e.message?.startsWith('db:')) toast('❌ ' + e.message.slice(3), 'error');
         else toast('خطأ في الاتصال!', 'error');
       }
@@ -5850,10 +5834,55 @@ ESSAY
       document.getElementById(id).classList.add('hidden');
     }
 
+    // ====================== CUSTOM FILE-TYPE DROPDOWN (نوع الملف) ======================
+    const FILE_TYPE_LABELS = { pdf: 'PDF', video: 'فيديو', link: 'رابط', drive: 'Google Drive' };
+
+    function toggleFileTypeDropdown() {
+      const trigger = document.getElementById('resource-file-type-trigger');
+      const options = document.getElementById('resource-file-type-options');
+      const isOpen = options.classList.contains('open');
+      if (isOpen) {
+        options.classList.remove('open');
+        trigger.classList.remove('open');
+      } else {
+        options.classList.add('open');
+        trigger.classList.add('open');
+      }
+    }
+
+    function selectFileType(value) {
+      document.getElementById('resource-file-type').value = value;
+      document.getElementById('resource-file-type-current-label').textContent = FILE_TYPE_LABELS[value] || value;
+      const chosenOption = document.querySelector(`#resource-file-type-options .cft-option[data-value="${value}"]`);
+      const currentIconEl = document.getElementById('resource-file-type-current-icon');
+      if (chosenOption && currentIconEl) {
+        currentIconEl.innerHTML = chosenOption.querySelector('.cft-icon').innerHTML;
+      }
+      document.querySelectorAll('#resource-file-type-options .cft-option').forEach(opt => {
+        opt.classList.toggle('selected', opt.dataset.value === value);
+      });
+      document.getElementById('resource-file-type-options').classList.remove('open');
+      document.getElementById('resource-file-type-trigger').classList.remove('open');
+    }
+
+    // بيتنادى برمجياً بدل "resource-file-type.value = x" عشان تتحدث الأيقونة والنص كمان
+    function setFileTypeSelectValue(value) {
+      selectFileType(value);
+    }
+
+    document.addEventListener('click', function(e) {
+      const wrap = document.getElementById('resource-file-type-select');
+      if (!wrap) return;
+      if (!wrap.contains(e.target)) {
+        document.getElementById('resource-file-type-options').classList.remove('open');
+        document.getElementById('resource-file-type-trigger').classList.remove('open');
+      }
+    });
+
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', function(e) {
         if (e.target === this) {
-          const modals = ['pwd-modal', 'quiz-modal', 'question-modal', 'about-modal', 'review-modal', 'import-modal', 'resource-modal'];
+          const modals = ['pwd-modal', 'quiz-modal', 'question-modal', 'about-modal', 'review-modal', 'import-modal', 'resource-modal', 'owners-master-pwd-modal', 'owner-modal', 'owner-pwd-modal'];
           modals.forEach(m => {
             if (this.id === m) closeModal(m);
           });
@@ -5870,6 +5899,7 @@ ESSAY
     loadGradePasswords().then(() => {
       showGradeSelection();
     });
+    loadOwnersMasterPassword();
 
     // ══════════════════════════════════════════════════
     //  COSMIC SPACE ENGINE — Stars + Aurora + Nebula
@@ -6171,486 +6201,5 @@ ESSAY
 
   </script>
 
-  <!-- ═══════════════════════════════════════════════════════
-       🤖 SPACE BOT SCRIPT — AI CURRICULUM ASSISTANT v2
-  ═══════════════════════════════════════════════════════ -->
-  <script>
-  (function() {
-
-    /* ── STATE ── */
-    let botOpen      = false;
-    let botLoading   = false;
-    let botCtxFlags  = { lectures: true, summaries: true, quizzes: true };
-    let botHistory   = [];
-    let botDragging  = false;
-    let botDragOffX  = 0, botDragOffY = 0;
-    let botDept      = null; // 'general' | 'systems' | null
-
-    const icon       = document.getElementById('space-bot-icon');
-    const sidebar    = document.getElementById('bot-sidebar');
-    const overlay    = document.getElementById('bot-overlay');
-    const messagesEl = document.getElementById('bot-messages');
-    const inputEl    = document.getElementById('bot-input');
-    const sendBtn    = document.getElementById('bot-send-btn');
-
-    /* ── DRAGGABLE ICON ── */
-    let dragMoved = false;
-
-    function onPointerDown(e) {
-      botDragging = true;
-      dragMoved   = false;
-      const rect  = icon.getBoundingClientRect();
-      const cx    = e.clientX ?? e.touches[0].clientX;
-      const cy    = e.clientY ?? e.touches[0].clientY;
-      botDragOffX = cx - rect.left;
-      botDragOffY = cy - rect.top;
-      icon.style.transition = 'none';
-      icon.style.cursor = 'grabbing';
-      e.preventDefault();
-    }
-
-    function onPointerMove(e) {
-      if (!botDragging) return;
-      dragMoved = true;
-      const cx = e.clientX ?? e.touches[0].clientX;
-      const cy = e.clientY ?? e.touches[0].clientY;
-      let nx = Math.max(0, Math.min(window.innerWidth  - icon.offsetWidth,  cx - botDragOffX));
-      let ny = Math.max(0, Math.min(window.innerHeight - icon.offsetHeight, cy - botDragOffY));
-      icon.style.left   = nx + 'px';
-      icon.style.top    = ny + 'px';
-      icon.style.bottom = 'auto';
-      icon.style.right  = 'auto';
-      // Move sidebar to follow icon
-      if (botOpen) positionSidebar();
-      e.preventDefault();
-    }
-
-    function onPointerUp() {
-      if (botDragging) {
-        botDragging = false;
-        icon.style.transition = '';
-        icon.style.cursor = 'grab';
-      }
-    }
-
-    function positionSidebar() {
-      // On mobile — CSS handles position, don't override
-      if (window.innerWidth <= 480) {
-        sidebar.style.left = '';
-        sidebar.style.top  = '';
-        return;
-      }
-      const rect = icon.getBoundingClientRect();
-      const sw   = sidebar.offsetWidth  || 320;
-      const sh   = sidebar.offsetHeight || 460;
-      let left   = rect.left;
-      let top    = rect.top - sh - 10;
-      if (left + sw > window.innerWidth  - 8) left = window.innerWidth  - sw - 8;
-      if (top < 8) top = rect.bottom + 10;
-      if (left < 8) left = 8;
-      sidebar.style.left   = left + 'px';
-      sidebar.style.top    = top  + 'px';
-      sidebar.style.bottom = 'auto';
-    }
-
-    // ── Mouse drag (desktop) ──
-    icon.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      dragMoved = false;
-      onPointerDown(e);
-    });
-    document.addEventListener('mousemove', (e) => { if (botDragging) onPointerMove(e); });
-    document.addEventListener('mouseup', () => { if (botDragging) onPointerUp(); });
-    icon.addEventListener('click', () => { if (!dragMoved) toggleBot(); dragMoved = false; });
-
-    // ── Touch (mobile) — simple tap to toggle, drag to move ──
-    let touchStartX = 0, touchStartY = 0;
-    icon.addEventListener('touchstart', (e) => {
-      dragMoved = false;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    icon.addEventListener('touchmove', (e) => {
-      const dx = Math.abs(e.touches[0].clientX - touchStartX);
-      const dy = Math.abs(e.touches[0].clientY - touchStartY);
-      if (dx > 8 || dy > 8) {
-        dragMoved = true;
-        if (!botDragging) onPointerDown(e);
-        onPointerMove(e);
-      }
-    }, { passive: false });
-
-    icon.addEventListener('touchend', (e) => {
-      if (botDragging) {
-        onPointerUp();
-      } else if (!dragMoved) {
-        // Pure tap — toggle bot
-        e.preventDefault();
-        toggleBot();
-      }
-      dragMoved = false;
-    }, { passive: false });
-
-    document.addEventListener('touchend', () => { if (botDragging) onPointerUp(); });
-
-
-
-    /* ── TOGGLE / OPEN / CLOSE ── */
-    function toggleBot() {
-      botOpen ? closeBot() : openBot();
-    }
-
-    function openBot() {
-      positionSidebar();
-      botOpen = true;
-      sidebar.classList.add('open');
-      if (!botDept) showDeptPicker();
-      // Don't auto-focus on mobile — causes keyboard to open instead of bot
-      if (window.innerWidth > 480) {
-        setTimeout(() => inputEl && inputEl.focus(), 400);
-      }
-    }
-
-    window.closeBotSidebar = function() { closeBot(); };
-    function closeBot() {
-      botOpen = false;
-      sidebar.classList.remove('open');
-      // Remove any stray overlay
-      if (overlay) { overlay.classList.remove('show'); }
-    }
-
-    /* ── DEPT PICKER ── */
-    function showDeptPicker() {
-      const msgArea = messagesEl;
-      // Remove old picker if exists
-      const old = document.getElementById('bot-dept-picker');
-      if (old) old.remove();
-
-      const picker = document.createElement('div');
-      picker.id = 'bot-dept-picker';
-      picker.style.cssText = `
-        background: rgba(56,189,248,0.06);
-        border: 1px solid rgba(56,189,248,0.2);
-        border-radius: 14px;
-        padding: 14px;
-        margin: 4px 0;
-        animation: msgFadeIn 0.35s cubic-bezier(0.22,1,0.36,1);
-      `;
-      picker.innerHTML = `
-        <div style="font-size:0.85rem;font-weight:700;color:var(--accent);margin-bottom:10px;text-align:center">
-          🎓 اختار القسم اللي تبعه
-        </div>
-        <div style="display:flex;gap:8px;justify-content:center">
-          <button onclick="window.setBotDept('general')" style="
-            flex:1;padding:10px 8px;border-radius:11px;border:1px solid rgba(45,212,191,0.3);
-            background:rgba(45,212,191,0.08);color:var(--teal);font-family:'Cairo',sans-serif;
-            font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;
-          ">🏫 إدارة أعمال عامة</button>
-          <button onclick="window.setBotDept('systems')" style="
-            flex:1;padding:10px 8px;border-radius:11px;border:1px solid rgba(167,139,250,0.3);
-            background:rgba(167,139,250,0.08);color:var(--violet);font-family:'Cairo',sans-serif;
-            font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.2s;
-          ">💻 نظم ومعلومات</button>
-        </div>
-      `;
-      const typing = document.getElementById('bot-typing');
-      messagesEl.insertBefore(picker, typing);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    window.setBotDept = function(dept) {
-      botDept = dept;
-      const picker = document.getElementById('bot-dept-picker');
-      if (picker) picker.remove();
-      const deptName = dept === 'general' ? '🏫 إدارة أعمال عامة' : '💻 نظم ومعلومات';
-      appendMsg('bot', `تمام! هجيبلك المحتوى الخاص بـ <strong>${deptName}</strong> بس. اسألني عن أي حاجة 🚀`);
-      document.getElementById('bot-suggestions').style.display = '';
-      // Update dept indicator in header
-      const statusEl = document.getElementById('bot-status-text');
-      if (statusEl) statusEl.textContent = `قسم: ${deptName}`;
-    };
-
-    /* ── CONTEXT TOGGLE ── */
-    window.toggleBotCtx = function(chip, key) {
-      botCtxFlags[key] = !botCtxFlags[key];
-      chip.classList.toggle('active', botCtxFlags[key]);
-    };
-
-    /* ── CLEAR ── */
-    window.clearBotChat = function() {
-      botHistory = [];
-      botDept    = null;
-      messagesEl.innerHTML = `
-        <div class="bot-msg bot">
-          <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
-          <div class="bot-msg-bubble">👋 تم مسح المحادثة! اختار قسمك الأول. 🚀</div>
-        </div>
-        <div class="bot-msg bot" id="bot-typing">
-          <div class="bot-msg-avatar"><i class="fas fa-robot"></i></div>
-          <div class="typing-dots">
-            <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-          </div>
-        </div>`;
-      showDeptPicker();
-    };
-
-    /* ── SUGGESTIONS ── */
-    window.sendBotSuggestion = function(btn) {
-      if (!botDept) { showDeptPicker(); return; }
-      inputEl.value = btn.textContent.trim();
-      sendBotMessage();
-    };
-
-    /* ── AUTO RESIZE ── */
-    window.autoResizeBotInput = function(el) {
-      el.style.height = 'auto';
-      el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-    };
-
-    /* ── KEYDOWN ── */
-    window.botInputKeydown = function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBotMessage(); }
-    };
-
-    /* ── FETCH CURRICULUM CONTEXT ── */
-    async function fetchCurriculumContext() {
-      const ctx = [];
-      const grade = window.currentGrade;
-      const term  = window.currentTerm;
-
-      // Build dept filter
-      let deptFilter = '';
-      if (botDept === 'general')  deptFilter = '&department=eq.general';
-      if (botDept === 'systems')  deptFilter = '&department=eq.systems';
-
-      const gradeTermFilter = (grade && term)
-        ? `&grade=eq.${grade}&term=eq.${term}`
-        : '';
-
-      const filter = gradeTermFilter + deptFilter;
-
-      const headers = {
-        'apikey': window.SUPABASE_KEY || '',
-        'Authorization': `Bearer ${window.SUPABASE_KEY || ''}`,
-        'Content-Type': 'application/json'
-      };
-      const SB_URL = window.SUPABASE_URL || '';
-
-      try {
-        // ── Lectures ──
-        if (botCtxFlags.lectures) {
-          const res = await fetch(
-            `${SB_URL}/rest/v1/resources?select=title,subject,url,file_type&type=eq.lectures${filter}&limit=80`,
-            { headers }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.length) {
-              ctx.push(`\n## المحاضرات (${data.length}):`);
-              const grouped = {};
-              data.forEach(r => {
-                const sub = r.subject || 'عام';
-                if (!grouped[sub]) grouped[sub] = [];
-                grouped[sub].push(`  - "${r.title}" [${r.file_type || 'رابط'}]`);
-              });
-              Object.entries(grouped).forEach(([sub, items]) => {
-                ctx.push(`### ${sub}:`);
-                ctx.push(items.join('\n'));
-              });
-            }
-          }
-        }
-
-        // ── Summaries ──
-        if (botCtxFlags.summaries) {
-          const res = await fetch(
-            `${SB_URL}/rest/v1/resources?select=title,subject,author_name&type=eq.summaries${filter}&limit=80`,
-            { headers }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.length) {
-              ctx.push(`\n## الملخصات (${data.length}):`);
-              const grouped = {};
-              data.forEach(r => {
-                const sub = r.subject || 'عام';
-                if (!grouped[sub]) grouped[sub] = [];
-                grouped[sub].push(`  - "${r.title}" ${r.author_name ? '(' + r.author_name + ')' : ''}`);
-              });
-              Object.entries(grouped).forEach(([sub, items]) => {
-                ctx.push(`### ${sub}:`);
-                ctx.push(items.join('\n'));
-              });
-            }
-          }
-        }
-
-        // ── Quizzes ──
-        if (botCtxFlags.quizzes) {
-          const res = await fetch(
-            `${SB_URL}/rest/v1/quizzes?select=title,section,lq_folder,questions${filter}&published=eq.true&limit=80`,
-            { headers }
-          );
-          if (res.ok) {
-            const data = await res.json();
-            if (data && data.length) {
-              const exams     = data.filter(q => !q.section || q.section === 'exams');
-              const lqQuizzes = data.filter(q => q.section === 'lecture-quizzes');
-
-              if (exams.length) {
-                ctx.push(`\n## الامتحانات (${exams.length}):`);
-                exams.forEach(q => {
-                  if (!Array.isArray(q.questions)) return;
-                  ctx.push(`### ${q.title} (${q.questions.length} سؤال):`);
-                  q.questions.forEach((qs, i) => {
-                    ctx.push(`  س${i+1}: ${qs.question}`);
-                    if (qs.type === 'mcq' && Array.isArray(qs.options)) {
-                      qs.options.forEach((opt, idx) => {
-                        const mark = idx === qs.correct ? '✓' : ' ';
-                        ctx.push(`    ${mark} ${idx+1}) ${opt}`);
-                      });
-                      if (qs.explanation) ctx.push(`    💡 ${qs.explanation}`);
-                    } else if (qs.type === 'tf') {
-                      ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح ✓' : 'خطأ ✓'}`);
-                    }
-                  });
-                });
-              }
-
-              if (lqQuizzes.length) {
-                ctx.push(`\n## كويزات المحاضرات (${lqQuizzes.length}):`);
-                lqQuizzes.forEach(q => {
-                  if (!Array.isArray(q.questions)) return;
-                  ctx.push(`### [${q.lq_folder || 'عام'}] ${q.title}:`);
-                  q.questions.forEach((qs, i) => {
-                    ctx.push(`  س${i+1}: ${qs.question}`);
-                    if (qs.type === 'mcq' && Array.isArray(qs.options)) {
-                      qs.options.forEach((opt, idx) => {
-                        const mark = idx === qs.correct ? '✓' : ' ';
-                        ctx.push(`    ${mark} ${idx+1}) ${opt}`);
-                      });
-                    } else if (qs.type === 'tf') {
-                      ctx.push(`    الإجابة: ${qs.correct === 0 ? 'صح ✓' : 'خطأ ✓'}`);
-                    }
-                  });
-                });
-              }
-            }
-          }
-        }
-
-      } catch(err) {
-        console.warn('Bot context error:', err);
-      }
-
-      return ctx.join('\n');
-    }
-
-    /* ── APPEND MESSAGE ── */
-    function appendMsg(role, content) {
-      const typing = document.getElementById('bot-typing');
-      const div = document.createElement('div');
-      div.className = `bot-msg ${role}`;
-      div.innerHTML = `
-        <div class="bot-msg-avatar"><i class="fas fa-${role === 'bot' ? 'robot' : 'user'}"></i></div>
-        <div class="bot-msg-bubble">${content}</div>`;
-      messagesEl.insertBefore(div, typing);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-      return div;
-    }
-
-    /* ── SEND MESSAGE ── */
-    window.sendBotMessage = async function() {
-      const text = inputEl.value.trim();
-      if (!text || botLoading) return;
-      if (!botDept) { showDeptPicker(); return; }
-
-      document.getElementById('bot-suggestions').style.display = 'none';
-      appendMsg('user', text);
-      botHistory.push({ role: 'user', content: text });
-      inputEl.value = '';
-      inputEl.style.height = 'auto';
-
-      botLoading = true;
-      sendBtn.disabled = true;
-      const typing = document.getElementById('bot-typing');
-      typing.classList.add('show');
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-
-      const statusEl = document.getElementById('bot-status-text');
-      if (statusEl) statusEl.textContent = 'جاري جلب المحتوى...';
-
-      try {
-        const curriculumCtx = await fetchCurriculumContext();
-        if (statusEl) statusEl.textContent = 'جاري التفكير...';
-
-        const deptName = botDept === 'general' ? 'إدارة أعمال عامة' : 'نظم ومعلومات';
-        const grade    = window.currentGrade;
-        const term     = window.currentTerm;
-
-        const systemPrompt = `أنت مساعد ذكي متخصص في مناهج كلية نظم ومعلومات، قسم ${deptName}.
-
-مهمتك الإجابة على أسئلة الطلاب بخصوص المحتوى التعليمي الخاص بقسم ${deptName} فقط.
-
-${curriculumCtx
-  ? `محتوى المنصة المتاح لقسم ${deptName}:\n${curriculumCtx}`
-  : `لا يوجد محتوى محدد متاح لقسم ${deptName} بعد.`
-}
-
-تعليمات مهمة جداً:
-1. أجب بالعربية دائماً
-2. للأسئلة في الامتحانات: اذكر الإجابة الصحيحة (المعلمة بـ ✓) بالضبط كما هي في المحتوى
-3. لا تخلط بين مناهج قسم ${deptName} وأي قسم آخر
-4. لو الطالب طلب الانتقال لمادة معينة، قوله يدور عليها في القائمة الجانبية للمنصة
-5. كن موجزاً ومفيداً وودوداً`;
-
-        const messages = [];
-        botHistory.slice(-6, -1).forEach(h => {
-          messages.push({ role: h.role === 'bot' ? 'assistant' : 'user', content: h.content });
-        });
-        messages.push({ role: 'user', content: text });
-
-        const response = await fetch(`${window.SUPABASE_URL}/functions/v1/ai-proxy`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${window.SUPABASE_KEY}`,
-          },
-          body: JSON.stringify({
-            model: 'groq',
-            max_tokens: 1000,
-            system: systemPrompt,
-            messages: messages
-          })
-        });
-
-        if (!response.ok) throw new Error('API error: ' + response.status);
-        const data = await response.json();
-        const reply = data.content?.[0]?.text || '⚠️ حصل خطأ في الرد.';
-        const formatted = reply
-          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\n/g, '<br>');
-
-        typing.classList.remove('show');
-        appendMsg('bot', formatted);
-        botHistory.push({ role: 'bot', content: reply });
-        const deptLabel = botDept === 'general' ? '🏫 إدارة أعمال' : '💻 نظم ومعلومات';
-        if (statusEl) statusEl.textContent = `قسم: ${deptLabel}`;
-
-      } catch(err) {
-        typing.classList.remove('show');
-        appendMsg('bot', `⚠️ حصل خطأ: ${err.message || 'تعذر الاتصال'}. جرب تاني.`);
-        if (statusEl) statusEl.textContent = 'جاهز للمساعدة';
-        console.error('Bot error:', err);
-      } finally {
-        botLoading = false;
-        sendBtn.disabled = false;
-        setTimeout(() => inputEl && inputEl.focus(), 100);
-      }
-    };
-
-  })();
-  </script>
 </body>
 </html>
