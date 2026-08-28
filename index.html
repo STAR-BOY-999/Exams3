@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منصة كلية نظم ومعلومات</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <title>كلية نظم ومعلومات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -1596,6 +1596,114 @@
     .admin-subject-info p  { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; }
     .admin-subject-actions { display: flex; gap: 6px; }
 
+    /* ─── OWNER LEADER CARD (كروت أصحاب الملخصات — الصورة على الحرف بكيرف) ─── */
+    .owner-leader-card {
+      position: relative;
+      margin-bottom: 1.6rem;
+      cursor: pointer;
+      animation: fadeUp 0.4s ease both;
+    }
+    .owner-leader-card:hover .owner-leader-inner {
+      border-color: rgba(251,191,36,0.6);
+      transform: translateY(-4px);
+      box-shadow: 0 14px 34px rgba(251,191,36,0.16);
+    }
+    .owner-leader-card:hover .owner-leader-photo-wrap { transform: translateX(-50%) scale(1.05); }
+    /* الجسم الداخلي للكارت (بيقص الزوايا والمنحنى العلوي) */
+    .owner-leader-inner {
+      position: relative;
+      background: linear-gradient(160deg, #100e08 0%, #05050a 80%);
+      border: 1px solid rgba(251,191,36,0.28);
+      border-radius: 20px;
+      overflow: hidden;
+      padding-top: 30px;
+      transition: all 0.32s cubic-bezier(0.22,1,0.36,1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    }
+    /* شريط أعلى الكارت — بيتقوّس بكيرف حوالين الصورة */
+    .owner-leader-header { position: absolute; top: 0; left: 0; right: 0; height: 54px; z-index: 1; }
+    .owner-leader-header svg { display: block; width: 100%; height: 100%; }
+    .owner-leader-header path { fill: rgba(251,191,36,0.1); }
+    /* شريط "قائد" في الركن */
+    .owner-leader-ribbon {
+      position: absolute; top: 0; right: 16px;
+      background: linear-gradient(180deg, #fde68a, #fbbf24 45%, #b45309);
+      color: #241800;
+      font-size: 0.72rem;
+      width: 24px; padding: 5px 0 12px;
+      display: flex; align-items: center; justify-content: center;
+      clip-path: polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%);
+      box-shadow: 0 3px 10px rgba(251,191,36,0.3);
+      z-index: 2;
+    }
+    /* الصورة — على حرف الكارت بالظبط، نصها برّه ونصها جوه الكيرف */
+    .owner-leader-photo-wrap {
+      position: absolute; top: -32px; left: 50%; transform: translateX(-50%);
+      z-index: 4;
+      width: 72px; height: 72px; border-radius: 50%;
+      padding: 3px;
+      background: conic-gradient(from 180deg, #fde68a, #fbbf24, #b45309, #fbbf24, #fde68a);
+      box-shadow: 0 4px 16px rgba(251,191,36,0.28);
+      transition: transform 0.3s ease;
+    }
+    .owner-leader-photo {
+      width: 100%; height: 100%; border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      border: 3px solid #05050a;
+    }
+    .owner-leader-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .owner-leader-photo i { font-size: 1.6rem; color: var(--amber); opacity: 0.55; }
+    .owner-leader-photo-edit {
+      position: absolute; bottom: -2px; left: -2px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--amber); color: #241800;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.64rem; border: 2px solid #05050a;
+      cursor: pointer; z-index: 5;
+      transition: transform 0.2s;
+    }
+    .owner-leader-photo-edit:hover { transform: scale(1.15); }
+    /* محتوى الاسم واللقب */
+    .owner-leader-content {
+      position: relative; z-index: 2;
+      padding: 1.6rem 1.3rem 1.1rem;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 3px; text-align: center;
+    }
+    .owner-leader-content h4 {
+      font-family: 'Amiri', 'Cairo', serif;
+      font-size: 1.28rem; font-weight: 700; color: #fff; line-height: 1.25;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .owner-leader-verified {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; flex-shrink: 0;
+      filter: drop-shadow(0 0 4px rgba(29,155,240,0.5));
+    }
+    .owner-leader-verified svg { width: 100%; height: 100%; display: block; }
+    .owner-leader-tag {
+      font-size: 0.64rem; font-weight: 800; letter-spacing: 1.6px;
+      color: var(--amber); text-transform: uppercase;
+    }
+    .owner-leader-divider {
+      width: 65%; height: 1px; margin: 5px 0;
+      background: linear-gradient(90deg, transparent, rgba(251,191,36,0.55), transparent);
+    }
+    .owner-leader-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1px solid rgba(251,191,36,0.32);
+      border-radius: 999px; padding: 4px 13px;
+      font-size: 0.72rem; color: var(--text-dim);
+    }
+    .owner-leader-pill i { color: var(--amber); font-size: 0.68rem; }
+    /* زرار حذف الأدمن — ركن مقابل لشريط "قائد" */
+    .owner-leader-delete {
+      position: absolute; top: 8px; left: 12px; z-index: 3;
+    }
+    .owner-leader-delete .btn { padding: 4px 8px; font-size: 0.72rem; }
+
     /* ─── ADMIN SECTION BREADCRUMB ─── */
     .admin-section-breadcrumb {
       display: flex; align-items: center; gap: 6px;
@@ -2683,12 +2791,23 @@ ESSAY
         <label>كلمة سر خاصة بقسمه</label>
         <input type="text" id="owner-password-input" placeholder="كلمة سر لإدارة ملخصاته فقط">
       </div>
+      <div class="form-group">
+        <label>صورة صاحب الملخص (اختياري)</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="position:relative;width:60px;height:60px;border-radius:50%;overflow:hidden;background:var(--surface2);border:2px solid rgba(251,191,36,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="fas fa-user" id="owner-photo-preview-icon" style="color:var(--amber);opacity:0.5;font-size:1.3rem"></i>
+            <img id="owner-photo-preview-img" style="width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0">
+          </div>
+          <input type="file" id="owner-photo-input" accept="image/*" onchange="previewOwnerPhoto(event)" style="flex:1;font-size:0.8rem">
+        </div>
+      </div>
       <div class="modal-actions">
         <button class="btn btn-ghost" onclick="closeModal('owner-modal')">إلغاء</button>
         <button class="btn btn-primary" onclick="saveOwner()"><i class="fas fa-save"></i> حفظ</button>
       </div>
     </div>
   </div>
+  <input type="file" id="owner-photo-edit-input" accept="image/*" style="display:none" onchange="handleOwnerPhotoEditChange(event)">
 
   <!-- MODAL: باسورد قسم صاحب ملخص معين -->
   <div id="owner-pwd-modal" class="modal-overlay hidden">
@@ -3052,6 +3171,12 @@ ESSAY
 
     // ====================== أصحاب الملخصات (SUMMARY OWNERS) — STATE ======================
     let summaryOwnersMasterPassword = null; // باسورد إضافة صاحب ملخص جديد — من جدول app_passwords
+    // شكل الكيرف اللي بيتقوّس حوالين صورة صاحب الملخص أعلى الكارت
+    const OWNER_HEADER_CURVE_SVG = `<svg viewBox="0 0 300 54" preserveAspectRatio="none"><path d="M20,0 H280 Q300,0 300,20 L300,24 L185,24 C170,24 170,54 150,54 C130,54 130,24 115,24 L0,24 L0,20 Q0,0 20,0 Z"/></svg>`;
+    // علامة التوثيق الزرقاء (نجمة 12 ضلع + علامة صح)
+    const OWNER_VERIFIED_BADGE_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,2 L59.84,13.29 L74,8.43 L76.87,23.13 L91.57,26 L86.71,40.16 L98,50 L86.71,59.84 L91.57,74 L76.87,76.87 L74,91.57 L59.84,86.71 L50,98 L40.16,86.71 L26,91.57 L23.13,76.87 L8.43,74 L13.29,59.84 L2,50 L13.29,40.16 L8.43,26 L23.13,23.13 L26,8.43 L40.16,13.29 Z" fill="#3b9df0"/><path d="M30,53 L43,66 L72,36" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    // بيحدد اتجاه اسم صاحب الملخص (عربي = يمين لشمال، إنجليزي = شمال ليمين) عشان مكان علامة التوثيق
+    function ownerNameDir(name) { return /[\u0600-\u06FF]/.test(name || '') ? 'rtl' : 'ltr'; }
     let summaryOwners = [];                 // أصحاب الملخصات في القسم/الترم الحالي (للأدمن)
     let adminSummariesMode = 'subjects';    // 'subjects' | 'owners' — وضع تصفح الملخصات في الأدمن
     let adminCurrentOwner  = null;          // الصاحب المفتوح حالياً بعد إدخال باسورده
@@ -3680,13 +3805,22 @@ ESSAY
         html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>أصحاب الملخصات</div>`;
         html += `<div style="margin-bottom:1.4rem">`;
         html += owners.map((o, i) => `
-          <div class="admin-subject-card" style="animation-delay:${i*0.06}s" onclick="openPublicOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
-            <div class="admin-subject-folder-icon"><i class="fas fa-user"></i></div>
-            <div class="admin-subject-info">
-              <h4>${o.name}</h4>
-              <p>اضغط لعرض ملخصاته وتحميلها</p>
+          <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openPublicOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
+            <div class="owner-leader-inner">
+              <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+              <div class="owner-leader-ribbon"><i class="fas fa-crown"></i></div>
+              <div class="owner-leader-content">
+                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب ملخصات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+                <div class="owner-leader-tag">صاحب ملخصات</div>
+                <div class="owner-leader-divider"></div>
+                <div class="owner-leader-pill"><i class="fas fa-book-open"></i> اضغط لعرض الملخصات</div>
+              </div>
             </div>
-            <i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:0.85rem;margin-right:4px"></i>
+            <div class="owner-leader-photo-wrap">
+              <div class="owner-leader-photo">
+                ${o.photo_url ? `<img src="${o.photo_url}" alt="${o.name}">` : `<i class="fas fa-user"></i>`}
+              </div>
+            </div>
           </div>
         `).join('');
         html += `</div>`;
@@ -5118,18 +5252,30 @@ ESSAY
         return;
       }
       container.innerHTML = summaryOwners.map((o, i) => `
-        <div class="admin-subject-card" style="animation-delay:${i*0.06}s" onclick="openAdminOwner(${o.id})">
-          <div class="admin-subject-folder-icon"><i class="fas fa-user"></i></div>
-          <div class="admin-subject-info">
-            <h4>${o.name}</h4>
-            <p>ادخل باسورد قسمه لإدارة ملخصاته</p>
+        <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openAdminOwner(${o.id})">
+          <div class="owner-leader-inner">
+            <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+            <div class="owner-leader-ribbon"><i class="fas fa-crown"></i></div>
+            <div class="owner-leader-delete" onclick="event.stopPropagation()">
+              <button class="btn btn-danger" title="حذف صاحب الملخص بالكامل" onclick="deleteOwnerAdmin(${o.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="owner-leader-content">
+              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب ملخصات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+              <div class="owner-leader-tag">صاحب ملخصات</div>
+              <div class="owner-leader-divider"></div>
+              <div class="owner-leader-pill"><i class="fas fa-lock"></i> ادخل باسورد قسمه للإدارة</div>
+            </div>
           </div>
-          <div class="admin-subject-actions" onclick="event.stopPropagation()">
-            <button class="btn btn-danger" title="حذف صاحب الملخص بالكامل" onclick="deleteOwnerAdmin(${o.id})">
-              <i class="fas fa-trash"></i>
-            </button>
+          <div class="owner-leader-photo-wrap">
+            <div class="owner-leader-photo">
+              ${o.photo_url ? `<img src="${o.photo_url}" alt="${o.name}">` : `<i class="fas fa-user"></i>`}
+            </div>
+            <div class="owner-leader-photo-edit" onclick="event.stopPropagation(); triggerOwnerPhotoChange(${o.id})" title="تغيير الصورة">
+              <i class="fas fa-camera"></i>
+            </div>
           </div>
-          <i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:0.85rem;margin-right:4px"></i>
         </div>
       `).join('');
     }
@@ -5140,9 +5286,74 @@ ESSAY
       askOwnersMasterPassword(() => {
         document.getElementById('owner-name-input').value = '';
         document.getElementById('owner-password-input').value = '';
+        document.getElementById('owner-photo-input').value = '';
+        ownerPhotoDataUrl = null;
+        document.getElementById('owner-photo-preview-img').style.display = 'none';
+        document.getElementById('owner-photo-preview-img').src = '';
+        document.getElementById('owner-photo-preview-icon').style.display = '';
         document.getElementById('owner-modal').classList.remove('hidden');
         setTimeout(() => document.getElementById('owner-name-input').focus(), 100);
       });
+    }
+
+    // ── صورة صاحب الملخص: ضغط وتحويل لـ base64 ──
+    let ownerPhotoDataUrl = null;
+    let _editingOwnerPhotoId = null;
+
+    function compressImageToDataUrl(file, maxSize = 320, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            let { width, height } = img;
+            if (width > height) { if (width > maxSize) { height = Math.round(height * maxSize / width); width = maxSize; } }
+            else { if (height > maxSize) { width = Math.round(width * maxSize / height); height = maxSize; } }
+            const canvas = document.createElement('canvas');
+            canvas.width = width; canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = () => reject(new Error('صورة غير صالحة'));
+          img.src = e.target.result;
+        };
+        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function previewOwnerPhoto(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        ownerPhotoDataUrl = await compressImageToDataUrl(file);
+        const img = document.getElementById('owner-photo-preview-img');
+        img.src = ownerPhotoDataUrl;
+        img.style.display = 'block';
+        document.getElementById('owner-photo-preview-icon').style.display = 'none';
+      } catch { toast('تعذر تحميل الصورة!', 'error'); }
+    }
+
+    function triggerOwnerPhotoChange(id) {
+      _editingOwnerPhotoId = id;
+      document.getElementById('owner-photo-edit-input').click();
+    }
+
+    async function handleOwnerPhotoEditChange(e) {
+      const file = e.target.files[0];
+      if (!file || !_editingOwnerPhotoId) return;
+      try {
+        const dataUrl = await compressImageToDataUrl(file);
+        const res = await api(`summary_owners?id=eq.${_editingOwnerPhotoId}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ photo_url: dataUrl })
+        });
+        if (!res.ok) throw new Error();
+        toast('✅ تم تحديث الصورة');
+        loadSummaryOwners();
+      } catch { toast('خطأ في تحديث الصورة!', 'error'); }
+      e.target.value = '';
+      _editingOwnerPhotoId = null;
     }
 
     function askOwnersMasterPassword(cb) {
@@ -5177,7 +5388,7 @@ ESSAY
       try {
         const res = await api('summary_owners', {
           method: 'POST',
-          body: JSON.stringify({ name, password, grade: currentGrade, term: currentTerm })
+          body: JSON.stringify({ name, password, grade: currentGrade, term: currentTerm, photo_url: ownerPhotoDataUrl || null })
         });
         if (!res.ok) throw new Error();
         closeModal('owner-modal');
