@@ -2034,48 +2034,15 @@
         <i class="fas fa-home"></i><span class="btn-text"> الرئيسية</span>
       </button>
       <button class="btn btn-primary" onclick="promptAdmin()">
-        <i class="fas fa-cog"></i><span class="btn-text"> الإدارة</span>
+        <i class="fas fa-cog"></i><span class="btn-text"> Dashboard</span>
       </button>
     </div>
   </nav>
 
   <div id="main">
 
-    <!-- GRADE SELECTION PAGE -->
-    <div id="grade-selection-page">
-      <h2 class="page-title" style="animation-delay:0s">🎓 كلية <span>نظم ومعلومات</span></h2>
-      <p class="page-sub" style="animation-delay:0.1s">اختر القسم</p>
-      <div class="grades-grid" style="max-width:340px;grid-template-columns:1fr">
-
-        <div class="grade-card grade-card-2" onclick="selectGrade('bis')" style="animation-delay:0.17s;min-height:240px">
-          <div class="grade-card-top"></div>
-          <div class="grade-card-body">
-            <div class="grade-icon-wrap">
-              <i class="fas fa-briefcase" style="color:#38bdf8"></i>
-            </div>
-            <div class="grade-num" style="font-size:1.3rem;margin-bottom:0.4rem;letter-spacing:1px">BIS</div>
-            <div class="grade-label">نظم ومعلومات أعمال</div>
-            <div class="grade-sub">Business Information Systems</div>
-            <div class="grade-arrow" style="color:#38bdf8">
-              <span>ادخل</span>
-              <i class="fas fa-arrow-left"></i>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <!-- TERM SELECTION PAGE -->
     <div id="term-selection-page" class="hidden">
-      <div class="breadcrumb">
-        <span onclick="showGradeSelection()"><i class="fas fa-home"></i> الرئيسية</span>
-        <span class="sep"><i class="fas fa-chevron-left" style="font-size:0.7rem"></i></span>
-        <span class="current" id="term-breadcrumb-grade"></span>
-      </div>
-      <button class="btn btn-ghost" onclick="showGradeSelection()" style="margin-bottom:1rem">
-        <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
-      </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem" id="term-page-title"></h2>
       <p class="page-sub" style="text-align:right;margin-bottom:0">اختر الفصل الدراسي</p>
       <div class="grades-grid" style="max-width:600px;grid-template-columns:1fr 1fr;margin-top:1.5rem">
@@ -2381,7 +2348,7 @@
       <div class="admin-header">
         <h2 style="font-size:1.8rem;font-weight:900">
           <i class="fas fa-shield-alt" style="color:var(--teal);margin-left:8px"></i>
-          لوحة الإدارة
+         Dashboard
           <span id="admin-grade-label" style="font-size:1rem;color:var(--teal);margin-right:8px"></span>
         </h2>
         <!-- زر امتحان جديد يظهر فقط عند قسم الامتحانات -->
@@ -2410,14 +2377,20 @@
       </div>
       <!-- Lectures section -->
       <div id="admin-section-lectures" class="hidden">
-        <!-- View 1: قائمة المواد (المجلدات) -->
+        <!-- View 1: قائمة المواد (المجلدات) + أصحاب محاضرات -->
         <div id="admin-lectures-subjects-view">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-            <p style="color:var(--text-dim);font-size:0.9rem">اختر مادة أو أضف مادة جديدة</p>
-            <button class="btn btn-primary" onclick="showAddSubjectModal('lectures')">
-              <i class="fas fa-folder-plus"></i> إضافة مادة
-            </button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+            <p style="color:var(--text-dim);font-size:0.9rem">المواد وأصحاب المحاضرات — كل واحد فولدر بيدخله لوحده</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="showAddLectureOwnerModal()">
+                <i class="fas fa-user-plus"></i> Add Owner
+              </button>
+              <button class="btn btn-primary" onclick="showAddSubjectModal('lectures')">
+                <i class="fas fa-folder-plus"></i> إضافة مادة
+              </button>
+            </div>
           </div>
+          <div id="admin-lecture-owners-list"></div>
           <div id="admin-lectures-subjects-list"></div>
         </div>
         <!-- View 2: محتوى المادة (المحاضرات داخل المادة) -->
@@ -2435,6 +2408,22 @@
             <span id="admin-lectures-current-subject"></span>
           </div>
           <div id="admin-lectures-inside-list"></div>
+        </div>
+        <!-- View 3: محاضرات صاحب معين (بعد إدخال باسورد قسمه) -->
+        <div id="admin-lecture-owner-inside-view" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <button class="btn btn-ghost" onclick="backToLectureOwnersView()">
+              <i class="fas fa-arrow-right"></i> رجوع للمواد
+            </button>
+            <button class="btn btn-primary" onclick="showAddOwnerLectureModal()">
+              <i class="fas fa-plus"></i> إضافة محاضرة
+            </button>
+          </div>
+          <div id="admin-lecture-owner-inside-title" style="font-size:1.1rem;font-weight:900;color:var(--amber);margin-bottom:1rem;display:flex;align-items:center;gap:8px">
+            <i class="fas fa-user"></i>
+            <span id="admin-lecture-owner-current-name"></span>
+          </div>
+          <div id="admin-lecture-owner-lectures-list"></div>
         </div>
       </div>
       <!-- Lecture Quizzes section -->
@@ -2474,7 +2463,7 @@
             <p style="color:var(--text-dim);font-size:0.9rem">المواد وأصحاب الملخصات — كل واحد فولدر بيدخله لوحده</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-primary" onclick="showAddOwnerModal()">
-                <i class="fas fa-user-plus"></i> إضافة صاحب ملخص
+                <i class="fas fa-user-plus"></i> Add Owner
               </button>
               <button class="btn btn-primary" onclick="showAddSubjectModal('summaries')">
                 <i class="fas fa-folder-plus"></i> إضافة مادة
@@ -2752,7 +2741,7 @@ ESSAY
       </div>
       <!-- حقل اسم صاحب الملخص — يظهر فقط عند إضافة ملخص -->
       <div class="form-group" id="resource-author-wrap" style="display:none">
-        <label><i class="fas fa-user" style="margin-left:5px;color:var(--amber)"></i> اسم صاحب الملخص</label>
+        <label><i class="fas fa-user" style="margin-left:5px;color:var(--amber)"></i> اسم الOwner</label>
         <input type="text" id="resource-author-name" placeholder="مثال: أحمد محمد">
       </div>
       <div class="modal-actions">
@@ -2765,7 +2754,7 @@ ESSAY
   <!-- MODAL: كلمة سر إدارة أصحاب الملخصات (باسورد رئيسي منفصل) -->
   <div id="owners-master-pwd-modal" class="modal-overlay hidden">
     <div class="modal">
-      <h3><i class="fas fa-user-shield" style="color:var(--amber);margin-left:8px"></i> كلمة سر إدارة أصحاب الملخصات</h3>
+      <h3><i class="fas fa-user-shield" style="color:var(--amber);margin-left:8px"></i> <span id="owners-master-pwd-title">كلمة سر إدارة الOwners</span></h3>
       <div class="form-group">
         <label>كلمة السر</label>
         <input type="password" id="owners-master-pwd-input" placeholder="ادخل كلمة السر" autocomplete="off"
@@ -2779,20 +2768,20 @@ ESSAY
     </div>
   </div>
 
-  <!-- MODAL: إضافة صاحب ملخص جديد (اسم + باسورد قسمه) -->
+  <!-- MODAL: إضافة صاحب ملخص/محاضرة جديد (اسم + باسورد قسمه) -->
   <div id="owner-modal" class="modal-overlay hidden">
     <div class="modal">
-      <h3><i class="fas fa-user-plus" style="color:var(--green);margin-left:8px"></i> إضافة صاحب ملخص</h3>
+      <h3><i class="fas fa-user-plus" style="color:var(--green);margin-left:8px"></i> <span id="owner-modal-title">إضافة Owner</span></h3>
       <div class="form-group">
-        <label>اسم صاحب الملخص</label>
+        <label id="owner-name-label">اسم Owner</label>
         <input type="text" id="owner-name-input" placeholder="مثال: أحمد محمد">
       </div>
       <div class="form-group">
-        <label>كلمة سر خاصة بقسمه</label>
+        <label>كلمة سر خاصة بالقسم</label>
         <input type="text" id="owner-password-input" placeholder="كلمة سر لإدارة ملخصاته فقط">
       </div>
       <div class="form-group">
-        <label>صورة صاحب الملخص (اختياري)</label>
+        <label id="owner-photo-label">صورة الOwner (اختياري)</label>
         <div style="display:flex;align-items:center;gap:12px">
           <div style="position:relative;width:60px;height:60px;border-radius:50%;overflow:hidden;background:var(--surface2);border:2px solid rgba(251,191,36,0.3);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <i class="fas fa-user" id="owner-photo-preview-icon" style="color:var(--amber);opacity:0.5;font-size:1.3rem"></i>
@@ -2832,8 +2821,8 @@ ESSAY
       <div class="pwd-icon-wrap">
         <i class="fas fa-lock"></i>
       </div>
-      <h3 class="pwd-title">وضع الإدارة</h3>
-      <p class="pwd-sub" id="pwd-sub-text">ادخل كلمة سر الإدارة للفرقة</p>
+      <h3 class="pwd-title">Dashboard</h3>
+      <p class="pwd-sub" id="pwd-sub-text">ادخل كلمة المرور</p>
 
       <div class="pwd-dots" id="pwd-dots">
         <div class="pwd-dot"></div>
@@ -2994,7 +2983,7 @@ ESSAY
     <div class="modal about-modal">
       <div class="about-avatar"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCADIAMgDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDwdIkaJMBnkdioVT9MfzpTaTJ9+3mA/wB0j+lEDMrwlHEbbzhycAdOc1qRXGpDJi1NOVLNi6x0+tDu9hO/QxzGV+8rj6im4T1b8q2vO1NlUC7jbYwIBnQ4OPf60yW+1SzhVZGTy/uDKo/TtmlqK7MgqAAQcg+1IAWOAMmpfLBiBOe/NSQbYJg+3ft+bacYPPSrik3ZlIhELkgYqQQoBgglicVK8ox5ygKTIcHGR9MU3O4Flz7etaWitgIxGm0sRuGcDaaQhBztz7Zp0sQQblIz6j/PWtCwktInea+i80PC2xA2Du7E+2aIq75dgM9EWTKkKDyc5qFgM8Age9XftCkFIv3YIOApxj8epqIh1JxMcjrk05KOwEKR7lLbsY6jFNOAfWpzkr86Bh/fTrULRkYI+YHoRUyiktAH+QQoZmjAPvmm+WpP+sQfn/hUyW6sq7mOTjnIAXr1qNYwpViykdgahsCIrjvketOSIupKsC393vUxKOSZHL89On5VK1pPHDHK0e2F/u+9VCnKWy2ApqFDgSA474605lQcgOFPTI61JJn77RHA4+aiOUbQhUEDkZPSnyrYCIbc9/yp4CYySw+gp6tlc7T/AN8g5pp2kcgr7irSSQDVRnDMDwuM8ijZgA56/SjBjyCAwYdv501o5IzhlZSRnkdql97AO/d+WTzvH5Giox0b6UVDkBZtiVktmG7PmnG0gHt0Jra2TkEP9p+Z+MCFs9/zrEiZVFuXICiU5yu4Y47d6vm4swWwbV85I32pXH5GkgJmzBD5kySJH93c1nGR1P65ArJujD5xeFywbJPybMHPpVm6+zPbHyprcMuPljR1L/nx71n/AEoYEpkZYVUY2nJPFTrLLc28UCkssW4qgGcE9Tj8Kpn7q1ZsImmu0jV2QudgZR68Uk7CvZFyLTjLFdTRxs0UQySxHHPf1zz0qm8LFtyoVHbmvWtE+G8MFrnUbq4kMigPCh2jrnmtU+APDxbaLFwQOT5jZ/PNcNbN8JG0Y3b6nFPMaMXZXZ4rJ5s8kss+3cTuJ+UZJI6AcVVkLozozZyeT616z4k+Hdounu+kLIHUbjGzZ3Y6nJ7+3es7w98OLHUbBL6/vbkq4OEVNhGD6nPFN5nh3T9pcpY6jy89zzMGgEg8V7VB8NvDe5l8u8fbjLPLgHPpxzUp+G/htldUhuAw7+cTisP7YoJ9fuM/7So+Z45NdtLb20YRE8pSpZRgtk5ya29O0mCbRr7UDdpFJbqpRSfvk8cDHPP5A5ro/E/gzSNJ07zYYr/eMBWOArHuSSePyrF8F6GPEWrSRzGQWUS7nx1PoM+ua9GnmFKVN1pbI3WKhKm6nRGNAjz3KoiKxC55AXIGSTk96pPM4yvlR445C9e/J/GvV9T+HenQ6XdvaeeLpYy0X7wkZHYjHfpXkJRhLsAJJOMCs6GMpYiLdPoOhiYVk+XoPHlucD5T9alnuppLaCBnJSIFVA+td94R8E6Zq+lyXF2ty8wfAGfKHT8c108Pw88PHI8ieRgMBvNOP061hLN6VCUoa+ZjPMKUJOOp4oGKdXYH0Bq7Hew/2fJAbdPMLBhIcZ46jpXrd18NPD7wkJHdwuehRyx/IivPfFPg+bw+TPC0stmTs8x024Pp/wDq9K2wmbUpy5YOzfc0o46nUlyrc5zZLLgqWbPUegpbu2e0umgYAsvoc1CrFcEHBB4pXbcxdzkk5Nd3NFx8zq0Dc+wDdwDkCpJJZrltzsWOMe+BxT7Wze7cJEpZj2+gp8sCwRFmyXDEYA6ematRmo3ewysNpVuCMLz+dFLKMSy49Oc0VlKSQhRG72iMqlsO2cdRwKczQlADDNnjPzcVXXGeSR9KeMbgBIw988VCuA9ja7TtSYHtlhUBpxdgxG8nHfNIXJ9PypMAP3F/Gug8FXKW3iW0aTyQnmKCZs4xnsB3rnixbGe1TW0FzM/+jRSuw/55gkj8qzqRUoOL6kVIqUHFn0dqVpPe2E8EMpt7gj5JRn5W7HtmvJ9Q8OeNbZi2+6u4lOVaGcuD74zmjR/GPiTw7ZhLqwee1U4DTxspBPbd/jXUad8UtKvGWK8tJrZm4yCHX+mK8GnRxWFvyRUonjQpV6F+VKSOat/iBrWiWC2FzYAyKTh7gMG/L2rBbxpraswtbyS1iZy4ihOFUk5OK9sm03SdasS7W8M0M6Y8zHIHqp7GvB9f0mTS9WuoVikFvFKUSQgkEA8c966sDUw9aUlyWl1OnCSo1W1yWZ6r8Or+71XT7ue9naeRHQKzyl8cHsTxWT8TNZ1PTL+zSzu57dGi3ERtgZ3Hr71a+FEUsWkXzSRuoaVSpIwD8p6VjfFdwdStVdCHEPykPnI3HqMcVzU4R/tBxtp/wDCEY/XHG2hxNzrOp6iDHdXs8yuwLB3JyfWvZvAWkrpvhqGUoFmuv3jHvjt+nNeTeE9IXWtft7R92xmy2B/COTz24r3yeKX7DJHabFl8srFv+6pxgZ+laZtVUVGjHS5eYzSSpR0K9hqVtqLXH2VwRBM0L+7CvGvH2kNpHiad4wVhnbzYiPfr+RzXovgzw3qvh+4u/tk0MkM+DhWOdwPXp6Zqt8TdHF7oK3yofMtGySP7jdf1xXNg6kKGK5YO8XoYYacaOItF3TKvwuvbm40y9SZ5JVjdAuTkrwc1V+KN/dWtxYRW0skSPGxYIduTuqx8K3WOyvYhA6uzqWbqDwcfTrXZ302kR3USX8lqJpOIluNpJ57A+9FaoqWOc+W/l8hVJqninK1/+GPMfh9q+uS63FbLNJLbMT5qysWUDHXr1rv/ABu/leEr5yowqjaxAOGyAMZ/GtkxwWMDukSRxqCxEaAZP0FeOeOfF82tSLZJby29vCxysn3mbpzjinSvjMSqkI2S3KhfE11KKskcaW3PknJqaGPcSd6qAaq96eWBKkHgdq+mi7HumhHcyII2iRYdikfKCN/B+Y+/OPSoJrhklV45gzFR8yjGCP60s0UqW8cjRnEwIQjuQeailCiFUP309O4PNbTlK3K2BGWdQ4YAluCTyaKa2DnFFYtgXrZPNihhX7OjOXJeYDHHuanl0m5V4xi0cycKqSD3Pbp0qrCjyxwIjFSd/P5VLFYGTfm5hUq5X51P55A6c1PK90S0+g99Ev1wTYnB6bX6/rWeqxeZtkDqOhxgkGrhtZ44TMl5AMAkqs2G49qzyckknJ9aOVrcFfqOmQRzOgOdpIzWv4V1UaPr9teFN4RuV3YyDwR0rHk/1rfWm1MoqcXF9QlFSi4vqfRDSaX4o06S2SYTWrbfMVH+YEYOD3Hp+dYc/wAMtBku0eIXMaZJKpJwAPcgmvGIrma3YNDI8bDoUYg1s6RLres36Wtvqcqu/GZLgr1/U/QZry4ZXWhLloVLJ9DzY4CrB2pTsj2efVdJ8LWi2d1d7RFDuRXYF2AOMD1NeFazqB1PVrm7GQsshcDoBk+navW9P+FmlBRJqt/c3kp5O19q5788mrUngzwRbARNBbNKSFw97hv/AEKvXweRyoXk5XkzuwuXOjeTd2zK+FhiTRLsCQFjMM5GP4c1z3xOu/M1SGHkqI+CJCQeepHQGtTxj4EstJ0yW/0S4kiES7pYmnBUjPOOc56cc15gWklYAszntzmuWWVzoYp1pPcy+ouGIdVs9c+GVpHa6LLfvsBlOxT0JAP09eB9KteMPHh8PXMdna28U05QO5kJwmegwK4vT/BfiuTShNHm2iRxJHDJJtYkfxY7Y9/wrM8PeHbvxPrUltNKylMmZ2cb1/Bjz9KzeTTniPaVdb7Ih5c51uepqn0N+D4raoZwJLS02sw3Ha3A9ua9QM0OoWCKzKI7qAsCOeCOcfTOa8U8TeCr/wANlZnZZ7Rn2LOgxz7jtXeaR4ASTTbGd9Wmjn8klBBJlAxB2uvfuCR9RVVsglVlakuVodbKlNpU/daH+BoE0hdYtgwYxXCrk4+bgkcgc5HP41h/FO7Q32nmJ8uiNynY7u9cJqEd7pupXFpM7pNE5RwGI5HFeh+C/BtpJpX9s6+CVfBhjkOAEByWP1x+WfWqw+UVJ4r2l9ev3WHSwE3X9o2b3gTxP/bWmpbXYYXMQKq7/wDLYAZOPUgdR6YNZnxD8NnU7VtXskaSWIYlRW7Dvju3r7CuT8ZazbNqkA0rzbc22QgT5BFz0AH8RPJPuB2rnv7b1LEw+2TYmIaQBz8xHQ/X3rKrlbw+KcqUrW6fmRLAunX56UrGeeDRSnk0dutdx3k6TgxbGJBX7pHP1704vlQEKk9MYPNVRyRVksYSVThT1J5Jqr3AGCMpZl2444FFTRCGaCZpncOF+TauQTkcGiqcbJMAtIIrk28Usvlqd/zflV20smUS+VfXESpIyhokLKcY5yDVOyS2kaBbptsXz55xzxip47KxYTHfKQrsEZJU6Z44OD0zUR3J6lnybqFzjUpEQjfvkgcZHHPQ+p5rBckuxJBOeoGK3FsI1GDcXqn7pKbWHXA6N0rGuIjDcvGd3DEAsME/hVSQyNjljSUrfeNJUjCtHQ5b2LWLY6e5S4ZwqkDPU9/as6u6+GbhdWuMnkREgBR6jv8A0rowlP2laMbl0480kj1LUbm6s9Bm+zBrm5EGxNoyzuRjOO/JzXm/h34eTXF0J9Yk8uNcObdDlnGe5HA/nXS+JvGS+H2hxELmSQHEe/bsweuff+lY2j+PtW1bUEt00mORWPzGNiu0Z6k9BxXu1FQdVQm9V0Oyfs+ZJi+PvFNnHaS6Rp8K+bIoSWXy8bVH8IOMnoOaqfDfw5BM39sXse8K+23RhwWHVvw7e/0rofF0FpNol091HFlULI7Llwe2G7cnp71b8PRCPw1YRRfuwIFztx35P86r6q5Ynmm7pLQPZ3qXZV8a+MzotqbW12m9mXjPJjB7kep7V5f4e1a90zXIJ7WZ1Z5FDqGwJBnkHsRVfW7ya/1i5nnJLs5GD1AHAH5AV0vgXw2bu7XUryNhbRn92CPvt/gP/rV5rnUxOKShsmYOUqlTQ9C8V7brwreecMgQs/zrkhhyOe3TrWT8OdfS70s2M2Tc2akIeuYieg9cH+lUviDraW+kjTo3RpJyMgHJVB/LNcP4SvLqz8SWjWql3d/LKjup4P6V2V66hiowXo/mazmlVSPQ9U8IprPi221KXyxbsN9wqnIZlIwPX5hjP0NXfGXipNB057eMRteT58pAOEXpuP07f/Wq/f6lFpdrLezNGI44yV55Pt75NeIarqU+rajNeXLbpJGz7AdgPanjqkcLF8nxSHWkqa93dlWSRpZGkc5Zjkn1NNoor51tt3ZwhRRRSAKkad2yM4HtUfpUmxf9v8qaQEscieWWKDcuMDsaKgIA/vfjRTuwLlr5H7oz42gOQDnBPbOOcVZt4tNMMjSFGIkIUNKyMVzx2IqDTp7a3ubeS7iMsI3BlABIz3APBx71PHdWPlys1vbqzSMyxujHapPADA0o7k9R62umkEEAkfxLdqAe3cev86zr1IEn224kCgch3Dc+xHGKvynT5Iyim1Qv/GqyZT8KynULIyqwdc8MO9WxjW+8frSU5/vn602oGKqlmCgEk8ACvSvBGmX+m6fLK9uscly67DJnO0ew5HXvXntjcC2ullZpVC94m2t+B7fWutTx0LayijtbRVm2lWd2LbR755Y988V6WXTo0pupUextRlGL5pHW3vhzTtR1IX9+ZHVcIELYQYP9Sf1pl34h0Dw3bfZ7V4XdN37qEZJOe5HHrya43U9SGpq/nay5bdwgkwhGR2CjnHP6dqyjZ6Ukalrre4++FkAH3iOPl54x+ftW1XN6abdGGr6sqWKjf3ETeIPFl9rx8twIbYHIiQ9fcnvXTeDvF1tDaRafekRGIHEhPDDsMetcIIrY3EgMu2LqhzknnjP4U4wWg5W4zz344/zmsKGKrqftm0792TGpNS5z1a58OeH57l9UMaMG/efMwCMe+Rmqms+L9N0q0MFnIs06r+7SL7qdsE9PwFeaOkPkHZMS3YFqWKK0ZEMkpUkfNz0OfTFdk8waVqcUm+typYjlXuqxFe3s9/dPcXDl5HPJrq/h5ZK+pTXr7QIV2qW9T1I+gB/Ouc+z6fgkXLH0yMVbs9T/ALOs54LaZlaf92zBshUJ+YjjqQAK4aD9nWVWq79dzGnUXPzM3/iBrn2hodNiYEKBJKQOpPKj8jn8a4Wt2W20cyO8l/K7Fyo2kHvwScdMdfSoriy0pbaRoLzdMB8qs/HXnnHp+dY4qtKvUdRjnNzldmPRRinxAeYMgEehrnSIGUVpNBZfKRepzjIEJ4Hf64p/l6cjkfbpSmOSsAz19z6c1XIBmrIyAgE4PYHFBcnHGfrUsjKHYRykpn5SeCRTN/qwP1o8rgMO4jJBwPaip2kUwFUDDI+bJ469qKiQEtnOLdonKFuGAC9c1ag1CGNJPkZd8jOMwI4x25NQWN6+myW12saPgsAG/D8qfFrDrHKjGUCVmZ1icKpz1GMGiG5PUbczWdywYvIhC4G2BQD9cGs89eD3rQur+K9QGdZ3lVcBjIuPyxWd/FxVMZNGqtI4YD6mrZ0m6wCturA45WQHr+NU14831PH61qGytwm4xtHjhmZnGOnP3elUmkloFyjNYTwIXltnRQdpJPeq+F54P51LO8X3Yg4IJyS+QfpwKijIZ/3jlQepxmi6ANoPc/Wl8sH+MD61bMCRId5JA6np+XrT4VmkUeVIyqWAVd1Pk7i5imtszdHQ/wDAxSPtiOMAuPyFXJZJY0l3yMxHyYPY1m0SSgtOo1qP8xs88j0NTrB5sZkj5A6r3FVas2ThbgB/uMMMPUVNN3dmKWiuNaA4ztb8sUv2dtobBAPfIqeWBECky4LEgKVJOPX8aaiWpsZNxk+1bl8vA+XbznNOyBEHk4POP++hTvKGOgP0bP8AIUsNpNcXaQIoMkhG3JwDmp7J2gaVDtB6HPTIpJDIVjjOPmjB9yeP0pXjVMjgsDgFTwRiln80FgNuCclF/wAKjJ+ZV/2R/Kqi1cC95HkWUTxsqO2OCuTISemcUs0CW2oHaFXcmdpxgHPuDVFbtgiq2TtGBz0H4/zqxZTSzXTMdzEJgY3EgfhzVyqRaskMs27qk8oIHJUnDLyfb5TVbU5ixWNB+7PzZ4IY/XaKuws7Tny5HOMh9pkJJHQHnPrVC5t72SRnktp1UZYKwYhR1PWs2tBFNPuSfT+tFOUDY/HUf1FFQ0A5HmSEYk2oTwM00ySE8uD+VPhLb0Aj83APykZq38w4GnqSR3U/41tCkpK9/wAykrmeWfPUfpT0VnbgjP4VI9tNJIxW3ZefugcCotjRy7WGHBHBqeRp6oVhcbSRkHJ6iugmhK5UodjDaR5RwB6/f5rn0VmUnHGeuO9XDcXAk3BbbIB6Rp3/AAppX6CHT6UkKGQzvtHUmL/69UCqh2CNuUdCRjNTStLOAGEWF/uqq/ypixkA/LnihxfYLksam5hIZuU6flUscu22eRFxtAUdODVZEcIyhfvY5p6QuCAysBnJ9KqLZLG3Dkg5HtVWpHJYA/U5+tM4rKo7stCVLbkeegOPvDrUVPVQx+VsH0NRF2dxPY1baWASJJdq0whZl8rsRz+WM1X+yTPam6WJvJEgQt23YJ/lSwSOrTYDBnGSAPXg1NiMWczNdP5quqxxKvDKc5PtW26IQy7R5tQ22sEaMdoEcDbg3HUEdaitIX85kf5WBIIYHg96f5kUUcLW5lF4rEsQRgDtg0y2Z28yXDOw54zyfek+/UroMnIDHEo3A9lx+tMClpA20kBAWwfahzLIx47elSRl47ldhwwCc4zg8du9KK7jK+xc9/zFPiYxNuVA3HRgCK1/PvgwzOMMcA/Zhyew/HFZ9/BLHL50ilhIfvmPZz3GKbsgEW5dWLfZ4iTjrF0+lON84LEwQHccnMX/ANeoSsTbQMA7R04yaaRtAZcjA5PY0AN4ETH5skY+770U9mfyQuV244xj2opNXAjRzGQR6EdcVN57TKQIlDY++Cciq55C/SrcK7Y1XH3hmtqSbdk9CkyJ4plUtvLDvg1EuSwPfNaRBzjA9OtUCoWbaOm6rq01B3QmOtji4QbFkyfuMcA+xNaT5ZTjTrBBnGRP0P8A33WbaYN3Hn+8O6+v+1x+dbHmYVCXUbmzzJAP6VzRYitJMqRkmw0/C8/LLuP/AKFzVNlXImKRKshOEVs7fw6irl6y/ZZAsik5AwJY2z+CjNQv81hbqZOASSC+ccdcY4/Ohyd0hNkL2/lKWXLfNjjPH1qaJvJAaZsDB+Rmz2x07VXnu2dvkAQAYyoAJ+tViSTyavmjHzC1x8j5wF4A6Co6mt7Z7mTYnXGST0Aqx9khTOZN7AZIHAApKlUqLntoVYo04MQQRwfpVlhbgDCjPBxuP4irUGli6gLpIFc5IQ8kY7U6eGqVJcsNWNRb0I7e7jyC5PmjGG2jAwc8jvVmczSW0n+jxyPNNvFwnUeq8dBzWXPbvbyFHwGHbOabFPLCwaNypHoaTfK+Wa1MnBp3RNJG4ZvlJ7HA6GpLUOh2kEB+OOMjFWoLsXbYcBZtp2lSVDn0OKYsbCRc7v3Y7nOBzxUtWemwlJ7MrXWyN9oiK8dcYpobbKHwThVJ/SmyLnLAgD3brU1urtcbIwrM6qoBGcnjFC1dix/2yAsC0TdD0Cen+7UObNhyLgH6qamk067LDNsQSCflHX36+9V5beSHHmoyZ6bgRmhxYxcIT8mdueA3XHvU91bLCsDI29pV3EDt/n+lVxIQuPl6dmprOWPI9uCK0TiotNaggYYiYlfxopW5iJKt6ZorKQxmPu8dquxhTGmCM46VTPAjJ9P61LA23I25B5962jLlZL0LIwCR0qm/zSk9s1bZ2YYUEe5qKO3YsMDvTk3JpIjmI7Rc3KAK7MSMBFDHr6Hg1qSXRtkHmpcod5z8ka9un3c9CKylVsAq2ARtPGe9OmhMUAkMysScbO+MdayUXa5fMtie4vkniMamfBxjcwI49gBUU8+bWOIFsL1yxI/AdqktjJ9mNx5JZITtZwmVGQcZPr6VRkdnfJGPanJcseZ9RLVje5PagDNH8qfEPmJ7445xWK3LNS1dLa3Yx43SfLluOM+tU5JtrsFC59T0+lMhkLARMgIJ+Qgcg06aEsWKsGYHkbcZ9/eu+dWU6ajBaIdyHhRyeTyAK2LaeS3KScsSuCCcMc+n+elYwYhg3U9++a0vOjuJt21Xd+2TkU8FPkk2nZ9BxdhLxjOSWI3dRwB/Ksqr0rhASmcA4BI61VlXE7g469jWOKlzS5nuSwRtuDnGDWpLIDErtHv8wYY9ckd6yT0X24rT0vMsogLNsfO0pjcp9Bn1rGGuhlU25uxWURSuUGRxhSSBSAKbnG35cgYq9fGy+y7Y5JmnaTLBkXAHY5Bzn26VA4Xzo2RsgtkZXFN6XGpEsFtG6SEo+Q5AILgKPwBqG4EEXDickjghwR+qipYPLHmghfvHBO329SKLhDJC2V3soO0DJx7jDEDpSV7FopWsazy7HOBjqAP6kVObIdmfnp8gPf2JqGybY8h3hDs4J6Z/I06aeRAB5kEoPogP9KSemoyOYum+Ik4U45XB7UUwsXDsQAT2UYFFKV2A+N1KgSH5R6DmnF3BzGqhenLA1Bx5Z559Knto45B85y2eAeg461Tk9heo6Od3dVLxpnjJzxT5FnRpQHYqh+ZlXp7mq06KkoVRjvz1qXL28zFOAp/TuPehNrclxSZNG0KxDeA3HIJxmmXclrIirboVO7ktnJHaoSyx/KAM+tSAIIy7Fc4yADya29o2uTQSjrca7vDB5Kysofl0B4OOmRVU052LMSepptYVJ8z02LSFoU4OaSioGTrmOUMoIIOV56VbRg8geEMuRnk5Ofb2qgr8AHt0qZWZovLQkt04HaurD1VB/iAtxIHmUrtAxjcvGT60yAjzkznAPJFNCM3RSfXAzmlKujANlCOeRjFZ8zc+drqBNKFX5CcYOcDtVU4LHFOdwRgZ9z600feBqak+aWgCHk0+GR45AUbBphGDSVmnZi3NW4haWEXCyIGcglET07+30qYSz6q0cHnHMKMys7YVABk/QcVRtZiPkH3WGG5xjBrVtYmittTmNs8YW1I3M2cszqufpya7aEru3R7mXwuzGDR79Ri3vbOUN837u8Tk/QkHNJJpGtoxLWLy4HURrIPzGazoNPurmBpooy6DOcHpjqfpWnHbaesY3i8hkQYcoNw3YzxitoQpS3jb5/8AALckjLeyu4fMEtrOh6HdERj/AAqv5Y2k7uR2IrRk1HULOaRbe7vYos8BpGBI96mF5PfaPfPdt5pjMYjYgZBLeuPQGuWcKe0bg5WsZCA+W/0H86KXzGMbKMbe/FFZdNCxp4QjIqZYCFDJMpzgELnj61AQQvseaVJpIwQjsoPJwazlvoInmUfKrTKzA4GFOSPrUrK0jDcu0fxc5zVMtJI4ZmLHsTWjbxFZCH/1jHkHA2/qOfb3rSEu4mh4treSCRzjdghRnBDf1FU5IFSAleW71sOkKjmNDgdSnQeucf1qhfG3eJhEAHBB+Xpj65rdKMk3bUEmZdFLwFOetIOTXGUOOOgH403vVidFijjQHLEbmqDt0ptWEnfUmjW3aP55GV/pxQRAsgCuxXnJp9tLBGjCSLJIwDjPNV2ILkhcLnpWnMrLRFFkmJWUCeXZjnHrSFLYt/rnPuRTZJUaEiP5AWB8vGfxzSWzrHLlx9D6VTmr2sv6+YXGzLEoHluW9c01fmBXv1FSXLLJLmMEjHJx1PrTFUggkEc9cVk99BMRupB6jvTQpPQdKtm2D2wkXduxnGM5pYZ1jhWCRcwsdz7cBieg59B6UrEqSexHbxFm3bJHX+LYucV0X2uyGmTwrKnmyiM7XbhlVs7c84zgcVzTOVnJiYptPBTI/GrsUlqgjluozMQ24qDgvn1b2Pb9a1pT5WROnzO/Yn+2QC4WOezeIbzvSFtu4FcAY471bMlrGmImurIlssJ0LA9h1B5xTrZtPvLyN76zl+xvgL5D8qcddzZ/I1rppOhOxS31m/tm252ykYznGOO3vWjw8+Xng9F5kSlFK7M+Z7e9tniOrW7gjO2SIAnnseOfrVPyxY+GtQjLiTdexxggZBAVzkenWtCXwTI2TBqNu/oGxn8cE1n30LWejpp3yvILlpZBGTj7oA7Z9ayjUne7dyKdSD0i7mHvAjcBfvd/SikfgHCAD0PaiobZ13GFiVAPakHXmiikBPtU8rMv48VKsl0gJSVjk5JD5zRRVAJJcTOoWToO4UD+VRZ2ru529APeiirU2kBCwIPPWhRk0UVm1aVgJmnG3Crz/fPU1CWJoopOTYBn2FGfYUUUgEzS7j6D8qKKADcakS4ljbKORj0NFFNNoLF5dTYwuAipKQclBgMPpWeGyhG3JHIOegooqpScrNkqKWqJPPHkhPKTfuz5g649MdKjLAoVLscHIHaiipuUT291JG2DIwjONyjofwq15weIvuIIBCse4oortwkndp9iJpNFf7ZcJnbKwzwcU6e4aWzhB4Ks3I98f4UUVyy3JUUmtCqXJVstnPqelFFFSzU//9k=" alt="STAR BOY"></div>
       <div class="about-name">STAR BOY</div>
-      <div class="about-role">الفرقة الرابعة · قسم نظم ومعلومات</div>
+      <div class="about-role">الفرقة الثالثة · قسم نظم ومعلومات</div>
 
       <div class="about-links">
 
@@ -3057,7 +3046,7 @@ ESSAY
 
   <footer>
     <div style="font-size:0.9rem;font-weight:700">BY : Ebrahim Basyoni</div>
-    <div style="font-size:0.8rem;margin-top:6px">الفرقة الرابعة — قسم نظم ومعلومات</div>
+    <div style="font-size:0.8rem;margin-top:6px">الفرقة الثالثة — قسم نظم ومعلومات</div>
   </footer>
 
   <script>
@@ -3186,6 +3175,18 @@ ESSAY
     let summaryOwnersPublicCache = [];
     let currentPublicOwner = null;
 
+    // ====================== أصحاب المحاضرات (LECTURE OWNERS) — STATE ======================
+    let lectureOwnersMasterPassword = null; // باسورد إضافة صاحب محاضرة جديد — من جدول app_passwords
+    let lectureOwners = [];                 // أصحاب المحاضرات في القسم/الترم الحالي (للأدمن)
+    let adminCurrentLectureOwner  = null;   // الصاحب المفتوح حالياً بعد إدخال باسورده
+    let lectureOwnersPublicCache = [];
+    let currentPublicLectureOwner = null;
+    let _addingOwnerKind = 'summary';       // 'summary' | 'lecture' — نوع الصاحب الجاري إضافته حالياً
+    let _addingLectureToOwner = null;       // لو مضبوطة، المحاضرة الجديدة هتتحفظ تحت صاحب المحاضرة ده بدل مادة
+    let _pendingLectureOwnerOpen = null;    // صاحب المحاضرة المنتظر التحقق من باسورده
+    let _ownerPwdContext = 'summary';       // 'summary' | 'lecture' — مين اللي بيتفتح بمودال الباسورد المشترك
+    let _editingOwnerPhotoType = 'summary'; // 'summary' | 'lecture' — نوع الصاحب اللي بيتغيّر صورته
+
     const GRADE_NAMES = {
       'bis': 'نظم ومعلومات أعمال (BIS)'
     };
@@ -3221,6 +3222,18 @@ ESSAY
         summaryOwnersMasterPassword = rows[0]?.password || null;
       } catch {
         summaryOwnersMasterPassword = null;
+      }
+    }
+
+    // باسورد منفصل بردو — بيتحكم بس في إضافة "صاحب محاضرة" جديد
+    async function loadLectureOwnersMasterPassword() {
+      try {
+        const res = await api('app_passwords?select=password&key=eq.lecture_owners_admin');
+        if (!res.ok) throw new Error('DB error');
+        const rows = await res.json();
+        lectureOwnersMasterPassword = rows[0]?.password || null;
+      } catch {
+        lectureOwnersMasterPassword = null;
       }
     }
 
@@ -3366,10 +3379,10 @@ ESSAY
     function showGradeSelection() {
       selectedQuizIds.clear();
       selectMode = false;
-      currentGrade = null;
+      currentGrade = 'bis';
       currentTerm  = null;
       currentSection = null;
-      showPage('grade-selection-page');
+      showTermSelection();
     }
 
     function selectGrade(grade) {
@@ -3380,7 +3393,6 @@ ESSAY
     function showTermSelection() {
       const name = GRADE_NAMES[currentGrade] || currentGrade;
       const icon = GRADE_ICONS[currentGrade] || '';
-      document.getElementById('term-breadcrumb-grade').textContent = name;
       document.getElementById('term-page-title').innerHTML = `<span style="font-size:1.4rem">${icon}</span> ${name}`;
       showPage('term-selection-page');
     }
@@ -3434,9 +3446,10 @@ ESSAY
         document.getElementById('lectures-breadcrumb-grade').textContent = gradeName;
         document.getElementById('lectures-breadcrumb-term').textContent  = termName;
         showPage('lectures-page');
+        currentPublicLectureOwner = null;
         document.getElementById('lectures-loading').classList.remove('hidden');
         document.getElementById('lectures-subjects-list').classList.add('hidden');
-        loadResources('lectures').then(renderLectureSubjects);
+        loadLecturesPageData();
       } else if (section === 'lecture-quizzes') {
         lqSearchQuery = ''; _resetSearchInput('lq-search');
         document.getElementById('lq-breadcrumb-grade').textContent = gradeName;
@@ -3476,6 +3489,28 @@ ESSAY
     async function loadPublicSummaryOwnersData() {
       try {
         const res = await api(`summary_owners?select=*&order=name&grade=eq.${currentGrade}&term=eq.${currentTerm}`);
+        return res.ok ? await res.json() : [];
+      } catch { return []; }
+    }
+
+    // تحميل المواد + أصحاب المحاضرات مع بعض وعرضهم في نفس الصفحة
+    async function loadLecturesPageData() {
+      const [list, owners] = await Promise.all([
+        loadResources('lectures'),
+        loadPublicLectureOwnersData()
+      ]);
+      _lecturesCache = list || [];
+      lectureOwnersPublicCache = owners || [];
+      selectedLectureIds.clear();
+      lecturesSelectMode = false;
+      document.getElementById('lectures-loading').classList.add('hidden');
+      document.getElementById('lectures-subjects-list').classList.remove('hidden');
+      _renderLecturesUI();
+    }
+
+    async function loadPublicLectureOwnersData() {
+      try {
+        const res = await api(`lecture_owners?select=*&order=name&grade=eq.${currentGrade}&term=eq.${currentTerm}`);
         return res.ok ? await res.json() : [];
       } catch { return []; }
     }
@@ -3532,48 +3567,112 @@ ESSAY
     }
 
     function _renderLecturesUI() {
-      const container     = document.getElementById('lectures-subjects-list');
-      let lecturesList  = _lecturesCache;
+      const container    = document.getElementById('lectures-subjects-list');
+      let lecturesList = _lecturesCache;
+      let owners = lectureOwnersPublicCache || [];
+      let matchedOwnerFiles = [];
 
-      if (!lecturesList || lecturesList.length === 0) {
-        container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-video"></i><p>لا توجد محاضرات حالياً</p></div>`;
-        return;
+      const q = lecturesSearchQuery.trim();
+      if (q) {
+        lecturesList = lecturesList.filter(r => _matchesQuery(q, r.subject, r.title));
+        // محاضرات أصحاب المحاضرات اللي بتطابق كلمة البحث — هتتعرض كملفات مباشرة
+        matchedOwnerFiles = _lecturesCache.filter(r => r.owner_id && _matchesQuery(q, r.subject, r.title));
+        // الفولدر نفسه يظهر بس لو اسم صاحبه هو اللي طابق البحث
+        owners = owners.filter(o => _matchesQuery(q, o.name));
       }
 
-      if (lecturesSearchQuery.trim()) {
-        lecturesList = lecturesList.filter(r => _matchesQuery(lecturesSearchQuery, r.subject, r.title));
-        if (lecturesList.length === 0) {
-          container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas fa-search"></i><p>لا توجد نتائج مطابقة لـ "${lecturesSearchQuery}"</p></div>`;
-          return;
-        }
+      if ((!lecturesList || lecturesList.length === 0) && owners.length === 0 && matchedOwnerFiles.length === 0) {
+        const msg = q ? `لا توجد نتائج مطابقة لـ "${q}"` : 'لا توجد محاضرات حالياً';
+        const icon = q ? 'fa-search' : 'fa-video';
+        container.innerHTML = `<div class="empty" style="grid-column:1/-1"><i class="fas ${icon}"></i><p>${msg}</p></div>`;
+        return;
       }
 
       const icons  = { pdf: _pdfIconSvg(), video:'🎥', link:'🔗', drive:'📁' };
       const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
 
-      const subjects = {};
-      lecturesList.forEach(r => {
-        const sub = r.subject || 'عام';
-        if (!subjects[sub]) subjects[sub] = [];
-        subjects[sub].push(r);
-      });
+      let html = `<div style="grid-column:1/-1">`;
 
-      let html = ``;
+      // ── محاضرات أصحاب المحاضرات المطابقة للبحث — تظهر كملفات مباشرة ──
+      if (matchedOwnerFiles.length > 0) {
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-search" style="margin-left:6px"></i>نتائج البحث</div>`;
+        html += `<div style="margin-bottom:1.4rem">`;
+        html += matchedOwnerFiles.map((r, i) => `
+          <a href="${r.url}" target="_blank" rel="noopener" class="resource-card"
+            style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;text-decoration:none;color:inherit">
+            <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
+              ${icons[r.file_type] || '🎥'}
+            </div>
+            <div class="resource-info" style="flex:1">
+              <h4>${r.title || r.subject}</h4>
+              <p style="color:var(--amber)"><i class="fas fa-user" style="margin-left:3px;font-size:0.75rem"></i>${r.subject}</p>
+            </div>
+            <i class="fas fa-download" style="color:#00e676;font-size:1.1rem;flex-shrink:0"></i>
+          </a>
+        `).join('');
+        html += `</div>`;
+      }
 
-      html += `<div style="grid-column:1/-1">` + Object.entries(subjects).map(([sub, items]) => {
-        const isOpen   = lecturesOpenFolders[sub] !== false;
-        return `
-          <div style="margin-bottom:1.2rem">
-            <div style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:10px 14px;border-radius:12px;
-              background:var(--surface2);border:1px solid var(--border);margin-bottom:6px;transition:all 0.25s"
-              onclick="_toggleLectureFolder('${sub.replace(/'/g,"\\'")}')">
-              <i class="fas fa-${isOpen ? 'folder-open' : 'folder'}" style="color:#ffab40;font-size:1.1rem"></i>
-              <span style="font-weight:900;color:#ffab40;flex:1">${sub}</span>
-              <span style="font-size:0.8rem;color:var(--text-dim)">${items.length} محاضرة</span>
-              <i class="fas fa-chevron-${isOpen ? 'up' : 'down'}" style="color:var(--text-muted);font-size:0.8rem;margin-right:4px"></i>
+      // ── فولدرات أصحاب المحاضرات ──
+      if (owners.length > 0) {
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>أصحاب محاضرات</div>`;
+        html += `<div style="margin-bottom:1.4rem">`;
+        html += owners.map((o, i) => `
+          <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openPublicLectureOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
+            <div class="owner-leader-inner">
+              <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+              <div class="owner-leader-ribbon"><i class="fas fa-crown"></i></div>
+              <div class="owner-leader-content">
+                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب محاضرات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+                <div class="owner-leader-tag">صاحب محاضرات</div>
+                <div class="owner-leader-divider"></div>
+                <div class="owner-leader-pill"><i class="fas fa-video"></i> اضغط لعرض المحاضرات</div>
+              </div>
+            </div>
+            <div class="owner-leader-photo-wrap">
+              <div class="owner-leader-photo">
+                ${o.photo_url ? `<img src="${o.photo_url}" alt="${o.name}">` : `<i class="fas fa-user"></i>`}
+              </div>
+            </div>
+          </div>
+        `).join('');
+        html += `</div>`;
+      }
+
+      // ── فولدرات المواد (استبعاد محاضرات أصحاب المحاضرات) ──
+      const subjectOnlyList = (lecturesList || []).filter(r => !r.owner_id);
+      if (subjectOnlyList.length > 0) {
+        const subjects = {};
+        subjectOnlyList.forEach(r => {
+          const sub = r.subject || 'عام';
+          if (!subjects[sub]) subjects[sub] = [];
+          subjects[sub].push(r);
+        });
+
+        if (owners.length > 0) {
+          html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-folder" style="margin-left:6px"></i>حسب المادة</div>`;
+        }
+
+        html += Object.entries(subjects).map(([sub, items], i) => {
+          const isOpen   = lecturesOpenFolders[sub] !== false;
+          return `
+            <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="_toggleLectureFolder('${sub.replace(/'/g,"\\'")}')">
+              <div class="owner-leader-inner">
+                <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+                <div class="owner-leader-ribbon"><i class="fas fa-video"></i></div>
+                <div class="owner-leader-content">
+                  <h4 dir="rtl">${sub}</h4>
+                  <div class="owner-leader-tag">مادة دراسية</div>
+                  <div class="owner-leader-divider"></div>
+                  <div class="owner-leader-pill"><i class="fas fa-chevron-${isOpen ? 'up' : 'down'}"></i> ${items.length} محاضرة — اضغط ${isOpen ? 'للإغلاق' : 'للعرض'}</div>
+                </div>
+              </div>
+              <div class="owner-leader-photo-wrap">
+                <div class="owner-leader-photo"><i class="fas fa-folder-open"></i></div>
+              </div>
             </div>
             ${isOpen ? `
-            <div>
+            <div style="margin-bottom:1.2rem">
               ${items.map((r, i) => `
                 <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
                   <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
@@ -3592,11 +3691,70 @@ ESSAY
                     <i class="fas fa-download"></i> تحميل
                   </a>
                 </div>`).join('')}
-            </div>` : ''}
-          </div>`;
-      }).join('') + `</div>`;
+            </div>` : ''}`;
+        }).join('');
+      }
 
+      html += `</div>`;
       container.innerHTML = html;
+    }
+
+    // ====================== أصحاب المحاضرات — الواجهة العامة للطالب ======================
+    async function openPublicLectureOwner(id, name) {
+      currentPublicLectureOwner = { id, name };
+      document.getElementById('lectures-loading').classList.remove('hidden');
+      document.getElementById('lectures-subjects-list').classList.add('hidden');
+      try {
+        const res = await api(`resources?select=*&order=id&owner_id=eq.${id}&type=eq.lectures`);
+        const items = res.ok ? await res.json() : [];
+        renderPublicLectureOwnerLectures(items, name);
+      } catch { renderPublicLectureOwnerLectures([], name); }
+    }
+
+    function renderPublicLectureOwnerLectures(items, name) {
+      document.getElementById('lectures-loading').classList.add('hidden');
+      const container = document.getElementById('lectures-subjects-list');
+      container.classList.remove('hidden');
+      const icons  = { pdf: _pdfIconSvg(), video:'🎥', link:'🔗', drive:'📁' };
+      const colors = { pdf:'#ff5252', video:'#ffab40', link:'#6aa6ff', drive:'#00e676' };
+
+      let html = `<div style="grid-column:1/-1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;cursor:pointer;color:var(--amber);font-weight:800" onclick="backToLecturesMain()">
+          <i class="fas fa-arrow-right"></i> رجوع للمحاضرات
+        </div>
+        <h3 style="margin-bottom:1rem;color:var(--amber);display:flex;align-items:center;gap:8px">
+          <i class="fas fa-user"></i>${name}
+        </h3>`;
+
+      if (!items.length) {
+        html += `<div class="empty"><i class="fas fa-video"></i><p>لا توجد محاضرات لهذا الشخص بعد</p></div>`;
+      } else {
+        html += items.map((r, i) => `
+          <div class="resource-card" style="margin-bottom:0.5rem;animation-delay:${i*0.05}s;cursor:default">
+            <div class="resource-icon" style="${_iconBoxStyle(r.file_type, colors[r.file_type]||'var(--amber)')}">
+              ${icons[r.file_type] || '🎥'}
+            </div>
+            <div class="resource-info" style="flex:1">
+              <h4>${r.title || r.subject}</h4>
+            </div>
+            <a href="${r.url}" target="_blank" rel="noopener"
+              style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;
+              background:#00e676;color:#050509;font-weight:800;font-size:0.82rem;text-decoration:none;
+              flex-shrink:0;font-family:'Cairo',sans-serif;transition:all 0.22s"
+              onmouseover="this.style.background='#00c860';this.style.transform='scale(1.05)'"
+              onmouseout="this.style.background='#00e676';this.style.transform='scale(1)'">
+              <i class="fas fa-download"></i> تحميل
+            </a>
+          </div>`).join('');
+      }
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    function backToLecturesMain() {
+      currentPublicLectureOwner = null;
+      document.getElementById('lectures-subjects-list').classList.remove('hidden');
+      _renderLecturesUI();
     }
 
     function showLecturesList(subject, itemsJson) {
@@ -4378,7 +4536,7 @@ ESSAY
       document.getElementById('pwd-input').classList.remove('error');
       updatePwdDots();
       // Always show generic message — system will detect grade from password
-      document.getElementById('pwd-sub-text').textContent = 'ادخل كلمة سر الإدارة';
+      document.getElementById('pwd-sub-text').textContent = 'ادخل كلمة المرور';
       document.getElementById('pwd-modal').classList.remove('hidden');
       setTimeout(() => document.getElementById('pwd-input').focus(), 300);
     }
@@ -4516,6 +4674,11 @@ ESSAY
         adminLqCurrentFolder = null; // reset to folder list view
         loadAllQuizzesForAdmin();
       } else if (section === 'lectures') {
+        adminLecturesCurrentSubject = null;
+        adminCurrentLectureOwner = null;
+        document.getElementById('admin-lectures-subjects-view').style.display = '';
+        document.getElementById('admin-lectures-inside-view').style.display = 'none';
+        document.getElementById('admin-lecture-owner-inside-view').style.display = 'none';
         loadResources('lectures').then(renderAdminLecturesGrouped);
       } else if (section === 'summaries') {
         adminSummariesCurrentSubject = null;
@@ -4538,6 +4701,10 @@ ESSAY
       // الرجوع للـ view الخاص بالمواد
       document.getElementById('admin-lectures-subjects-view').style.display = '';
       document.getElementById('admin-lectures-inside-view').style.display = 'none';
+      document.getElementById('admin-lecture-owner-inside-view').style.display = 'none';
+
+      // حمّل أصحاب المحاضرات جنب المواد في نفس الواجهة
+      loadLectureOwners();
 
       const container = document.getElementById('admin-lectures-subjects-list');
 
@@ -4553,28 +4720,33 @@ ESSAY
       // استخراج المواد الفريدة مع عدد محاضراتها
       const subjects = {};
       lecturesList.forEach(r => {
+        if (r.owner_id) return; // محاضرات أصحاب المحاضرات ليها فولدراتها الخاصة، متتحطش تحت المواد
         const sub = r.subject || 'عام';
         if (!subjects[sub]) subjects[sub] = [];
         subjects[sub].push(r);
       });
 
       container.innerHTML = Object.entries(subjects).map(([sub, items], i) => `
-        <div class="admin-subject-card" style="animation-delay:${i*0.06}s"
+        <div class="owner-leader-card" style="animation-delay:${i*0.06}s"
           onclick="openAdminSubject('${sub.replace(/'/g,"\\'")}', ${JSON.stringify(items).replace(/"/g,'&quot;')})">
-          <div class="admin-subject-folder-icon">
-            <i class="fas fa-folder"></i>
+          <div class="owner-leader-inner">
+            <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+            <div class="owner-leader-ribbon"><i class="fas fa-video"></i></div>
+            <div class="owner-leader-delete" onclick="event.stopPropagation()">
+              <button class="btn btn-danger" title="حذف المادة كلها" onclick="deleteSubjectAdmin('${sub.replace(/'/g,"\\'")}', 'lectures')">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="owner-leader-content">
+              <h4 dir="rtl">${sub}</h4>
+              <div class="owner-leader-tag">مادة دراسية</div>
+              <div class="owner-leader-divider"></div>
+              <div class="owner-leader-pill"><i class="fas fa-folder-open"></i> ${items.length} محاضرة — اضغط للإدارة</div>
+            </div>
           </div>
-          <div class="admin-subject-info">
-            <h4>${sub}</h4>
-            <p>${items.length} محاضرة</p>
+          <div class="owner-leader-photo-wrap">
+            <div class="owner-leader-photo"><i class="fas fa-folder-open"></i></div>
           </div>
-          <div class="admin-subject-actions" onclick="event.stopPropagation()">
-            <button class="btn btn-danger" title="حذف المادة كلها"
-              onclick="deleteSubjectAdmin('${sub.replace(/'/g,"\\'")}', 'lectures')">
-              <i class="fas fa-trash"></i>
-            </button>
-          </div>
-          <i class="fas fa-chevron-left" style="color:var(--text-muted);font-size:0.85rem;margin-right:4px"></i>
         </div>
       `).join('');
     }
@@ -4920,7 +5092,7 @@ ESSAY
       const ok = await showConfirm({ title:`حذف فولدر "${folder}"`, msg:`هيتم حذف ${items.length} امتحان نهائياً. هل أنت متأكد؟`, type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
       if (!ok) return;
       try {
-        for (const q of items) await deleteQuiz(q.id);
+        for (const q of items) await deleteQuizFromDB(q.id);
         toast(`✅ تم حذف فولدر "${folder}"`);
         loadAllQuizzesForAdmin();
       } catch { toast('خطأ في الحذف!', 'error'); }
@@ -5284,6 +5456,9 @@ ESSAY
     function showAddOwnerModal() {
       if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
       askOwnersMasterPassword(() => {
+        document.getElementById('owner-modal-title').innerHTML = '<i class="fas fa-user-plus" style="color:var(--green);margin-left:8px"></i> إضافة صاحب ملخص';
+        document.getElementById('owner-name-label').textContent = 'اسم الOwner';
+        document.getElementById('owner-photo-label').textContent = 'صورة صاحب الملخص (اختياري)';
         document.getElementById('owner-name-input').value = '';
         document.getElementById('owner-password-input').value = '';
         document.getElementById('owner-photo-input').value = '';
@@ -5293,7 +5468,26 @@ ESSAY
         document.getElementById('owner-photo-preview-icon').style.display = '';
         document.getElementById('owner-modal').classList.remove('hidden');
         setTimeout(() => document.getElementById('owner-name-input').focus(), 100);
-      });
+      }, 'summary');
+    }
+
+    // فتح مودال إضافة صاحب محاضرة — محمي بباسورد رئيسي منفصل عن باسورد أصحاب الملخصات
+    function showAddLectureOwnerModal() {
+      if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
+      askOwnersMasterPassword(() => {
+        document.getElementById('owner-modal-title').innerHTML = '<i class="fas fa-user-plus" style="color:var(--green);margin-left:8px"></i> إضافة Owner';
+        document.getElementById('owner-name-label').textContent = 'اسم الOwner';
+        document.getElementById('owner-photo-label').textContent = 'صورة الOwner (اختياري)';
+        document.getElementById('owner-name-input').value = '';
+        document.getElementById('owner-password-input').value = '';
+        document.getElementById('owner-photo-input').value = '';
+        ownerPhotoDataUrl = null;
+        document.getElementById('owner-photo-preview-img').style.display = 'none';
+        document.getElementById('owner-photo-preview-img').src = '';
+        document.getElementById('owner-photo-preview-icon').style.display = '';
+        document.getElementById('owner-modal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('owner-name-input').focus(), 100);
+      }, 'lecture');
     }
 
     // ── صورة صاحب الملخص: ضغط وتحويل لـ base64 ──
@@ -5334,34 +5528,41 @@ ESSAY
       } catch { toast('تعذر تحميل الصورة!', 'error'); }
     }
 
-    function triggerOwnerPhotoChange(id) {
+    function triggerOwnerPhotoChange(id, kind = 'summary') {
       _editingOwnerPhotoId = id;
+      _editingOwnerPhotoType = kind;
       document.getElementById('owner-photo-edit-input').click();
     }
 
     async function handleOwnerPhotoEditChange(e) {
       const file = e.target.files[0];
       if (!file || !_editingOwnerPhotoId) return;
+      const table = _editingOwnerPhotoType === 'lecture' ? 'lecture_owners' : 'summary_owners';
       try {
         const dataUrl = await compressImageToDataUrl(file);
-        const res = await api(`summary_owners?id=eq.${_editingOwnerPhotoId}`, {
+        const res = await api(`${table}?id=eq.${_editingOwnerPhotoId}`, {
           method: 'PATCH',
           body: JSON.stringify({ photo_url: dataUrl })
         });
         if (!res.ok) throw new Error();
         toast('✅ تم تحديث الصورة');
-        loadSummaryOwners();
+        if (_editingOwnerPhotoType === 'lecture') loadLectureOwners(); else loadSummaryOwners();
       } catch { toast('خطأ في تحديث الصورة!', 'error'); }
       e.target.value = '';
       _editingOwnerPhotoId = null;
+      _editingOwnerPhotoType = 'summary';
     }
 
-    function askOwnersMasterPassword(cb) {
-      if (!summaryOwnersMasterPassword) {
+    function askOwnersMasterPassword(cb, kind = 'summary') {
+      const pwd = kind === 'lecture' ? lectureOwnersMasterPassword : summaryOwnersMasterPassword;
+      if (!pwd) {
         toast('⚠️ خطأ في الاتصال بقاعدة البيانات', 'error');
         return;
       }
+      _addingOwnerKind = kind;
       _ownersMasterPwdCallback = cb;
+      document.getElementById('owners-master-pwd-title').textContent =
+        kind === 'lecture' ? 'كلمة سر إدارة ال Owners' : 'كلمة سر إدارة الOwners';
       document.getElementById('owners-master-pwd-input').value = '';
       document.getElementById('owners-master-pwd-error').textContent = '';
       document.getElementById('owners-master-pwd-modal').classList.remove('hidden');
@@ -5370,7 +5571,8 @@ ESSAY
 
     function submitOwnersMasterPwd() {
       const val = document.getElementById('owners-master-pwd-input').value.trim();
-      if (!summaryOwnersMasterPassword || val !== summaryOwnersMasterPassword) {
+      const pwd = _addingOwnerKind === 'lecture' ? lectureOwnersMasterPassword : summaryOwnersMasterPassword;
+      if (!pwd || val !== pwd) {
         document.getElementById('owners-master-pwd-error').textContent = '❌ كلمة السر غلط، حاول تاني';
         return;
       }
@@ -5385,20 +5587,21 @@ ESSAY
       const password = document.getElementById('owner-password-input').value.trim();
       if (!name || !password) return toast('اكتب الاسم وكلمة السر!', 'error');
       if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
+      const table = _addingOwnerKind === 'lecture' ? 'lecture_owners' : 'summary_owners';
       try {
-        const res = await api('summary_owners', {
+        const res = await api(table, {
           method: 'POST',
           body: JSON.stringify({ name, password, grade: currentGrade, term: currentTerm, photo_url: ownerPhotoDataUrl || null })
         });
         if (!res.ok) throw new Error();
         closeModal('owner-modal');
-        toast('✅ تم إضافة صاحب الملخص');
-        loadSummaryOwners();
+        toast(_addingOwnerKind === 'lecture' ? '✅ تم إضافة Owner' : '✅ تم إضافة Owner');
+        if (_addingOwnerKind === 'lecture') loadLectureOwners(); else loadSummaryOwners();
       } catch { toast('خطأ في الحفظ!', 'error'); }
     }
 
     async function deleteOwnerAdmin(id) {
-      const ok = await showConfirm({ title:'حذف صاحب الملخص', msg:'هيتم حذف صاحب الملخص وكل ملخصاته نهائياً. متأكد؟', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
+      const ok = await showConfirm({ title:'حذف Owner', msg:'هيتم حذف Owner وكل ملخصاته نهائياً. متأكد؟', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
       if (!ok) return;
       try {
         await api(`resources?owner_id=eq.${id}`, { method: 'DELETE' });
@@ -5408,11 +5611,82 @@ ESSAY
       } catch { toast('خطأ في الحذف!', 'error'); }
     }
 
+    // ====================== أصحاب المحاضرات — ADMIN ======================
+    async function loadLectureOwners() {
+      if (!currentGrade || !currentTerm) { lectureOwners = []; renderAdminLectureOwners(); return; }
+      try {
+        const res = await api(`lecture_owners?select=*&order=id&grade=eq.${currentGrade}&term=eq.${currentTerm}`);
+        lectureOwners = res.ok ? await res.json() : [];
+      } catch { lectureOwners = []; }
+      renderAdminLectureOwners();
+    }
+
+    function renderAdminLectureOwners() {
+      const container = document.getElementById('admin-lecture-owners-list');
+      if (!container) return;
+      if (!lectureOwners.length) {
+        container.innerHTML = '';
+        return;
+      }
+      container.innerHTML = lectureOwners.map((o, i) => `
+        <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openAdminLectureOwner(${o.id})">
+          <div class="owner-leader-inner">
+            <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
+            <div class="owner-leader-ribbon"><i class="fas fa-video"></i></div>
+            <div class="owner-leader-delete" onclick="event.stopPropagation()">
+              <button class="btn btn-danger" title="حذف صاحب المحاضرة بالكامل" onclick="deleteLectureOwnerAdmin(${o.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="owner-leader-content">
+              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب محاضرات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+              <div class="owner-leader-tag">صاحب محاضرات</div>
+              <div class="owner-leader-divider"></div>
+              <div class="owner-leader-pill"><i class="fas fa-lock"></i> ادخل باسورد قسمه للإدارة</div>
+            </div>
+          </div>
+          <div class="owner-leader-photo-wrap">
+            <div class="owner-leader-photo">
+              ${o.photo_url ? `<img src="${o.photo_url}" alt="${o.name}">` : `<i class="fas fa-user"></i>`}
+            </div>
+            <div class="owner-leader-photo-edit" onclick="event.stopPropagation(); triggerOwnerPhotoChange(${o.id}, 'lecture')" title="تغيير الصورة">
+              <i class="fas fa-camera"></i>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteLectureOwnerAdmin(id) {
+      const ok = await showConfirm({ title:'حذف Owner', msg:'هيتم حذف Owner وكل محاضراته نهائياً. متأكد؟', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
+      if (!ok) return;
+      try {
+        await api(`resources?owner_id=eq.${id}`, { method: 'DELETE' });
+        await api(`lecture_owners?id=eq.${id}`, { method: 'DELETE' });
+        toast('تم الحذف ✅');
+        loadLectureOwners();
+      } catch { toast('خطأ في الحذف!', 'error'); }
+    }
+
     // فتح قسم صاحب ملخص معين — محمي بباسورد هذا الصاحب تحديداً
     function openAdminOwner(id) {
       const owner = summaryOwners.find(o => o.id === id);
       if (!owner) return;
       _pendingOwnerOpen = owner;
+      _ownerPwdContext = 'summary';
+      document.getElementById('owner-pwd-title').textContent = `كلمة سر قسم: ${owner.name}`;
+      document.getElementById('owner-pwd-input').value = '';
+      document.getElementById('owner-pwd-error').textContent = '';
+      document.getElementById('owner-pwd-modal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('owner-pwd-input').focus(), 150);
+    }
+
+    // فتح قسم صاحب محاضرة معين — محمي بباسورد هذا الصاحب تحديداً
+    function openAdminLectureOwner(id) {
+      const owner = lectureOwners.find(o => o.id === id);
+      if (!owner) return;
+      _pendingLectureOwnerOpen = owner;
+      _ownerPwdContext = 'lecture';
       document.getElementById('owner-pwd-title').textContent = `كلمة سر قسم: ${owner.name}`;
       document.getElementById('owner-pwd-input').value = '';
       document.getElementById('owner-pwd-error').textContent = '';
@@ -5422,6 +5696,20 @@ ESSAY
 
     function submitOwnerPwd() {
       const val = document.getElementById('owner-pwd-input').value.trim();
+      if (_ownerPwdContext === 'lecture') {
+        if (!_pendingLectureOwnerOpen || val !== _pendingLectureOwnerOpen.password) {
+          document.getElementById('owner-pwd-error').textContent = '❌ كلمة السر غلط، حاول تاني';
+          return;
+        }
+        closeModal('owner-pwd-modal');
+        adminCurrentLectureOwner = _pendingLectureOwnerOpen;
+        _pendingLectureOwnerOpen = null;
+        document.getElementById('admin-lectures-subjects-view').style.display = 'none';
+        document.getElementById('admin-lecture-owner-inside-view').style.display = '';
+        document.getElementById('admin-lecture-owner-current-name').textContent = adminCurrentLectureOwner.name;
+        loadOwnerLectures();
+        return;
+      }
       if (!_pendingOwnerOpen || val !== _pendingOwnerOpen.password) {
         document.getElementById('owner-pwd-error').textContent = '❌ كلمة السر غلط، حاول تاني';
         return;
@@ -5442,6 +5730,13 @@ ESSAY
       loadSummaryOwners();
     }
 
+    function backToLectureOwnersView() {
+      adminCurrentLectureOwner = null;
+      document.getElementById('admin-lecture-owner-inside-view').style.display = 'none';
+      document.getElementById('admin-lectures-subjects-view').style.display = '';
+      loadLectureOwners();
+    }
+
     async function loadOwnerSummaries() {
       if (!adminCurrentOwner) return;
       try {
@@ -5449,6 +5744,62 @@ ESSAY
         const items = res.ok ? await res.json() : [];
         renderAdminOwnerSummaries(items);
       } catch { renderAdminOwnerSummaries([]); }
+    }
+
+    async function loadOwnerLectures() {
+      if (!adminCurrentLectureOwner) return;
+      try {
+        const res = await api(`resources?select=*&order=id&owner_id=eq.${adminCurrentLectureOwner.id}`);
+        const items = res.ok ? await res.json() : [];
+        renderAdminOwnerLectures(items);
+      } catch { renderAdminOwnerLectures([]); }
+    }
+
+    function renderAdminOwnerLectures(items) {
+      const container = document.getElementById('admin-lecture-owner-lectures-list');
+      if (!items || !items.length) {
+        container.innerHTML = `<div class="empty"><i class="fas fa-video"></i><p>لا توجد محاضرات — اضغط "إضافة محاضرة"</p></div>`;
+        return;
+      }
+      const icons = { pdf: _pdfIconSvg('22px'), video:'🎥', link:'🔗', drive:'📁' };
+      container.innerHTML = items.map((r, i) => `
+        <div class="admin-quiz-card" style="animation-delay:${i*0.05}s">
+          <div style="flex:1">
+            <h4>${icons[r.file_type] || '🎥'} ${r.title || r.subject}</h4>
+            <p style="margin-top:4px"><a href="${r.url}" target="_blank" style="color:var(--amber);font-size:0.82rem">${r.url.substring(0,55)}${r.url.length>55?'...':''}</a></p>
+          </div>
+          <div class="admin-actions">
+            <button class="btn btn-danger" onclick="deleteOwnerLecture(${r.id})"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function deleteOwnerLecture(id) {
+      const ok = await showConfirm({ title:'حذف المحاضرة', msg:'هتتحذف نهائياً', type:'danger', icon:'fa-trash-alt', okText:'نعم احذف' });
+      if (!ok) return;
+      try {
+        await deleteResource(id);
+        toast('تم الحذف ✅');
+        loadOwnerLectures();
+      } catch { toast('خطأ في الحذف!', 'error'); }
+    }
+
+    function showAddOwnerLectureModal() {
+      if (!adminCurrentLectureOwner) return;
+      addingResourceType = 'owner-lecture';
+      document.getElementById('resource-modal-title').innerHTML = `<i class="fas fa-plus" style="color:var(--green);margin-left:8px"></i> إضافة محاضرة — ${adminCurrentLectureOwner.name}`;
+      const subjectWrap = document.getElementById('resource-subject-wrap');
+      if (subjectWrap) subjectWrap.style.display = 'none'; // مش محتاجينها هنا — الاسم اتحدد من فولدر الصاحب
+      document.getElementById('resource-subject').value = adminCurrentLectureOwner.name;
+      const titleLabel = document.getElementById('resource-title-label');
+      if (titleLabel) titleLabel.textContent = 'اسم المحاضرة/المادة';
+      document.getElementById('resource-title').value = '';
+      document.getElementById('resource-url').value = '';
+      setFileTypeSelectValue('video');
+      const authorWrap = document.getElementById('resource-author-wrap');
+      if (authorWrap) authorWrap.style.display = 'none'; // اسم الصاحب معروف بالفعل
+      document.getElementById('resource-modal').classList.remove('hidden');
     }
 
     function renderAdminOwnerSummaries(items) {
@@ -5613,6 +5964,15 @@ ESSAY
           loadOwnerSummaries();
           return;
         }
+        if (addingResourceType === 'owner-lecture') {
+          // محاضرة تابعة لصاحب محاضرة معين — يتحفظ بنفس نوع lectures مع ربطها بالـ owner
+          if (!adminCurrentLectureOwner) throw new Error('no-owner');
+          await createResource({ subject, title, url, file_type, owner_id: adminCurrentLectureOwner.id, type: 'lectures' });
+          closeModal('resource-modal');
+          toast('تم الحفظ ✅');
+          loadOwnerLectures();
+          return;
+        }
         await createResource({ subject, title, url, file_type, author_name, type: addingResourceType });
         closeModal('resource-modal');
         toast('تم الحفظ ✅');
@@ -5631,7 +5991,7 @@ ESSAY
       } catch(e) {
         if (e.message === 'no-grade') toast('اختار القسم أولاً!', 'error');
         else if (e.message === 'no-term') toast('اختار الترم أولاً!', 'error');
-        else if (e.message === 'no-owner') toast('خطأ: لا يوجد صاحب ملخص محدد!', 'error');
+        else if (e.message === 'no-owner') toast('خطأ: لا يوجد صاحب محدد!', 'error');
         else if (e.message?.startsWith('db:')) toast('❌ ' + e.message.slice(3), 'error');
         else toast('خطأ في الاتصال!', 'error');
       }
@@ -6210,6 +6570,7 @@ ESSAY
       showGradeSelection();
     });
     loadOwnersMasterPassword();
+    loadLectureOwnersMasterPassword();
 
     // ══════════════════════════════════════════════════
     //  COSMIC SPACE ENGINE — Stars + Aurora + Nebula
