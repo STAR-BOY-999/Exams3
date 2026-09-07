@@ -1596,7 +1596,7 @@
     .admin-subject-info p  { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; }
     .admin-subject-actions { display: flex; gap: 6px; }
 
-    /* ─── OWNER LEADER CARD (كروت أصحاب الملخصات — الصورة على الحرف بكيرف) ─── */
+    /* ─── OWNER LEADER CARD (كروت Owner ال — الصورة على الحرف بكيرف) ─── */
     .owner-leader-card {
       position: relative;
       margin-bottom: 1.6rem;
@@ -2260,7 +2260,7 @@
         <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
       </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">📝 <span>الملخصات</span></h2>
-      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">أصحاب الملخصات وملخصات كل مادة</p>
+      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">Owner ال وملخصات كل مادة</p>
       <div class="content-search-wrap" id="summaries-search-wrap" style="margin-top:-0.8rem">
         <input type="text" class="content-search-input" id="summaries-search" placeholder="ابحث باسم المادة، الملخص، أو صاحب الملخص..." oninput="filterSummaries(this.value)">
         <i class="fas fa-search"></i>
@@ -2377,7 +2377,7 @@
       </div>
       <!-- Lectures section -->
       <div id="admin-section-lectures" class="hidden">
-        <!-- View 1: قائمة المواد (المجلدات) + أصحاب محاضرات -->
+        <!-- View 1: قائمة المواد (المجلدات) + Owner ال -->
         <div id="admin-lectures-subjects-view">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
             <p style="color:var(--text-dim);font-size:0.9rem">المواد وأصحاب المحاضرات — كل واحد فولدر بيدخله لوحده</p>
@@ -2457,10 +2457,10 @@
       </div>
       <!-- Summaries section -->
       <div id="admin-section-summaries" class="hidden">
-        <!-- View 1: قائمة المواد + أصحاب الملخصات (كل حاجة في نفس الواجهة) -->
+        <!-- View 1: قائمة المواد + Owner ال (كل حاجة في نفس الواجهة) -->
         <div id="admin-summaries-subjects-view">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
-            <p style="color:var(--text-dim);font-size:0.9rem">المواد وأصحاب الملخصات — كل واحد فولدر بيدخله لوحده</p>
+            <p style="color:var(--text-dim);font-size:0.9rem">المواد وOwner ال — كل واحد فولدر بيدخله لوحده</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
               <button class="btn btn-primary" onclick="showAddOwnerModal()">
                 <i class="fas fa-user-plus"></i> Add Owner
@@ -2751,7 +2751,7 @@ ESSAY
     </div>
   </div>
 
-  <!-- MODAL: كلمة سر إدارة أصحاب الملخصات (باسورد رئيسي منفصل) -->
+  <!-- MODAL: كلمة سر إدارة Owner ال (باسورد رئيسي منفصل) -->
   <div id="owners-master-pwd-modal" class="modal-overlay hidden">
     <div class="modal">
       <h3><i class="fas fa-user-shield" style="color:var(--amber);margin-left:8px"></i> <span id="owners-master-pwd-title">كلمة سر إدارة الOwners</span></h3>
@@ -3158,7 +3158,7 @@ ESSAY
     let addingResourceType = 'summaries';  // type when opening add resource modal
     let gradePasswords = {};           // {general: 'xxx', bis: 'xxx'}  loaded from DB
 
-    // ====================== أصحاب الملخصات (SUMMARY OWNERS) — STATE ======================
+    // ====================== Owner ال (SUMMARY OWNERS) — STATE ======================
     let summaryOwnersMasterPassword = null; // باسورد إضافة صاحب ملخص جديد — من جدول app_passwords
     // شكل الكيرف اللي بيتقوّس حوالين صورة صاحب الملخص أعلى الكارت
     const OWNER_HEADER_CURVE_SVG = `<svg viewBox="0 0 300 54" preserveAspectRatio="none"><path d="M20,0 H280 Q300,0 300,20 L300,24 L185,24 C170,24 170,54 150,54 C130,54 130,24 115,24 L0,24 L0,20 Q0,0 20,0 Z"/></svg>`;
@@ -3166,7 +3166,7 @@ ESSAY
     const OWNER_VERIFIED_BADGE_SVG = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50,2 L59.84,13.29 L74,8.43 L76.87,23.13 L91.57,26 L86.71,40.16 L98,50 L86.71,59.84 L91.57,74 L76.87,76.87 L74,91.57 L59.84,86.71 L50,98 L40.16,86.71 L26,91.57 L23.13,76.87 L8.43,74 L13.29,59.84 L2,50 L13.29,40.16 L8.43,26 L23.13,23.13 L26,8.43 L40.16,13.29 Z" fill="#3b9df0"/><path d="M30,53 L43,66 L72,36" stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     // بيحدد اتجاه اسم صاحب الملخص (عربي = يمين لشمال، إنجليزي = شمال ليمين) عشان مكان علامة التوثيق
     function ownerNameDir(name) { return /[\u0600-\u06FF]/.test(name || '') ? 'rtl' : 'ltr'; }
-    let summaryOwners = [];                 // أصحاب الملخصات في القسم/الترم الحالي (للأدمن)
+    let summaryOwners = [];                 // Owner ال في القسم/الترم الحالي (للأدمن)
     let adminSummariesMode = 'subjects';    // 'subjects' | 'owners' — وضع تصفح الملخصات في الأدمن
     let adminCurrentOwner  = null;          // الصاحب المفتوح حالياً بعد إدخال باسورده
     let _pendingOwnerOpen  = null;
@@ -3471,7 +3471,7 @@ ESSAY
       }
     }
 
-    // تحميل المواد + أصحاب الملخصات مع بعض وعرضهم في نفس الصفحة
+    // تحميل المواد + Owner ال مع بعض وعرضهم في نفس الصفحة
     async function loadSummariesPageData() {
       const [list, owners] = await Promise.all([
         loadResources('summaries'),
@@ -3615,7 +3615,7 @@ ESSAY
 
       // ── فولدرات أصحاب المحاضرات ──
       if (owners.length > 0) {
-        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>أصحاب محاضرات</div>`;
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>Owner ال</div>`;
         html += `<div style="margin-bottom:1.4rem">`;
         html += owners.map((o, i) => `
           <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openPublicLectureOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
@@ -3623,8 +3623,8 @@ ESSAY
               <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
               <div class="owner-leader-ribbon"><i class="fas fa-crown"></i></div>
               <div class="owner-leader-content">
-                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب محاضرات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
-                <div class="owner-leader-tag">صاحب محاضرات</div>
+                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="Owner موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+                <div class="owner-leader-tag">Owner</div>
                 <div class="owner-leader-divider"></div>
                 <div class="owner-leader-pill"><i class="fas fa-video"></i> اضغط لعرض المحاضرات</div>
               </div>
@@ -3920,7 +3920,7 @@ ESSAY
       const q = summariesSearchQuery.trim();
       if (q) {
         summariesList = summariesList.filter(r => _matchesQuery(q, r.subject, r.title, r.author_name));
-        // الملخصات اللي جوا فولدرات أصحاب الملخصات واللي بتطابق كلمة البحث — هتتعرض كملفات مباشرة
+        // الملخصات اللي جوا فولدرات Owner ال واللي بتطابق كلمة البحث — هتتعرض كملفات مباشرة
         matchedOwnerFiles = _summariesCache.filter(r => r.owner_id && _matchesQuery(q, r.subject, r.title));
         // الفولدر نفسه يظهر بس لو اسم صاحبه هو اللي طابق البحث (مش لو ملخص جواه طابق)
         owners = owners.filter(o => _matchesQuery(q, o.name));
@@ -3938,7 +3938,7 @@ ESSAY
 
       let html = '';
 
-      // ── ملخصات أصحاب الملخصات المطابقة للبحث — تظهر كملفات مباشرة، ضغطة واحدة تفتح الملف ──
+      // ── ملخصات Owner ال المطابقة للبحث — تظهر كملفات مباشرة، ضغطة واحدة تفتح الملف ──
       if (matchedOwnerFiles.length > 0) {
         html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-search" style="margin-left:6px"></i>نتائج البحث</div>`;
         html += `<div style="margin-bottom:1.4rem">`;
@@ -3958,9 +3958,9 @@ ESSAY
         html += `</div>`;
       }
 
-      // ── فولدرات أصحاب الملخصات ──
+      // ── فولدرات Owner ال ──
       if (owners.length > 0) {
-        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>أصحاب الملخصات</div>`;
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>Owner ال</div>`;
         html += `<div style="margin-bottom:1.4rem">`;
         html += owners.map((o, i) => `
           <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openPublicOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
@@ -3968,8 +3968,8 @@ ESSAY
               <div class="owner-leader-header">${OWNER_HEADER_CURVE_SVG}</div>
               <div class="owner-leader-ribbon"><i class="fas fa-crown"></i></div>
               <div class="owner-leader-content">
-                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب ملخصات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
-                <div class="owner-leader-tag">صاحب ملخصات</div>
+                <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="Owner موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+                <div class="owner-leader-tag">Owner</div>
                 <div class="owner-leader-divider"></div>
                 <div class="owner-leader-pill"><i class="fas fa-book-open"></i> اضغط لعرض الملخصات</div>
               </div>
@@ -3985,7 +3985,7 @@ ESSAY
       }
 
       // ── فولدرات المواد ──
-      const subjectOnlyList = (summariesList || []).filter(r => !r.owner_id); // استبعاد ملخصات أصحاب الملخصات
+      const subjectOnlyList = (summariesList || []).filter(r => !r.owner_id); // استبعاد ملخصات Owner ال
       if (subjectOnlyList.length > 0) {
         const subjects = {};
         subjectOnlyList.forEach(r => {
@@ -5205,7 +5205,7 @@ ESSAY
       document.getElementById('admin-summaries-inside-view').style.display = 'none';
       document.getElementById('admin-owner-inside-view').style.display = 'none';
 
-      // حمّل أصحاب الملخصات جنب المواد في نفس الواجهة
+      // حمّل Owner ال جنب المواد في نفس الواجهة
       loadSummaryOwners();
 
       const container = document.getElementById('admin-summaries-subjects-list');
@@ -5221,7 +5221,7 @@ ESSAY
 
       const subjects = {};
       summariesList.forEach(r => {
-        if (r.owner_id) return; // ملخصات أصحاب الملخصات ليها فولدراتها الخاصة، متتحطش تحت المواد
+        if (r.owner_id) return; // ملخصات Owner ال ليها فولدراتها الخاصة، متتحطش تحت المواد
         const sub = r.subject || 'عام';
         if (!subjects[sub]) subjects[sub] = [];
         subjects[sub].push(r);
@@ -5402,7 +5402,7 @@ ESSAY
       } catch { toast('خطأ في الحذف!','error'); }
     }
 
-    // ====================== أصحاب الملخصات — ADMIN ======================
+    // ====================== Owner ال — ADMIN ======================
     async function loadSummaryOwners() {
       if (!currentGrade || !currentTerm) { summaryOwners = []; renderAdminOwners(); return; }
       try {
@@ -5419,7 +5419,7 @@ ESSAY
         container.innerHTML = `
           <div class="empty">
             <i class="fas fa-user-friends" style="font-size:2.5rem;opacity:0.3;margin-bottom:1rem"></i>
-            <p>لا يوجد أصحاب ملخصات بعد — اضغط "إضافة صاحب ملخص"</p>
+            <p>لا يوجد Owners بعد — اضغط "إضافة Oner "</p>
           </div>`;
         return;
       }
@@ -5434,8 +5434,8 @@ ESSAY
               </button>
             </div>
             <div class="owner-leader-content">
-              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب ملخصات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
-              <div class="owner-leader-tag">صاحب ملخصات</div>
+              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="Owner موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+              <div class="owner-leader-tag">Owner</div>
               <div class="owner-leader-divider"></div>
               <div class="owner-leader-pill"><i class="fas fa-lock"></i> ادخل باسورد قسمه للإدارة</div>
             </div>
@@ -5471,7 +5471,7 @@ ESSAY
       }, 'summary');
     }
 
-    // فتح مودال إضافة صاحب محاضرة — محمي بباسورد رئيسي منفصل عن باسورد أصحاب الملخصات
+    // فتح مودال إضافة صاحب محاضرة — محمي بباسورد رئيسي منفصل عن باسورد Owner ال
     function showAddLectureOwnerModal() {
       if (!currentGrade || !currentTerm) return toast('اختار القسم والترم أولاً!', 'error');
       askOwnersMasterPassword(() => {
@@ -5639,8 +5639,8 @@ ESSAY
               </button>
             </div>
             <div class="owner-leader-content">
-              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="صاحب محاضرات موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
-              <div class="owner-leader-tag">صاحب محاضرات</div>
+              <h4 dir="${ownerNameDir(o.name)}">${o.name}<span class="owner-leader-verified" title="Owner موثّق">${OWNER_VERIFIED_BADGE_SVG}</span></h4>
+              <div class="owner-leader-tag">Owner</div>
               <div class="owner-leader-divider"></div>
               <div class="owner-leader-pill"><i class="fas fa-lock"></i> ادخل باسورد قسمه للإدارة</div>
             </div>
@@ -5849,7 +5849,7 @@ ESSAY
       document.getElementById('resource-modal').classList.remove('hidden');
     }
 
-    // ====================== أصحاب الملخصات — الواجهة العامة للطالب ======================
+    // ====================== Owner ال — الواجهة العامة للطالب ======================
     async function openPublicOwner(id, name) {
       currentPublicOwner = { id, name };
       document.getElementById('summaries-loading').classList.remove('hidden');
