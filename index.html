@@ -1596,7 +1596,7 @@
     .admin-subject-info p  { font-size: 0.82rem; color: var(--text-dim); margin-top: 3px; }
     .admin-subject-actions { display: flex; gap: 6px; }
 
-    /* ─── OWNER LEADER CARD (كروت Owner ال — الصورة على الحرف بكيرف) ─── */
+    /* ─── OWNER LEADER CARD (كروت  — الصورة على الحرف بكيرف) ─── */
     .owner-leader-card {
       position: relative;
       margin-bottom: 1.6rem;
@@ -2260,7 +2260,7 @@
         <i class="fas fa-arrow-right"></i> رجوع للقائمة السابقة
       </button>
       <h2 class="page-title" style="font-size:1.8rem;text-align:right;margin-bottom:0.3rem">📝 <span>الملخصات</span></h2>
-      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem">Owner ال وملخصات كل مادة</p>
+      <p class="page-sub" style="text-align:right;margin-bottom:1.5rem"> وملخصات كل مادة</p>
       <div class="content-search-wrap" id="summaries-search-wrap" style="margin-top:-0.8rem">
         <input type="text" class="content-search-input" id="summaries-search" placeholder="ابحث باسم المادة، الملخص، أو صاحب الملخص..." oninput="filterSummaries(this.value)">
         <i class="fas fa-search"></i>
@@ -3638,7 +3638,7 @@ ESSAY
 
       // ── فولدرات Owner ال ──
       if (owners.length > 0) {
-        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>Owner ال</div>`;
+        html += `<div style="font-weight:900;color:var(--amber);margin-bottom:8px;font-size:0.95rem"><i class="fas fa-user-friends" style="margin-left:6px"></i>Owners</div>`;
         html += `<div style="margin-bottom:1.4rem">`;
         html += owners.map((o, i) => `
           <div class="owner-leader-card" style="animation-delay:${i*0.06}s" onclick="openPublicLectureOwner(${o.id}, '${o.name.replace(/'/g,"\\'")}')">
