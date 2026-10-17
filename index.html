@@ -6559,7 +6559,7 @@ ESSAY
             const question = lines[1];
             const keywordsRaw = lines[2] || '';
             const keywords = keywordsRaw ? keywordsRaw.split(',').map(k => k.trim()).filter(Boolean) : [];
-            questions.push({ id: Date.now() + idx, type: 'essay', question, keywords, explanation: '' });
+            questions.push({ id: Date.now() + idx, type: 'essay', question, keywords, explanation: lines[3] || '' });
 
           } else {
             errors.push(`بلوك ${idx+1}: نوع مش معروف "${lines[0]}" - المفروض يكون MCQ أو TF أو ESSAY`);
