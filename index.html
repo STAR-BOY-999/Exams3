@@ -2008,6 +2008,14 @@
       background: rgba(215,232,255,0.95);
     }
   </style>
+  <!-- Google Analytics (GA4) : استبدل G-XXXXXXXXXX بالـ Measurement ID بتاعك -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-SGZMT9945T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', { send_page_view: false });
+  </script>
 </head>
 <body data-theme="dark">
 
@@ -7054,6 +7062,63 @@ ESSAY
       observer.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
     })();
 
+  </script>
+
+
+  <!-- Google Analytics: تتبع الأقسام والتحميلات والامتحانات -->
+  <script>
+  (function () {
+    const PAGE_NAMES = {
+      'term-selection-page': 'اختيار الترم',
+      'sections-page': 'صفحة الأقسام',
+      'home-page': 'قسم الامتحانات',
+      'lectures-page': 'قسم المحاضرات',
+      'lecture-quizzes-page': 'قسم أسئلة المحاضرات',
+      'summaries-page': 'قسم الملخصات',
+      'books-page': 'قسم الكتب',
+      'quiz-page': 'حل امتحان',
+      'results-page': 'نتيجة الامتحان'
+    };
+
+    const _showPage = window.showPage;
+    window.showPage = function (id) {
+      _showPage.apply(this, arguments);
+      if (id === 'admin-page') return;
+      try {
+        gtag('event', 'page_view', {
+          page_title: PAGE_NAMES[id] || id,
+          page_location: location.origin + location.pathname + '#' + id,
+          page_path: location.pathname + '#' + id
+        });
+      } catch (e) {}
+    };
+
+    document.addEventListener('click', function (e) {
+      const a = e.target.closest('a[href^="http"][target="_blank"]');
+      if (!a || !a.closest('#main') || a.closest('#admin-page')) return;
+      const card = a.closest('.resource-card') || a.parentElement;
+      const name = (card ? card.innerText : a.innerText).replace(/\s+/g, ' ').trim().slice(0, 100);
+      try {
+        gtag('event', 'download_click', {
+          file_name: name,
+          file_url: a.href,
+          section: (typeof currentSection !== 'undefined' && currentSection) || ''
+        });
+      } catch (e) {}
+    }, true);
+
+    const _startQuiz = window.startQuiz;
+    if (_startQuiz) {
+      window.startQuiz = function (id) {
+        _startQuiz.apply(this, arguments);
+        try {
+          gtag('event', 'quiz_start', {
+            quiz_name: (typeof currentQuiz !== 'undefined' && currentQuiz && currentQuiz.title) || String(id)
+          });
+        } catch (e) {}
+      };
+    }
+  })();
   </script>
 
 </body>
